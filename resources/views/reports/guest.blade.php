@@ -77,7 +77,7 @@
                                     <tbody>
                                         @foreach ($repeatGuests as $user)
                                             <tr>
-                                                <td>{{ $user->full_name }}</td>
+                                                <td>{{ $user->name }}</td>
                                                 <td><span class="badge bg-success">{{ $user->reservation_count }}</span>
                                                 </td>
                                             </tr>
@@ -136,7 +136,7 @@
                         <tbody>
                             @foreach ($guests as $user)
                                 <tr>
-                                    <td><strong>{{ $user->full_name }}</strong></td>
+                                    <td><strong>{{ $user->name }}</strong></td>
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->phone ?? '-' }}</td>
                                     <td>

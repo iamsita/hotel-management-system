@@ -25,7 +25,7 @@ class Reservation extends Model
         'check_out_date' => 'datetime',
     ];
 
-    public function guest(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

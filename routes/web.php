@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChargeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\FoodOrderManagementController;
 use App\Http\Controllers\GuestAuthController;
@@ -16,11 +17,7 @@ use App\Http\Controllers\PaymentManagementController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
-use App\Models\CleaningRequest;
-use App\Models\FoodOrder;
 use App\Models\Payment;
-use App\Models\Reservation;
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 // ==================== PUBLIC ROUTES ====================
@@ -63,16 +60,7 @@ Route::middleware(['auth', 'type:guest'])
 // ==================== STAFF PORTAL ROUTES ====================
 Route::middleware(['auth', 'type:admin,manager,staff'])
     ->group(function () {
-        Route::get('dashboard', function () {
-            return view('staff.dashboard', [
-                'totalGuests' => User::where('type', 'guest')->count(),
-                'checkedIn' => Reservation::where('status', 'checked_in')->count(),
-                'pendingOrders' => FoodOrder::where('status', '!=', 'delivered')->count(),
-                'totalRevenue' => Payment::where('status', 'completed')->sum('amount'),
-                'recentBookings' => Reservation::orderBy('check_in_date', 'desc')->limit(5)->get(),
-                'pendingCleaning' => CleaningRequest::where('status', '!=', 'completed')->limit(5)->get(),
-            ]);
-        })->name('dashboard');
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // Rooms Management
         Route::resource('rooms', RoomController::class);

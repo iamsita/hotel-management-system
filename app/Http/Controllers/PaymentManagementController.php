@@ -9,7 +9,7 @@ class PaymentManagementController extends Controller
 {
     public function index()
     {
-        $payments = Payment::with('reservation.guest', 'reservation.room')
+        $payments = Payment::with('reservation.user', 'reservation.room')
             ->latest()
             ->paginate(20);
 
@@ -37,7 +37,7 @@ class PaymentManagementController extends Controller
 
     public function report()
     {
-        $payments = Payment::with('reservation.guest', 'processedBy')
+        $payments = Payment::with('reservation.user', 'processedBy')
             ->latest()
             ->get();
 

@@ -28,7 +28,7 @@
                     @forelse($orders as $order)
                         <tr>
                             <td>#{{ $order->id }}</td>
-                            <td>{{ $order->reservation->guest->full_name }}</td>
+                            <td>{{ $order->reservation->user->name }}</td>
                             <td>{{ $order->reservation->room->room_number }}</td>
                             <td>{{ $order->food->name }}</td>
                             <td>{{ $order->quantity }}</td>

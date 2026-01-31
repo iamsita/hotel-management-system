@@ -10,7 +10,7 @@ class InvoiceController extends Controller
 {
     public function index()
     {
-        $invoices = Invoice::with('reservation.guest')
+        $invoices = Invoice::with('reservation.user')
             ->orderBy('issue_date', 'desc')
             ->paginate(15);
 
@@ -50,7 +50,7 @@ class InvoiceController extends Controller
 
     public function show(Invoice $invoice)
     {
-        $invoice->load('reservation.guest', 'reservation.charges');
+        $invoice->load('reservation.user', 'reservation.charges');
 
         return view('invoices.show', compact('invoice'));
     }
@@ -83,7 +83,7 @@ class InvoiceController extends Controller
 
     public function generatePDF(Invoice $invoice)
     {
-        $invoice->load('reservation.guest', 'reservation.charges');
+        $invoice->load('reservation.user', 'reservation.charges');
 
         // Generate PDF using TCPDF or similar
         // This is a simplified version

@@ -38,9 +38,9 @@
                         <h5 class="mb-0">Guest Information</h5>
                     </div>
                     <div class="card-body">
-                        <p><strong>Name:</strong> {{ $reservation->guest->full_name }}</p>
-                        <p><strong>Email:</strong> {{ $reservation->guest->email }}</p>
-                        <p><strong>Phone:</strong> {{ $reservation->guest->phone ?? '-' }}</p>
+                        <p><strong>Name:</strong> {{ $reservation->user->name }}</p>
+                        <p><strong>Email:</strong> {{ $reservation->user->email }}</p>
+                        <p><strong>Phone:</strong> {{ $reservation->user->phone ?? '-' }}</p>
                     </div>
                 </div>
 

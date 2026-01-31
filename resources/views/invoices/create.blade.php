@@ -17,8 +17,8 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <h6>Guest Information</h6>
-                                    <p><strong>{{ $reservation->guest->full_name }}</strong></p>
-                                    <p>{{ $reservation->guest->email }}<br>{{ $reservation->guest->phone ?? '' }}</p>
+                                    <p><strong>{{ $reservation->user->name }}</strong></p>
+                                    <p>{{ $reservation->user->email }}<br>{{ $reservation->user->phone ?? '' }}</p>
                                 </div>
                                 <div class="col-md-6">
                                     <h6>Reservation Information</h6>

@@ -72,7 +72,7 @@
                         <tbody>
                             @foreach ($reservations as $reservation)
                                 <tr>
-                                    <td>{{ $reservation->guest->full_name }}</td>
+                                    <td>{{ $reservation->user->name }}</td>
                                     <td>{{ $reservation->room->room_number }}</td>
                                     <td>{{ $reservation->check_in_date->format('M d, Y') }}</td>
                                     <td>{{ $reservation->check_out_date->format('M d, Y') }}</td>

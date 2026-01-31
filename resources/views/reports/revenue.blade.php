@@ -138,7 +138,7 @@
                             @foreach ($invoices as $invoice)
                                 <tr>
                                     <td>{{ $invoice->invoice_number }}</td>
-                                    <td>{{ $invoice->reservation->guest->full_name }}</td>
+                                    <td>{{ $invoice->reservation->user->name }}</td>
                                     <td>{{ $invoice->issue_date->format('M d, Y') }}</td>
                                     <td>${{ number_format($invoice->total_amount, 2) }}</td>
                                     <td>

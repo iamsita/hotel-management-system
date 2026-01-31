@@ -21,7 +21,7 @@
                                     @foreach ($guests as $user)
                                         <option value="{{ $user->id }}"
                                             {{ old('user_id') === (string) $user->id ? 'selected' : '' }}>
-                                            {{ $user->full_name }} ({{ $user->email }})
+                                            {{ $user->name }} ({{ $user->email }})
                                         </option>
                                     @endforeach
                                 </select>

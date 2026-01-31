@@ -53,7 +53,7 @@
                                     </td>
                                     <td>
                                         @if ($room->current_reservation)
-                                            {{ $room->current_reservation->guest->full_name }}
+                                            {{ $room->current_reservation->user->name }}
                                         @else
                                             -
                                         @endif

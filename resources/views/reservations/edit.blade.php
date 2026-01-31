@@ -22,7 +22,7 @@
                                     @foreach ($guests as $user)
                                         <option value="{{ $user->id }}"
                                             {{ $reservation->user_id === $user->id ? 'selected' : '' }}>
-                                            {{ $user->full_name }} ({{ $user->email }})
+                                            {{ $user->name }} ({{ $user->email }})
                                         </option>
                                     @endforeach
                                 </select>

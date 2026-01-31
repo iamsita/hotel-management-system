@@ -28,7 +28,7 @@
                     @forelse($payments as $payment)
                         <tr>
                             <td>{{ $payment->transaction_id }}</td>
-                            <td>{{ $payment->reservation->guest->full_name }}</td>
+                            <td>{{ $payment->reservation->user->name }}</td>
                             <td>{{ $payment->reservation->room->room_number }}</td>
                             <td>${{ number_format($payment->amount, 2) }}</td>
                             <td>{{ ucfirst(str_replace('_', ' ', $payment->payment_method)) }}</td>

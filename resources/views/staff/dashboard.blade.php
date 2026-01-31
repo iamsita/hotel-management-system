@@ -1,6 +1,5 @@
 @extends('layout')
 @section('content')
-
     <div class="container-fluid">
         <div class="row mb-4">
             <div class="col-md-8">
@@ -57,28 +56,28 @@
                         <div class="table-responsive">
                             <table class="table table-sm">
                                 <thead>
-                                <tr>
-                                    <th>Guest</th>
-                                    <th>Room</th>
-                                    <th>Check-in</th>
-                                    <th>Status</th>
-                                </tr>
+                                    <tr>
+                                        <th>Guest</th>
+                                        <th>Room</th>
+                                        <th>Check-in</th>
+                                        <th>Status</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                @forelse($recentBookings as $booking)
-                                    <tr>
-                                        <td>{{ $booking->guest->full_name }}</td>
-                                        <td>{{ $booking->room->room_number }}</td>
-                                        <td>{{ $booking->check_in_date->format('M d') }}</td>
-                                        <td><span
-                                                class="badge bg-{{ $booking->status === 'checked_in' ? 'success' : 'warning' }}">{{ ucfirst($booking->status) }}</span>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center">No bookings</td>
-                                    </tr>
-                                @endforelse
+                                    @forelse($recentBookings as $booking)
+                                        <tr>
+                                            <td>{{ $booking->user->name }}</td>
+                                            <td>{{ $booking->room->room_number }}</td>
+                                            <td>{{ $booking->check_in_date->format('M d') }}</td>
+                                            <td><span
+                                                    class="badge bg-{{ $booking->status === 'checked_in' ? 'success' : 'warning' }}">{{ ucfirst($booking->status) }}</span>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center">No bookings</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -94,28 +93,28 @@
                         <div class="table-responsive">
                             <table class="table table-sm">
                                 <thead>
-                                <tr>
-                                    <th>Room</th>
-                                    <th>Type</th>
-                                    <th>Priority</th>
-                                    <th>Status</th>
-                                </tr>
+                                    <tr>
+                                        <th>Room</th>
+                                        <th>Type</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                @forelse($pendingCleaning as $cleaning)
-                                    <tr>
-                                        <td>{{ $cleaning->room->room_number }}</td>
-                                        <td>{{ ucfirst($cleaning->request_type) }}</td>
-                                        <td><span
-                                                class="badge bg-{{ $cleaning->priority === 'urgent' ? 'danger' : 'warning' }}">{{ ucfirst($cleaning->priority) }}</span>
-                                        </td>
-                                        <td>{{ ucfirst(str_replace('_', ' ', $cleaning->status)) }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center">No pending requests</td>
-                                    </tr>
-                                @endforelse
+                                    @forelse($pendingCleaning as $cleaning)
+                                        <tr>
+                                            <td>{{ $cleaning->room->room_number }}</td>
+                                            <td>{{ ucfirst($cleaning->request_type) }}</td>
+                                            <td><span
+                                                    class="badge bg-{{ $cleaning->priority === 'urgent' ? 'danger' : 'warning' }}">{{ ucfirst($cleaning->priority) }}</span>
+                                            </td>
+                                            <td>{{ ucfirst(str_replace('_', ' ', $cleaning->status)) }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center">No pending requests</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>

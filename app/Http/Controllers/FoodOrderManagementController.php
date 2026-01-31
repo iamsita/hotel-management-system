@@ -9,7 +9,7 @@ class FoodOrderManagementController extends Controller
 {
     public function index()
     {
-        $orders = FoodOrder::with('food', 'reservation.guest')
+        $orders = FoodOrder::with('food', 'reservation.user')
             ->latest()
             ->paginate(20);
 

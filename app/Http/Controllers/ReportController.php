@@ -71,7 +71,7 @@ class ReportController extends Controller
         $endDate = $request->get('end_date', now()->format('Y-m-d'));
 
         $invoices = Invoice::whereBetween('issue_date', [$startDate, $endDate])
-            ->with('reservation.guest')
+            ->with('reservation.user')
             ->get();
 
         $roomRevenue = 0;

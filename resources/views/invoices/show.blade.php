@@ -35,12 +35,12 @@
                             <div class="col-md-6">
                                 <h6>INVOICE TO</h6>
                                 <p>
-                                    <strong>{{ $invoice->reservation->guest->full_name }}</strong><br>
-                                    {{ $invoice->reservation->guest->email }}<br>
-                                    {{ $invoice->reservation->guest->phone ?? '' }}<br>
-                                    {{ $invoice->reservation->guest->address ?? '' }}<br>
-                                    {{ $invoice->reservation->guest->city ?? '' }},
-                                    {{ $invoice->reservation->guest->country ?? '' }}
+                                    <strong>{{ $invoice->reservation->user->name }}</strong><br>
+                                    {{ $invoice->reservation->user->email }}<br>
+                                    {{ $invoice->reservation->user->phone ?? '' }}<br>
+                                    {{ $invoice->reservation->user->address ?? '' }}<br>
+                                    {{ $invoice->reservation->user->city ?? '' }},
+                                    {{ $invoice->reservation->user->country ?? '' }}
                                 </p>
                             </div>
                             <div class="col-md-6 text-end">
@@ -91,7 +91,8 @@
                                     @foreach ($invoice->reservation->charges as $charge)
                                         <tr>
                                             <td>{{ $charge->description }}
-                                                ({{ ucfirst(str_replace('_', ' ', $charge->charge_type)) }})</td>
+                                                ({{ ucfirst(str_replace('_', ' ', $charge->charge_type)) }})
+                                            </td>
                                             <td class="text-end">${{ number_format($charge->amount, 2) }}</td>
                                         </tr>
                                     @endforeach

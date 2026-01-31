@@ -20,7 +20,7 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <p><strong>Order ID:</strong> #{{ $order->id }}</p>
-                                <p><strong>Guest:</strong> {{ $order->reservation->guest->full_name }}</p>
+                                <p><strong>Guest:</strong> {{ $order->reservation->user->name }}</p>
                                 <p><strong>Room:</strong> {{ $order->reservation->room->room_number }}</p>
                             </div>
                             <div class="col-md-6">
@@ -91,9 +91,9 @@
                         <h5>Guest Information</h5>
                     </div>
                     <div class="card-body">
-                        <p><strong>Name:</strong> {{ $order->reservation->guest->full_name }}</p>
-                        <p><strong>Email:</strong> {{ $order->reservation->guest->email }}</p>
-                        <p><strong>Phone:</strong> {{ $order->reservation->guest->phone }}</p>
+                        <p><strong>Name:</strong> {{ $order->reservation->user->name }}</p>
+                        <p><strong>Email:</strong> {{ $order->reservation->user->email }}</p>
+                        <p><strong>Phone:</strong> {{ $order->reservation->user->phone }}</p>
                         <p><strong>Room:</strong> {{ $order->reservation->room->room_number }}</p>
                     </div>
                 </div>
