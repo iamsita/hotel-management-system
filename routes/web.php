@@ -16,7 +16,6 @@ use App\Http\Controllers\PaymentManagementController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
-use App\Http\Middleware\UserTypeMiddleware;
 use App\Models\CleaningRequest;
 use App\Models\FoodOrder;
 use App\Models\Payment;
@@ -24,13 +23,16 @@ use App\Models\Reservation;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
-// ==================== GUEST ROUTES (No Auth Required) ====================
+// ==================== PUBLIC ROUTES ====================
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::prefix('guest')->name('guest.')->group(function () {
-    Route::middleware('guest')->group(function () {
+// ==================== GUEST PORTAL ROUTES ====================
+Route::middleware(['auth', 'type:guest'])
+    ->prefix('guest')
+    ->name('guest.')
+    ->group(function () {
         Route::get('dashboard', [GuestDashboardController::class, 'index'])->name('dashboard');
         Route::get('profile', [GuestDashboardController::class, 'profile'])->name('profile');
         Route::post('profile', [GuestDashboardController::class, 'updateProfile'])->name('profile.update');
@@ -58,32 +60,20 @@ Route::prefix('guest')->name('guest.')->group(function () {
         Route::post('logout', [GuestAuthController::class, 'logout'])->name('logout');
     });
 
-    Route::middleware(UserTypeMiddleware::class.':guest')->group(function () {
-        Route::get('register', [GuestAuthController::class, 'showRegister'])->name('register');
-        Route::post('register', [GuestAuthController::class, 'register'])->name('register.store');
-        Route::get('login', [GuestAuthController::class, 'showLogin'])->name('login');
-        Route::post('login', [GuestAuthController::class, 'login'])->name('login.store');
-    });
-});
+// ==================== STAFF PORTAL ROUTES ====================
+Route::middleware(['auth', 'type:admin,manager,staff'])
+    ->group(function () {
+        Route::get('dashboard', function () {
+            return view('staff.dashboard', [
+                'totalGuests' => User::where('type', 'guest')->count(),
+                'checkedIn' => Reservation::where('status', 'checked_in')->count(),
+                'pendingOrders' => FoodOrder::where('status', '!=', 'delivered')->count(),
+                'totalRevenue' => Payment::where('status', 'completed')->sum('amount'),
+                'recentBookings' => Reservation::orderBy('check_in_date', 'desc')->limit(5)->get(),
+                'pendingCleaning' => CleaningRequest::where('status', '!=', 'completed')->limit(5)->get(),
+            ]);
+        })->name('dashboard');
 
-// ==================== HMS STAFF ROUTES ====================
-Route::middleware('auth.staff')->group(function () {
-    Route::get('staff/dashboard', function () {
-        // Show staff dashboard
-        return view('staff.dashboard', [
-            'totalGuests' => User::where('type', 'guest')->count(),
-            'checkedIn' => Reservation::where('status', 'checked_in')->count(),
-            'pendingOrders' => FoodOrder::where('status', '!=', 'delivered')->count(),
-            'totalRevenue' => Payment::where('status', 'completed')->sum('amount'),
-            'recentBookings' => Reservation::orderBy('check_in_date', 'desc')->limit(5)->get(),
-            'pendingCleaning' => CleaningRequest::where('status', '!=', 'completed')->limit(5)->get(),
-        ]);
-    })->name('staff.dashboard');
-
-    // Auth
-    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-
-    Route::prefix('staff')->name('staff.')->group(function () {
         // Rooms Management
         Route::resource('rooms', RoomController::class);
         Route::patch('rooms/{room}/update-status', [RoomController::class, 'updateStatus'])->name('rooms.update-status');
@@ -129,13 +119,14 @@ Route::middleware('auth.staff')->group(function () {
         Route::get('reports/revenue', [ReportController::class, 'revenueReport'])->name('reports.revenue');
         Route::get('reports/guests', [ReportController::class, 'guestReport'])->name('reports.guests');
         Route::get('reports/food', [ReportController::class, 'foodReport'])->name('reports.food');
+        Route::get('reports/services', [ReportController::class, 'serviceReport'])->name('reports.services');
+
+        // Auth
+        Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     });
-});
 
 // ==================== AUTH ROUTES ====================
-Route::middleware(UserTypeMiddleware::class)->group(function () {
+Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('login', [AuthController::class, 'login'])->name('login.store');
 });
-
-Route::get('reports/services', [ReportController::class, 'serviceReport'])->name('reports.services');

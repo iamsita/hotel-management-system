@@ -10,5 +10,3 @@ parameters:
         - database/
         - routes/
     level: 1
-    ignoreErrors:
-        - '#Trait .* is used zero times and is not analysed#'

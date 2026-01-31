@@ -12,7 +12,7 @@ class UserTypeMiddleware
      * Allow only users with specific roles.
      * Usage: ->middleware('type:admin,manager')
      */
-    public function handle(Request $request, Closure $next, ...$roles): Response
+    public function handle(Request $request, Closure $next, $role): Response
     {
         $user = $request->user();
 
@@ -27,13 +27,14 @@ class UserTypeMiddleware
         }
 
         // No roles passed => deny (safe default)
-        if (empty($roles)) {
-            abort(403, 'Role not allowed.');
+        if (empty($role)) {
+            abort(403, 'Type not allowed.');
         }
 
-        // Role check
-        if (! in_array($user->type, $roles, true)) {
-            abort(403, 'Forbidden.');
+        // type check - check if user's type matches allowed types
+
+        if (! $user->type === $role) {
+            abort(403, 'Type not allowed.');
         }
 
         return $next($request);

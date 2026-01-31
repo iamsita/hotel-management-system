@@ -67,7 +67,7 @@
 
             <hr>
             <p class="text-center text-muted small">
-                Staff use only. For guest login, <a href="{{ route('guest.login') }}">click here</a>.
+                Staff use only. For guest login, <a href="{{ route('login') }}">click here</a>.
             </p>
         </div>
     </div>

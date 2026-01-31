@@ -9,7 +9,7 @@ class GuestController extends Controller
 {
     public function index()
     {
-        $guests = User::with('reservations')->paginate(15);
+        $guests = User::where('type', 'guest')->with('reservations')->paginate(15);
 
         return view('guests.index', compact('guests'));
     }
@@ -22,17 +22,15 @@ class GuestController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'email' => 'required|email|unique:guests',
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
             'phone' => 'nullable|string',
-            'id_number' => 'nullable|string',
-            'id_type' => 'nullable|in:passport,national_id,driving_license',
-            'address' => 'nullable|string',
-            'city' => 'nullable|string',
-            'country' => 'nullable|string',
-            'guest_type' => 'required|in:individual,corporate',
+            'password' => 'required|min:8',
         ]);
+
+        // Set user type to guest
+        $validated['type'] = 'guest';
+        $validated['status'] = 'active';
 
         User::create($validated);
 
@@ -41,29 +39,37 @@ class GuestController extends Controller
 
     public function show(User $user)
     {
+        // Ensure this is a guest user
+        if ($user->type !== 'guest') {
+            abort(404);
+        }
+
         $user->load('reservations.room', 'reservations.charges');
 
-        return view('guests.show', compact('guest'));
+        return view('guests.show', compact('user'));
     }
 
     public function edit(User $user)
     {
-        return view('guests.edit', compact('guest'));
+        // Ensure this is a guest user
+        if ($user->type !== 'guest') {
+            abort(404);
+        }
+
+        return view('guests.edit', compact('user'));
     }
 
     public function update(Request $request, User $user)
     {
+        // Ensure this is a guest user
+        if ($user->type !== 'guest') {
+            abort(404);
+        }
+
         $validated = $request->validate([
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'email' => 'required|email|unique:guests,email,'.$user->id,
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email,'.$user->id,
             'phone' => 'nullable|string',
-            'id_number' => 'nullable|string',
-            'id_type' => 'nullable|in:passport,national_id,driving_license',
-            'address' => 'nullable|string',
-            'city' => 'nullable|string',
-            'country' => 'nullable|string',
-            'guest_type' => 'required|in:individual,corporate',
         ]);
 
         $user->update($validated);
@@ -73,6 +79,11 @@ class GuestController extends Controller
 
     public function destroy(User $user)
     {
+        // Ensure this is a guest user
+        if ($user->type !== 'guest') {
+            abort(404);
+        }
+
         $user->delete();
 
         return redirect()->route('guests.index')->with('success', 'Guest deleted successfully');

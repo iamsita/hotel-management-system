@@ -10,7 +10,7 @@ class GuestDashboardController extends Controller
     public static function middleware(): array
     {
         return [
-            'auth:guest',
+            'type:guest',
         ];
     }
 
@@ -31,7 +31,7 @@ class GuestDashboardController extends Controller
             ->get();
 
         return view('guest.dashboard', compact(
-            'guest',
+            'user',
             'activeBooking',
             'totalBookings',
             'totalSpent',
@@ -43,7 +43,7 @@ class GuestDashboardController extends Controller
     {
         $user = Auth::user();
 
-        return view('guest.profile.edit', compact('guest'));
+        return view('guest.profile.edit', compact('user'));
     }
 
     public function updateProfile(Request $request)
@@ -51,12 +51,8 @@ class GuestDashboardController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
-            'address' => 'required|string',
-            'city' => 'required|string',
-            'country' => 'required|string',
         ]);
 
         $user->update($validated);

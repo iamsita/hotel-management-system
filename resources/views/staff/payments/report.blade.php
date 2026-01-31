@@ -107,7 +107,7 @@
         </div>
 
         <div class="mb-4">
-            <a href="{{ route('staff.payments.index') }}" class="btn btn-secondary">Back to Payments</a>
+            <a href="{{ route('payments.index') }}" class="btn btn-secondary">Back to Payments</a>
             <button class="btn btn-outline-secondary" onclick="window.print()">Print Report</button>
         </div>
     </div>

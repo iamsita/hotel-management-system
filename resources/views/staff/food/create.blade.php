@@ -20,7 +20,7 @@
             </div>
         @endif
 
-        <form action="{{ route('staff.food.store') }}" method="POST" class="card p-4">
+        <form action="{{ route('food.store') }}" method="POST" class="card p-4">
             @csrf
 
             <div class="mb-3">
@@ -91,7 +91,7 @@
 
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Add Food Item</button>
-                <a href="{{ route('staff.food.index') }}" class="btn btn-secondary">Cancel</a>
+                <a href="{{ route('food.index') }}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>

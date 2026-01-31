@@ -17,20 +17,15 @@ class GuestAuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:guests',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
             'phone' => 'required|string|max:20',
-            'id_type' => 'required|string',
-            'id_number' => 'required|string|unique:guests',
-            'address' => 'required|string',
-            'city' => 'required|string',
-            'country' => 'required|string',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
-        $validated['guest_type'] = 'individual';
+        $validated['type'] = 'guest';
+        $validated['status'] = 'active';
 
         $user = User::create($validated);
 
@@ -52,6 +47,15 @@ class GuestAuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            // Only allow guest users
+            if ($user->type !== 'guest') {
+                Auth::logout();
+
+                return back()->withErrors(['email' => 'Staff users must use staff login'])->onlyInput('email');
+            }
+
             return redirect()->route('guest.dashboard')->with('success', 'Logged in successfully!');
         }
 
@@ -62,6 +66,6 @@ class GuestAuthController extends Controller
     {
         Auth::logout();
 
-        return redirect()->route('guest.login')->with('success', 'Logged out successfully!');
+        return redirect()->route('login')->with('success', 'Logged out successfully!');
     }
 }

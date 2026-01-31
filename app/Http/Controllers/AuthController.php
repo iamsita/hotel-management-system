@@ -20,7 +20,16 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            return redirect()->route('staff.dashboard')->with('success', 'Logged in successfully!');
+            $user = Auth::user();
+
+            // Only allow staff users (not guests)
+            if ($user->type === 'guest') {
+                Auth::logout();
+
+                return back()->withErrors(['email' => 'Guest users must use guest login'])->onlyInput('email');
+            }
+
+            return redirect()->route('dashboard')->with('success', 'Logged in successfully!');
         }
 
         return back()->withErrors(['email' => 'Invalid credentials'])->onlyInput('email');

@@ -40,8 +40,7 @@
                             </td>
                             <td>{{ $order->ordered_at->format('M d H:i') }}</td>
                             <td>
-                                <a href="{{ route('staff.food-orders.show', $order) }}"
-                                    class="btn btn-sm btn-info">Details</a>
+                                <a href="{{ route('food-orders.show', $order) }}" class="btn btn-sm btn-info">Details</a>
                             </td>
                         </tr>
                     @empty

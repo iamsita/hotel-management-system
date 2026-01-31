@@ -3,7 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property-read BelongsTo $food
+ * @property-read BelongsTo $reservation
+ */
 class FoodOrder extends Model
 {
     protected $table = 'food_orders';
@@ -19,12 +24,12 @@ class FoodOrder extends Model
         'delivered_at',
     ];
 
-    public function reservation()
+    public function reservation(): BelongsTo
     {
         return $this->belongsTo(Reservation::class);
     }
 
-    public function food()
+    public function food(): BelongsTo
     {
         return $this->belongsTo(Food::class);
     }

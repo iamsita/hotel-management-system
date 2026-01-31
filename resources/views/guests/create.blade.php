@@ -13,28 +13,13 @@
                         <form action="{{ route('guests.store') }}" method="POST">
                             @csrf
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="first_name" class="form-label">First Name *</label>
-                                        <input type="text" class="form-control @error('first_name') is-invalid @enderror"
-                                            id="first_name" name="first_name" required value="{{ old('first_name') }}">
-                                        @error('first_name')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="last_name" class="form-label">Last Name *</label>
-                                        <input type="text" class="form-control @error('last_name') is-invalid @enderror"
-                                            id="last_name" name="last_name" required value="{{ old('last_name') }}">
-                                        @error('last_name')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                    id="name" name="name" required value="{{ old('name') }}">
+                                @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="row">
@@ -61,84 +46,11 @@
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="id_type" class="form-label">ID Type</label>
-                                        <select class="form-select @error('id_type') is-invalid @enderror" id="id_type"
-                                            name="id_type">
-                                            <option value="">Select Type</option>
-                                            <option value="passport" {{ old('id_type') === 'passport' ? 'selected' : '' }}>
-                                                Passport</option>
-                                            <option value="national_id"
-                                                {{ old('id_type') === 'national_id' ? 'selected' : '' }}>National ID
-                                            </option>
-                                            <option value="driving_license"
-                                                {{ old('id_type') === 'driving_license' ? 'selected' : '' }}>Driving
-                                                License</option>
-                                        </select>
-                                        @error('id_type')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="id_number" class="form-label">ID Number</label>
-                                        <input type="text" class="form-control @error('id_number') is-invalid @enderror"
-                                            id="id_number" name="id_number" value="{{ old('id_number') }}">
-                                        @error('id_number')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="mb-3">
-                                <label for="address" class="form-label">Address</label>
-                                <input type="text" class="form-control @error('address') is-invalid @enderror"
-                                    id="address" name="address" value="{{ old('address') }}">
-                                @error('address')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="city" class="form-label">City</label>
-                                        <input type="text" class="form-control @error('city') is-invalid @enderror"
-                                            id="city" name="city" value="{{ old('city') }}">
-                                        @error('city')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="country" class="form-label">Country</label>
-                                        <input type="text" class="form-control @error('country') is-invalid @enderror"
-                                            id="country" name="country" value="{{ old('country') }}">
-                                        @error('country')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="guest_type" class="form-label">Guest Type *</label>
-                                <select class="form-select @error('guest_type') is-invalid @enderror" id="guest_type"
-                                    name="guest_type" required>
-                                    <option value="individual"
-                                        {{ old('guest_type', 'individual') === 'individual' ? 'selected' : '' }}>Individual
-                                    </option>
-                                    <option value="corporate" {{ old('guest_type') === 'corporate' ? 'selected' : '' }}>
-                                        Corporate</option>
-                                </select>
-                                @error('guest_type')
+                                <label for="password" class="form-label">Password *</label>
+                                <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                    id="password" name="password" required>
+                                @error('password')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>

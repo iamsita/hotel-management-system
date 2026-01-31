@@ -285,16 +285,6 @@
                 </ul>
             </li>
 
-            <li @if (str_starts_with(Route::currentRouteName(), 'housekeeping')) class="active" @endif>
-                <a href="#housekeepingMenu" data-toggle="collapse">
-                    <i class="fas fa-broom"></i> Housekeeping
-                </a>
-                <ul class="submenu" id="housekeepingMenu">
-                    <li><a href="{{ route('housekeeping.index') }}">Tasks</a></li>
-                    <li><a href="{{ route('housekeeping.create') }}">New Task</a></li>
-                </ul>
-            </li>
-
             <li @if (str_starts_with(Route::currentRouteName(), 'invoices') || str_starts_with(Route::currentRouteName(), 'charges')) class="active" @endif>
                 <a href="#billingMenu" data-toggle="collapse">
                     <i class="fas fa-receipt"></i> Billing

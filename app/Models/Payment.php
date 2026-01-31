@@ -3,7 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property-read BelongsTo $reservation
+ * @property-read BelongsTo $invoice
+ * @property-read BelongsTo $processedBy
+ */
 class Payment extends Model
 {
     protected $table = 'payments';
@@ -20,17 +26,17 @@ class Payment extends Model
         'paid_at',
     ];
 
-    public function reservation()
+    public function reservation(): BelongsTo
     {
         return $this->belongsTo(Reservation::class);
     }
 
-    public function invoice()
+    public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
     }
 
-    public function processedBy()
+    public function processedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'processed_by');
     }

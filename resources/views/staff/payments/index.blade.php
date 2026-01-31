@@ -40,8 +40,7 @@
                             </td>
                             <td>{{ $payment->paid_at?->format('M d, Y H:i') ?? 'N/A' }}</td>
                             <td>
-                                <a href="{{ route('staff.payments.show', $payment) }}"
-                                    class="btn btn-sm btn-info">Details</a>
+                                <a href="{{ route('payments.show', $payment) }}" class="btn btn-sm btn-info">Details</a>
                             </td>
                         </tr>
                     @empty
@@ -56,7 +55,7 @@
         {{ $payments->links() }}
 
         <div class="mt-4">
-            <a href="{{ route('staff.payments.report') }}" class="btn btn-primary">View Payment Report</a>
+            <a href="{{ route('payments.report') }}" class="btn btn-primary">View Payment Report</a>
         </div>
     </div>
 </body>

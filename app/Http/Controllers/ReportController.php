@@ -40,8 +40,9 @@ class ReportController extends Controller
 
     public function occupancyReport(Request $request)
     {
-        $startDate = $request->get('start_date', now()->subDays(30)->date());
-        $endDate = $request->get('end_date', now()->date());
+        $startDate = $request->get('start_date', now()->subDays(30)->format('Y-m-d'));
+
+        $endDate = $request->get('end_date', now()->format('Y-m-d'));
 
         $reservations = Reservation::whereBetween('check_in_date', [$startDate, $endDate])
             ->with('room', 'guest')
@@ -65,8 +66,9 @@ class ReportController extends Controller
 
     public function revenueReport(Request $request)
     {
-        $startDate = $request->get('start_date', now()->subDays(30)->date());
-        $endDate = $request->get('end_date', now()->date());
+        $startDate = $request->get('start_date', now()->subDays(30)->format('Y-m-d'));
+
+        $endDate = $request->get('end_date', now()->format('Y-m-d'));
 
         $invoices = Invoice::whereBetween('issue_date', [$startDate, $endDate])
             ->with('reservation.guest')
@@ -99,8 +101,9 @@ class ReportController extends Controller
 
     public function guestReport(Request $request)
     {
-        $startDate = $request->get('start_date', now()->subDays(30)->date());
-        $endDate = $request->get('end_date', now()->date());
+        $startDate = $request->get('start_date', now()->subDays(30)->format('Y-m-d'));
+
+        $endDate = $request->get('end_date', now()->format('Y-m-d'));
 
         $guests = User::whereHas('reservations', function ($query) use ($startDate, $endDate) {
             $query->whereBetween('check_in_date', [$startDate, $endDate]);
@@ -123,8 +126,9 @@ class ReportController extends Controller
 
     public function serviceReport(Request $request)
     {
-        $startDate = $request->get('start_date', now()->subDays(30)->date());
-        $endDate = $request->get('end_date', now()->date());
+        $startDate = $request->get('start_date', now()->subDays(30)->format('Y-m-d'));
+
+        $endDate = $request->get('end_date', now()->format('Y-m-d'));
 
         $charges = Charge::whereBetween('created_at', [$startDate, $endDate])
             ->with('service', 'reservation')

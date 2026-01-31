@@ -34,7 +34,7 @@ class FoodController extends Controller
 
         Food::create($validated);
 
-        return redirect()->route('staff.food.index')->with('success', 'Food item created!');
+        return redirect()->route('food.index')->with('success', 'Food item created!');
     }
 
     public function edit(Food $food)
@@ -57,13 +57,13 @@ class FoodController extends Controller
 
         $food->update($validated);
 
-        return redirect()->route('staff.food.index')->with('success', 'Food item updated!');
+        return redirect()->route('food.index')->with('success', 'Food item updated!');
     }
 
     public function destroy(Food $food)
     {
         $food->delete();
 
-        return redirect()->route('staff.food.index')->with('success', 'Food item deleted!');
+        return redirect()->route('food.index')->with('success', 'Food item deleted!');
     }
 }

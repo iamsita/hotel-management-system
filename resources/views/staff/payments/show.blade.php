@@ -58,7 +58,7 @@
                             <h5>Update Status</h5>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('staff.payments.update-status', $payment) }}" method="POST">
+                            <form action="{{ route('payments.update-status', $payment) }}" method="POST">
                                 @csrf
                                 @method('PUT')
                                 <div class="mb-3">
@@ -86,9 +86,9 @@
                         <h5>Actions</h5>
                     </div>
                     <div class="card-body d-flex flex-column gap-2">
-                        <a href="{{ route('staff.payments.index') }}" class="btn btn-secondary">Back to Payments</a>
-                        <a href="{{ route('staff.reservations.show', $payment->reservation) }}"
-                            class="btn btn-info">View Booking</a>
+                        <a href="{{ route('payments.index') }}" class="btn btn-secondary">Back to Payments</a>
+                        <a href="{{ route('reservations.show', $payment->reservation) }}" class="btn btn-info">View
+                            Booking</a>
                     </div>
                 </div>
             </div>

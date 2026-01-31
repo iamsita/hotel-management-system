@@ -20,7 +20,7 @@
             </div>
         @endif
 
-        <form action="{{ route('staff.food.update', $food) }}" method="POST" class="card p-4">
+        <form action="{{ route('food.update', $food) }}" method="POST" class="card p-4">
             @csrf
             @method('PUT')
 
@@ -99,7 +99,7 @@
 
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Update Food Item</button>
-                <a href="{{ route('staff.food.index') }}" class="btn btn-secondary">Cancel</a>
+                <a href="{{ route('food.index') }}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>

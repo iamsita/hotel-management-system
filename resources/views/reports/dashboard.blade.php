@@ -91,9 +91,7 @@
                         <a href="{{ route('guests.create') }}" class="btn btn-info btn-sm mb-2 w-100">
                             <i class="fas fa-user-plus"></i> Add Guest
                         </a>
-                        <a href="{{ route('housekeeping.index') }}" class="btn btn-warning btn-sm mb-2 w-100">
-                            <i class="fas fa-tasks"></i> Housekeeping Tasks
-                        </a>
+
                         <a href="{{ route('invoices.index') }}" class="btn btn-success btn-sm w-100">
                             <i class="fas fa-receipt"></i> View Invoices
                         </a>

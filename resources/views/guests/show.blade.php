@@ -6,7 +6,7 @@
     <div class="container-fluid">
         <div class="row mb-4">
             <div class="col-md-8">
-                <h1><i class="fas fa-user"></i> {{ $user->full_name }}</h1>
+                <h1><i class="fas fa-user"></i> {{ $user->name }}</h1>
             </div>
             <div class="col-md-4 text-end">
                 <a href="{{ route('guests.edit', $user) }}" class="btn btn-info">
@@ -22,17 +22,16 @@
                         <h5 class="mb-0">Guest Information</h5>
                     </div>
                     <div class="card-body">
-                        <p><strong>Full Name:</strong> {{ $user->full_name }}</p>
+                        <p><strong>Full Name:</strong> {{ $user->name }}</p>
                         <p><strong>Email:</strong> {{ $user->email }}</p>
                         <p><strong>Phone:</strong> {{ $user->phone ?? '-' }}</p>
-                        <p><strong>Type:</strong> <span class="badge"
-                                style="background: {{ $user->guest_type === 'individual' ? '#3498db' : '#e74c3c' }}">{{ ucfirst($user->guest_type) }}</span>
+                        <p><strong>User Type:</strong>
+                            <span class="badge bg-primary">{{ ucfirst($user->type) }}</span>
                         </p>
-                        <p><strong>ID Type:</strong> {{ ucfirst(str_replace('_', ' ', $user->id_type ?? '-')) }}</p>
-                        <p><strong>ID Number:</strong> {{ $user->id_number ?? '-' }}</p>
-                        <p><strong>Address:</strong> {{ $user->address ?? '-' }}</p>
-                        <p><strong>City:</strong> {{ $user->city ?? '-' }}</p>
-                        <p><strong>Country:</strong> {{ $user->country ?? '-' }}</p>
+                        <p><strong>Status:</strong>
+                            <span
+                                class="badge bg-{{ $user->status === 'active' ? 'success' : 'danger' }}">{{ ucfirst($user->status) }}</span>
+                        </p>
                         <p><strong>Member Since:</strong> {{ $user->created_at->format('M d, Y') }}</p>
                     </div>
                 </div>

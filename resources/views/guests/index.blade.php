@@ -27,22 +27,21 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Phone</th>
-                                <th>Type</th>
+                                <th>Status</th>
                                 <th>Reservations</th>
                                 <th>Member Since</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($guests as $user)
+                            @forelse ($guests as $user)
                                 <tr>
-                                    <td><strong>{{ $user->full_name }}</strong></td>
+                                    <td><strong>{{ $user->name }}</strong></td>
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->phone ?? '-' }}</td>
                                     <td>
-                                        <span class="badge"
-                                            style="background: {{ $user->guest_type === 'individual' ? '#3498db' : '#e74c3c' }}">
-                                            {{ ucfirst($user->guest_type) }}
+                                        <span class="badge bg-{{ $user->status === 'active' ? 'success' : 'danger' }}">
+                                            {{ ucfirst($user->status) }}
                                         </span>
                                     </td>
                                     <td>{{ $user->reservations->count() }}</td>
@@ -65,7 +64,11 @@
                                         </form>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center">No guests found</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

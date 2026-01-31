@@ -10,7 +10,7 @@
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Food Menu Management</h2>
-            <a href="{{ route('staff.food.create') }}" class="btn btn-primary">Add New Food Item</a>
+            <a href="{{ route('food.create') }}" class="btn btn-primary">Add New Food Item</a>
         </div>
 
         <div class="table-responsive">
@@ -38,8 +38,8 @@
                                 </span>
                             </td>
                             <td>
-                                <a href="{{ route('staff.food.edit', $food) }}" class="btn btn-sm btn-warning">Edit</a>
-                                <form action="{{ route('staff.food.destroy', $food) }}" method="POST"
+                                <a href="{{ route('food.edit', $food) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <form action="{{ route('food.destroy', $food) }}" method="POST"
                                     style="display:inline;">
                                     @csrf
                                     @method('DELETE')
