@@ -105,20 +105,21 @@ class ReportController extends Controller
 
         $endDate = $request->get('end_date', now()->format('Y-m-d'));
 
-        $guests = User::whereHas('reservations', function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('check_in_date', [$startDate, $endDate]);
-        })
+        $guests = User::where('type', 'guest')
+            ->whereHas('reservations', function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('check_in_date', [$startDate, $endDate]);
+            })
             ->with('reservations')
             ->get();
 
-        $newGuests = User::whereBetween('created_at', [$startDate, $endDate])->count();
-        $totalGuests = User::count();
-        $repeatGuests = User::whereHas('reservations', function ($query) {
-            $query->where('status', '!=', 'cancelled');
-        })
-            ->having('reservation_count', '>', 1)
-            ->selectRaw('guests.*, count(*) as reservation_count')
-            ->groupBy('guests.id')
+        $newGuests = User::where('type', 'guest')->whereBetween('created_at', [$startDate, $endDate])->count();
+        $totalGuests = User::where('type', 'guest')->count();
+        $repeatGuests = User::where('type', 'guest')
+            ->whereHas('reservations', function ($query) {
+                $query->where('status', '!=', 'cancelled');
+            })
+            ->withCount('reservations')
+            ->having('reservations_count', '>', 1)
             ->get();
 
         return view('reports.guest', compact('guests', 'newGuests', 'totalGuests', 'repeatGuests', 'startDate', 'endDate'));
