@@ -75,10 +75,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($repeatGuests as $guest)
+                                        @foreach ($repeatGuests as $user)
                                             <tr>
-                                                <td>{{ $guest->full_name }}</td>
-                                                <td><span class="badge bg-success">{{ $guest->reservation_count }}</span>
+                                                <td>{{ $user->full_name }}</td>
+                                                <td><span class="badge bg-success">{{ $user->reservation_count }}</span>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -134,18 +134,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($guests as $guest)
+                            @foreach ($guests as $user)
                                 <tr>
-                                    <td><strong>{{ $guest->full_name }}</strong></td>
-                                    <td>{{ $guest->email }}</td>
-                                    <td>{{ $guest->phone ?? '-' }}</td>
+                                    <td><strong>{{ $user->full_name }}</strong></td>
+                                    <td>{{ $user->email }}</td>
+                                    <td>{{ $user->phone ?? '-' }}</td>
                                     <td>
                                         <span class="badge"
-                                            style="background: {{ $guest->guest_type === 'individual' ? '#3498db' : '#e74c3c' }}">
-                                            {{ ucfirst($guest->guest_type) }}
+                                            style="background: {{ $user->guest_type === 'individual' ? '#3498db' : '#e74c3c' }}">
+                                            {{ ucfirst($user->guest_type) }}
                                         </span>
                                     </td>
-                                    <td>{{ $guest->reservations->count() }}</td>
+                                    <td>{{ $user->reservations->count() }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

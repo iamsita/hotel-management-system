@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\Auth;
 
 class GuestCleaningRequestController extends Controller
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth:guest');
+        return [
+            'auth:guest',
+        ];
     }
 
     public function create()
@@ -51,8 +53,8 @@ class GuestCleaningRequestController extends Controller
 
     public function myRequests()
     {
-        $guest = Auth::user();
-        $requests = CleaningRequest::whereIn('reservation_id', $guest->reservations->pluck('id'))
+        $user = Auth::user();
+        $requests = CleaningRequest::whereIn('reservation_id', $user->reservations->pluck('id'))
             ->latest()
             ->paginate(15);
 

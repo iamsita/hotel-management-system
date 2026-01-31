@@ -19,10 +19,10 @@
                                 <select class="form-select @error('user_id') is-invalid @enderror" id="user_id"
                                     name="user_id" required>
                                     <option value="">Select Guest</option>
-                                    @foreach ($guests as $guest)
-                                        <option value="{{ $guest->id }}"
-                                            {{ $reservation->user_id === $guest->id ? 'selected' : '' }}>
-                                            {{ $guest->full_name }} ({{ $guest->email }})
+                                    @foreach ($guests as $user)
+                                        <option value="{{ $user->id }}"
+                                            {{ $reservation->user_id === $user->id ? 'selected' : '' }}>
+                                            {{ $user->full_name }} ({{ $user->email }})
                                         </option>
                                     @endforeach
                                 </select>

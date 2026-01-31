@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\Auth;
 
 class GuestBookingController extends Controller
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth:guest');
+        return [
+            'auth:guest',
+        ];
     }
 
     public function showBooking()

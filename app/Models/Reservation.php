@@ -27,7 +27,7 @@ class Reservation extends Model
 
     public function guest(): BelongsTo
     {
-        return $this->belongsTo(Guest::class);
+        return $this->belongsTo(User::class);
     }
 
     public function room(): BelongsTo

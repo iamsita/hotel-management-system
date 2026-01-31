@@ -23,11 +23,6 @@ class Room extends Model
         return $this->hasMany(Reservation::class);
     }
 
-    public function housekeeping_tasks(): HasMany
-    {
-        return $this->hasMany(HousekeepingTask::class);
-    }
-
     public function current_reservation()
     {
         return $this->hasOne(Reservation::class)

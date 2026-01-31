@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Charge;
-use App\Models\Guest;
 use App\Models\Invoice;
 use App\Models\Reservation;
 use App\Models\Room;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -18,7 +18,7 @@ class ReportController extends Controller
         $availableRooms = Room::where('status', 'available')->count();
         $occupancyRate = $totalRooms > 0 ? ($occupiedRooms / $totalRooms) * 100 : 0;
 
-        $totalGuests = Guest::count();
+        $totalGuests = User::count();
         $activeReservations = Reservation::where('status', 'checked_in')->count();
         $totalReservations = Reservation::count();
 
@@ -102,15 +102,15 @@ class ReportController extends Controller
         $startDate = $request->get('start_date', now()->subDays(30)->date());
         $endDate = $request->get('end_date', now()->date());
 
-        $guests = Guest::whereHas('reservations', function ($query) use ($startDate, $endDate) {
+        $guests = User::whereHas('reservations', function ($query) use ($startDate, $endDate) {
             $query->whereBetween('check_in_date', [$startDate, $endDate]);
         })
             ->with('reservations')
             ->get();
 
-        $newGuests = Guest::whereBetween('created_at', [$startDate, $endDate])->count();
-        $totalGuests = Guest::count();
-        $repeatGuests = Guest::whereHas('reservations', function ($query) {
+        $newGuests = User::whereBetween('created_at', [$startDate, $endDate])->count();
+        $totalGuests = User::count();
+        $repeatGuests = User::whereHas('reservations', function ($query) {
             $query->where('status', '!=', 'cancelled');
         })
             ->having('reservation_count', '>', 1)

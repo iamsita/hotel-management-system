@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Guest;
 use App\Models\Reservation;
 use App\Models\Room;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -21,7 +21,7 @@ class ReservationController extends Controller
 
     public function create()
     {
-        $guests = Guest::all();
+        $guests = User::all();
         $availableRooms = Room::where('status', 'available')->get();
 
         return view('reservations.create', compact('guests', 'availableRooms'));
@@ -64,7 +64,7 @@ class ReservationController extends Controller
 
     public function edit(Reservation $reservation)
     {
-        $guests = Guest::all();
+        $guests = User::all();
         $rooms = Room::all();
 
         return view('reservations.edit', compact('reservation', 'guests', 'rooms'));

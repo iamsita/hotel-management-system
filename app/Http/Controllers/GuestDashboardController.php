@@ -2,27 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class GuestDashboardController extends Controller
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth:guest');
+        return [
+            'auth:guest',
+        ];
     }
 
     public function index()
     {
-        $guest = Auth::user();
+        $user = Auth::user();
 
-        $activeBooking = $guest->reservations()
+        $activeBooking = $user->reservations()
             ->where('status', 'checked_in')
             ->first();
 
-        $totalBookings = $guest->reservations()->count();
-        $totalSpent = $guest->reservations()->sum('total_amount');
+        $totalBookings = $user->reservations()->count();
+        $totalSpent = $user->reservations()->sum('total_amount');
 
-        $recentOrders = $guest->foodOrders()
+        $recentOrders = $user->foodOrders()
             ->latest()
             ->limit(5)
             ->get();
@@ -38,14 +41,14 @@ class GuestDashboardController extends Controller
 
     public function profile()
     {
-        $guest = Auth::user();
+        $user = Auth::user();
 
         return view('guest.profile.edit', compact('guest'));
     }
 
     public function updateProfile(Request $request)
     {
-        $guest = Auth::user();
+        $user = Auth::user();
 
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
@@ -56,7 +59,7 @@ class GuestDashboardController extends Controller
             'country' => 'required|string',
         ]);
 
-        $guest->update($validated);
+        $user->update($validated);
 
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }

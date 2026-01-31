@@ -8,23 +8,25 @@ use Illuminate\Support\Facades\Auth;
 
 class GuestPaymentController extends Controller
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth:guest');
+        return [
+            'auth:guest',
+        ];
     }
 
     public function showPaymentForm()
     {
-        $guest = Auth::user();
-        $reservations = $guest->reservations()->active()->get();
+        $user = Auth::user();
+        $reservations = $user->reservations()->active()->get();
 
         return view('guest.payment.create', compact('reservations'));
     }
 
     public function processPayment(Request $request)
     {
-        $guest = Auth::user();
-        $reservation = $guest->reservations()->findOrFail($request->reservation_id);
+        $user = Auth::user();
+        $reservation = $user->reservations()->findOrFail($request->reservation_id);
 
         $validated = $request->validate([
             'reservation_id' => 'required|exists:reservations,id',
@@ -57,8 +59,8 @@ class GuestPaymentController extends Controller
 
     public function history()
     {
-        $guest = Auth::user();
-        $payments = Payment::whereIn('reservation_id', $guest->reservations->pluck('id'))
+        $user = Auth::user();
+        $payments = Payment::whereIn('reservation_id', $user->reservations->pluck('id'))
             ->latest()
             ->paginate(15);
 

@@ -34,27 +34,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($guests as $guest)
+                            @foreach ($guests as $user)
                                 <tr>
-                                    <td><strong>{{ $guest->full_name }}</strong></td>
-                                    <td>{{ $guest->email }}</td>
-                                    <td>{{ $guest->phone ?? '-' }}</td>
+                                    <td><strong>{{ $user->full_name }}</strong></td>
+                                    <td>{{ $user->email }}</td>
+                                    <td>{{ $user->phone ?? '-' }}</td>
                                     <td>
                                         <span class="badge"
-                                            style="background: {{ $guest->guest_type === 'individual' ? '#3498db' : '#e74c3c' }}">
-                                            {{ ucfirst($guest->guest_type) }}
+                                            style="background: {{ $user->guest_type === 'individual' ? '#3498db' : '#e74c3c' }}">
+                                            {{ ucfirst($user->guest_type) }}
                                         </span>
                                     </td>
-                                    <td>{{ $guest->reservations->count() }}</td>
-                                    <td>{{ $guest->created_at->format('M d, Y') }}</td>
+                                    <td>{{ $user->reservations->count() }}</td>
+                                    <td>{{ $user->created_at->format('M d, Y') }}</td>
                                     <td>
-                                        <a href="{{ route('guests.show', $guest) }}" class="btn btn-sm btn-primary">
+                                        <a href="{{ route('guests.show', $user) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('guests.edit', $guest) }}" class="btn btn-sm btn-info">
+                                        <a href="{{ route('guests.edit', $user) }}" class="btn btn-sm btn-info">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form method="POST" action="{{ route('guests.destroy', $guest) }}"
+                                        <form method="POST" action="{{ route('guests.destroy', $user) }}"
                                             style="display:inline;">
                                             @csrf
                                             @method('DELETE')

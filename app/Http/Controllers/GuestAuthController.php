@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Guest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -32,9 +32,9 @@ class GuestAuthController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         $validated['guest_type'] = 'individual';
 
-        $guest = Guest::create($validated);
+        $user = User::create($validated);
 
-        Auth::login($guest);
+        Auth::login($user);
 
         return redirect()->route('guest.dashboard')->with('success', 'Account created successfully!');
     }

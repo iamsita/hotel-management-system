@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class GuestFoodOrderController extends Controller
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth:guest');
+        return [
+            'auth:guest',
+        ];
     }
 
     public function showMenu()
@@ -55,8 +57,8 @@ class GuestFoodOrderController extends Controller
 
     public function orderHistory()
     {
-        $guest = Auth::user();
-        $orders = FoodOrder::whereIn('reservation_id', $guest->reservations->pluck('id'))
+        $user = Auth::user();
+        $orders = FoodOrder::whereIn('reservation_id', $user->reservations->pluck('id'))
             ->with('food', 'reservation')
             ->latest()
             ->paginate(15);

@@ -11,7 +11,6 @@ use App\Http\Controllers\GuestController;
 use App\Http\Controllers\GuestDashboardController;
 use App\Http\Controllers\GuestFoodOrderController;
 use App\Http\Controllers\GuestPaymentController;
-use App\Http\Controllers\HousekeepingController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentManagementController;
 use App\Http\Controllers\ReportController;
@@ -20,7 +19,6 @@ use App\Http\Controllers\RoomController;
 use App\Http\Middleware\UserTypeMiddleware;
 use App\Models\CleaningRequest;
 use App\Models\FoodOrder;
-use App\Models\Guest;
 use App\Models\Payment;
 use App\Models\Reservation;
 use App\Models\User;
@@ -99,11 +97,6 @@ Route::middleware('auth.staff')->group(function () {
         Route::post('reservations/{reservation}/check-in', [ReservationController::class, 'checkIn'])->name('reservations.check-in');
         Route::post('reservations/{reservation}/check-out', [ReservationController::class, 'checkOut'])->name('reservations.check-out');
         Route::get('api/reservations/available-rooms', [ReservationController::class, 'getAvailableRooms'])->name('reservations.available-rooms');
-
-        // Housekeeping Management
-        Route::resource('housekeeping', HousekeepingController::class);
-        Route::patch('housekeeping/{task}/update-status', [HousekeepingController::class, 'updateStatus'])->name('housekeeping.update-status');
-        Route::get('api/housekeeping/room-status', [HousekeepingController::class, 'getRoomStatus'])->name('housekeeping.room-status');
 
         // Charges Management
         Route::post('charges', [ChargeController::class, 'store'])->name('charges.store');

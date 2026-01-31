@@ -6,10 +6,10 @@
     <div class="container-fluid">
         <div class="row mb-4">
             <div class="col-md-8">
-                <h1><i class="fas fa-user"></i> {{ $guest->full_name }}</h1>
+                <h1><i class="fas fa-user"></i> {{ $user->full_name }}</h1>
             </div>
             <div class="col-md-4 text-end">
-                <a href="{{ route('guests.edit', $guest) }}" class="btn btn-info">
+                <a href="{{ route('guests.edit', $user) }}" class="btn btn-info">
                     <i class="fas fa-edit"></i> Edit
                 </a>
             </div>
@@ -22,18 +22,18 @@
                         <h5 class="mb-0">Guest Information</h5>
                     </div>
                     <div class="card-body">
-                        <p><strong>Full Name:</strong> {{ $guest->full_name }}</p>
-                        <p><strong>Email:</strong> {{ $guest->email }}</p>
-                        <p><strong>Phone:</strong> {{ $guest->phone ?? '-' }}</p>
+                        <p><strong>Full Name:</strong> {{ $user->full_name }}</p>
+                        <p><strong>Email:</strong> {{ $user->email }}</p>
+                        <p><strong>Phone:</strong> {{ $user->phone ?? '-' }}</p>
                         <p><strong>Type:</strong> <span class="badge"
-                                style="background: {{ $guest->guest_type === 'individual' ? '#3498db' : '#e74c3c' }}">{{ ucfirst($guest->guest_type) }}</span>
+                                style="background: {{ $user->guest_type === 'individual' ? '#3498db' : '#e74c3c' }}">{{ ucfirst($user->guest_type) }}</span>
                         </p>
-                        <p><strong>ID Type:</strong> {{ ucfirst(str_replace('_', ' ', $guest->id_type ?? '-')) }}</p>
-                        <p><strong>ID Number:</strong> {{ $guest->id_number ?? '-' }}</p>
-                        <p><strong>Address:</strong> {{ $guest->address ?? '-' }}</p>
-                        <p><strong>City:</strong> {{ $guest->city ?? '-' }}</p>
-                        <p><strong>Country:</strong> {{ $guest->country ?? '-' }}</p>
-                        <p><strong>Member Since:</strong> {{ $guest->created_at->format('M d, Y') }}</p>
+                        <p><strong>ID Type:</strong> {{ ucfirst(str_replace('_', ' ', $user->id_type ?? '-')) }}</p>
+                        <p><strong>ID Number:</strong> {{ $user->id_number ?? '-' }}</p>
+                        <p><strong>Address:</strong> {{ $user->address ?? '-' }}</p>
+                        <p><strong>City:</strong> {{ $user->city ?? '-' }}</p>
+                        <p><strong>Country:</strong> {{ $user->country ?? '-' }}</p>
+                        <p><strong>Member Since:</strong> {{ $user->created_at->format('M d, Y') }}</p>
                     </div>
                 </div>
             </div>
@@ -41,10 +41,10 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">Reservations ({{ $guest->reservations->count() }})</h5>
+                        <h5 class="mb-0">Reservations ({{ $user->reservations->count() }})</h5>
                     </div>
                     <div class="card-body">
-                        @if ($guest->reservations->count() > 0)
+                        @if ($user->reservations->count() > 0)
                             <div class="table-responsive">
                                 <table class="table table-sm">
                                     <thead>
@@ -58,7 +58,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($guest->reservations as $reservation)
+                                        @foreach ($user->reservations as $reservation)
                                             <tr>
                                                 <td>{{ $reservation->room->room_number }}</td>
                                                 <td>{{ $reservation->check_in_date->format('M d, Y') }}</td>

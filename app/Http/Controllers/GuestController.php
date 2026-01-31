@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Guest;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class GuestController extends Controller
 {
     public function index()
     {
-        $guests = Guest::with('reservations')->paginate(15);
+        $guests = User::with('reservations')->paginate(15);
 
         return view('guests.index', compact('guests'));
     }
@@ -34,29 +34,29 @@ class GuestController extends Controller
             'guest_type' => 'required|in:individual,corporate',
         ]);
 
-        Guest::create($validated);
+        User::create($validated);
 
         return redirect()->route('guests.index')->with('success', 'Guest created successfully');
     }
 
-    public function show(Guest $guest)
+    public function show(User $user)
     {
-        $guest->load('reservations.room', 'reservations.charges');
+        $user->load('reservations.room', 'reservations.charges');
 
         return view('guests.show', compact('guest'));
     }
 
-    public function edit(Guest $guest)
+    public function edit(User $user)
     {
         return view('guests.edit', compact('guest'));
     }
 
-    public function update(Request $request, Guest $guest)
+    public function update(Request $request, User $user)
     {
         $validated = $request->validate([
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'email' => 'required|email|unique:guests,email,'.$guest->id,
+            'email' => 'required|email|unique:guests,email,'.$user->id,
             'phone' => 'nullable|string',
             'id_number' => 'nullable|string',
             'id_type' => 'nullable|in:passport,national_id,driving_license',
@@ -66,14 +66,14 @@ class GuestController extends Controller
             'guest_type' => 'required|in:individual,corporate',
         ]);
 
-        $guest->update($validated);
+        $user->update($validated);
 
-        return redirect()->route('guests.show', $guest)->with('success', 'Guest updated successfully');
+        return redirect()->route('guests.show', $user)->with('success', 'Guest updated successfully');
     }
 
-    public function destroy(Guest $guest)
+    public function destroy(User $user)
     {
-        $guest->delete();
+        $user->delete();
 
         return redirect()->route('guests.index')->with('success', 'Guest deleted successfully');
     }
