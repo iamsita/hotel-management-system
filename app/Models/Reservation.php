@@ -17,6 +17,7 @@ class Reservation extends Model
         'status',
         'total_amount',
         'special_requests',
+        'managed_by',
     ];
 
     protected $casts = [
@@ -44,6 +45,26 @@ class Reservation extends Model
         return $this->hasOne(Invoice::class);
     }
 
+    public function foodOrders()
+    {
+        return $this->hasMany(FoodOrder::class);
+    }
+
+    public function cleaningRequests()
+    {
+        return $this->hasMany(CleaningRequest::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function managedByUser()
+    {
+        return $this->belongsTo(User::class, 'managed_by');
+    }
+
     public function getNumberOfNightsAttribute()
     {
         return $this->check_out_date->diffInDays($this->check_in_date);
@@ -52,5 +73,10 @@ class Reservation extends Model
     public function getTotalChargesAttribute()
     {
         return $this->charges()->where('status', '!=', 'cancelled')->sum('amount');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', '!=', 'cancelled')->where('status', '!=', 'checked_out');
     }
 }
