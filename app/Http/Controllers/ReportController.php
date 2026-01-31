@@ -45,7 +45,7 @@ class ReportController extends Controller
         $endDate = $request->get('end_date', now()->format('Y-m-d'));
 
         $reservations = Reservation::whereBetween('check_in_date', [$startDate, $endDate])
-            ->with('room', 'guest')
+            ->with('room', 'user')
             ->get();
 
         $totalNights = 0;

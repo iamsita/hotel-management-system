@@ -12,7 +12,7 @@ class ReservationController extends Controller
 {
     public function index()
     {
-        $reservations = Reservation::with('guest', 'room')
+        $reservations = Reservation::with('user', 'room')
             ->orderBy('check_in_date', 'desc')
             ->paginate(15);
 
@@ -57,7 +57,7 @@ class ReservationController extends Controller
 
     public function show(Reservation $reservation)
     {
-        $reservation->load('guest', 'room', 'charges');
+        $reservation->load('user', 'room', 'charges');
 
         return view('reservations.show', compact('reservation'));
     }
