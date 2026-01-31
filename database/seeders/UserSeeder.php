@@ -52,7 +52,7 @@ class UserSeeder extends Seeder
 
         // Some guest users
         $guestUsers = [
-            ['name' => 'Guest One', 'email' => 'guest1@gmail.com', 'phone' => '9800000003'],
+            ['name' => 'Guest One', 'email' => 'guest@gmail.com', 'phone' => '9800000003'],
             ['name' => 'Guest Two', 'email' => 'guest2@gmail.com', 'phone' => '9800000004'],
             ['name' => 'Guest Three', 'email' => 'guest3@gmail.com', 'phone' => null],
         ];

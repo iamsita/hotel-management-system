@@ -30,7 +30,7 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:guests,id',
+            'user_id' => 'required|exists:users,id',
             'room_id' => 'required|exists:rooms,id',
             'check_in_date' => 'required|date',
             'check_out_date' => 'required|date|after:check_in_date',
@@ -73,12 +73,13 @@ class ReservationController extends Controller
     public function update(Request $request, Reservation $reservation)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:guests,id',
+            'user_id' => 'required|exists:users,id',
             'room_id' => 'required|exists:rooms,id',
             'check_in_date' => 'required|date',
             'check_out_date' => 'required|date|after:check_in_date',
             'number_of_guests' => 'required|integer|min:1',
             'special_requests' => 'nullable|string',
+            'status' => 'required|in:pending,confirmed,checked_in,checked_out,cancelled',
         ]);
 
         $checkInDate = Carbon::parse($validated['check_in_date']);

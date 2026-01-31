@@ -45,8 +45,8 @@ class GuestBookingController extends Controller
     {
         $validated = $request->validate([
             'room_id' => 'required|exists:rooms,id',
-            'check_in_date' => 'required|date|after:today',
-            'check_out_date' => 'required|date|after:check_in_date',
+            'check_in_date' => 'required|date|after_or_equal:today',
+            'check_out_date' => 'required|date|after:today',
             'number_of_guests' => 'required|integer|min:1',
             'special_requests' => 'nullable|string',
         ]);

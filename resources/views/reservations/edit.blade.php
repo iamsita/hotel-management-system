@@ -93,6 +93,27 @@
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="status" class="form-label">Booking Status *</label>
+                                        <select class="form-select @error('status') is-invalid @enderror" id="status"
+                                            name="status" required>
+                                            <option value="">Select Status</option>
+                                            @foreach (['pending', 'confirmed', 'checked_in', 'checked_out', 'cancelled'] as $statusOption)
+                                                <option value="{{ $statusOption }}"
+                                                    {{ old('status', $reservation->status) === $statusOption ? 'selected' : '' }}>
+                                                    {{ ucfirst(str_replace('_', ' ', $statusOption)) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('status')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="mb-3">
                                 <label for="special_requests" class="form-label">Special Requests</label>
                                 <textarea class="form-control @error('special_requests') is-invalid @enderror" id="special_requests"
@@ -101,7 +122,6 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save"></i> Update Reservation
