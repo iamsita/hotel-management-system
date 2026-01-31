@@ -52,7 +52,7 @@ Route::middleware(['auth', 'type:guest'])
         Route::get('payment', [GuestPaymentController::class, 'showPaymentForm'])->name('payment.create');
         Route::post('payment', [GuestPaymentController::class, 'processPayment'])->name('payment.process');
         Route::get('payment/{payment}/receipt', [GuestPaymentController::class, 'receipt'])->name('payment.receipt');
-        Route::get('payments', [GuestPaymentController::class, 'history'])->name('payment.history');
+        Route::get('payments', [GuestPaymentController::class, 'history'])->name('payments');
 
         Route::post('logout', [GuestAuthController::class, 'logout'])->name('logout');
     });

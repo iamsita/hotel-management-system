@@ -1,17 +1,12 @@
-<!DOCTYPE html>
-<html>
+@extends('guest-layout')
 
-<head>
-    <title>Order History</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+@section('title', 'Order History')
+@section('page-title', 'Order History')
 
-<body>
-    <div class="container mt-4">
-        <h2>Order History</h2>
-
+@section('content')
+    <div class="card">
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped table-hover mb-0">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -30,8 +25,7 @@
                             <td>{{ $order->quantity }}</td>
                             <td>${{ number_format($order->price * $order->quantity, 2) }}</td>
                             <td>
-                                <span
-                                    class="badge bg-{{ $order->status === 'delivered' ? 'success' : ($order->status === 'cancelled' ? 'danger' : 'warning') }}">
+                                <span class="status-badge status-{{ $order->status }}">
                                     {{ ucfirst($order->status) }}
                                 </span>
                             </td>
@@ -40,22 +34,31 @@
                                     <form action="{{ route('guest.orders.cancel', $order) }}" method="POST"
                                         style="display:inline;">
                                         @csrf
-                                        <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </button>
                                     </form>
+                                @else
+                                    <span class="text-muted">-</span>
                                 @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">No orders found</td>
+                            <td colspan="6" class="text-center py-4">
+                                <p class="text-muted">No orders found</p>
+                                <a href="{{ route('guest.food.menu') }}" class="btn btn-primary btn-sm">Order Now</a>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-
-        {{ $orders->links() }}
     </div>
-</body>
 
-</html>
+    @if ($orders->hasPages())
+        <div class="mt-3">
+            {{ $orders->links() }}
+        </div>
+    @endif
+@endsection

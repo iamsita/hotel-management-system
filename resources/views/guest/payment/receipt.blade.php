@@ -57,11 +57,11 @@
                 </div>
                 <div class="receipt-row">
                     <span><strong>Check-in:</strong></span>
-                    <span>{{ $payment->reservation->check_in->format('M d, Y') }}</span>
+                    <span>{{ $payment->reservation->check_in_date->format('M d, Y') }}</span>
                 </div>
                 <div class="receipt-row">
                     <span><strong>Check-out:</strong></span>
-                    <span>{{ $payment->reservation->check_out->format('M d, Y') }}</span>
+                    <span>{{ $payment->reservation->check_out_date->format('M d, Y') }}</span>
                 </div>
                 <hr>
                 <div class="receipt-row">
@@ -95,7 +95,7 @@
 
         <div class="d-flex justify-content-between gap-2">
             <a href="{{ route('guest.dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
-            <a href="{{ route('guest.payment.history') }}" class="btn btn-secondary">View All Payments</a>
+            <a href="{{ route('guest.payments') }}" class="btn btn-secondary">View All Payments</a>
             <button class="btn btn-outline-secondary" onclick="window.print()">Print Receipt</button>
         </div>
     </div>

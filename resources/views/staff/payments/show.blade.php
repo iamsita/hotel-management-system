@@ -47,8 +47,9 @@
                         <p><strong>Booking Reference:</strong> #{{ $payment->reservation->id }}</p>
                         <p><strong>Guest:</strong> {{ $payment->reservation->user->name }}</p>
                         <p><strong>Room:</strong> {{ $payment->reservation->room->room_number }}</p>
-                        <p><strong>Check-in:</strong> {{ $payment->reservation->check_in->format('M d, Y') }}</p>
-                        <p><strong>Check-out:</strong> {{ $payment->reservation->check_out->format('M d, Y') }}</p>
+                        <p><strong>Check-in:</strong> {{ $payment->reservation->check_in_date->format('M d, Y') }}</p>
+                        <p><strong>Check-out:</strong> {{ $payment->reservation->check_out_date->format('M d, Y') }}
+                        </p>
                     </div>
                 </div>
 

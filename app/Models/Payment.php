@@ -26,6 +26,10 @@ class Payment extends Model
         'paid_at',
     ];
 
+    protected $casts = [
+        'paid_at' => 'datetime',
+    ];
+
     public function reservation(): BelongsTo
     {
         return $this->belongsTo(Reservation::class);

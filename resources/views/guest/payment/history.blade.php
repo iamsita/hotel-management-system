@@ -1,20 +1,18 @@
-<!DOCTYPE html>
-<html>
+@extends('guest-layout')
 
-<head>
-    <title>Payment History</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+@section('title', 'Payment History')
+@section('page-title', 'Payment History')
 
-<body>
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Payment History</h2>
-            <a href="{{ route('guest.payment.create') }}" class="btn btn-primary">Make Payment</a>
-        </div>
+@section('content')
+    <div class="mb-3">
+        <a href="{{ route('guest.payment.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Make Payment
+        </a>
+    </div>
 
+    <div class="card">
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped table-hover mb-0">
                 <thead>
                     <tr>
                         <th>Receipt #</th>
@@ -34,30 +32,38 @@
                             <td>${{ number_format($payment->amount, 2) }}</td>
                             <td>{{ ucfirst(str_replace('_', ' ', $payment->payment_method)) }}</td>
                             <td>
-                                <span
-                                    class="badge bg-{{ $payment->status === 'completed' ? 'success' : ($payment->status === 'failed' ? 'danger' : 'warning') }}">
+                                <span class="status-badge status-{{ $payment->status }}">
                                     {{ ucfirst($payment->status) }}
                                 </span>
                             </td>
                             <td>{{ $payment->paid_at?->format('M d, Y H:i') ?? 'N/A' }}</td>
                             <td>
                                 @if ($payment->status === 'completed')
-                                    <a href="{{ route('guest.payment.receipt', $payment) }}"
-                                        class="btn btn-sm btn-info">View Receipt</a>
+                                    <a href="{{ route('guest.payment.receipt', $payment) }}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-receipt"></i> Receipt
+                                    </a>
+                                @else
+                                    <span class="text-muted">-</span>
                                 @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center">No payments found</td>
+                            <td colspan="7" class="text-center py-4">
+                                <p class="text-muted">No payments found</p>
+                                <a href="{{ route('guest.payment.create') }}" class="btn btn-primary btn-sm">Make Your First
+                                    Payment</a>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-
-        {{ $payments->links() }}
     </div>
-</body>
 
-</html>
+    @if ($payments->hasPages())
+        <div class="mt-3">
+            {{ $payments->links() }}
+        </div>
+    @endif
+@endsection

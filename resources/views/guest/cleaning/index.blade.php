@@ -1,20 +1,18 @@
-<!DOCTYPE html>
-<html>
+@extends('guest-layout')
 
-<head>
-    <title>My Cleaning Requests</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+@section('title', 'My Cleaning Requests')
+@section('page-title', 'My Cleaning Requests')
 
-<body>
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>My Cleaning Requests</h2>
-            <a href="{{ route('guest.cleaning.create') }}" class="btn btn-primary">New Request</a>
-        </div>
+@section('content')
+    <div class="mb-3">
+        <a href="{{ route('guest.cleaning.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Request
+        </a>
+    </div>
 
+    <div class="card">
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped table-hover mb-0">
                 <thead>
                     <tr>
                         <th>Room</th>
@@ -37,8 +35,7 @@
                                 </span>
                             </td>
                             <td>
-                                <span
-                                    class="badge bg-{{ $request->status === 'completed' ? 'success' : ($request->status === 'cancelled' ? 'danger' : 'warning') }}">
+                                <span class="status-badge status-{{ str_replace('_', '-', $request->status) }}">
                                     {{ ucfirst(str_replace('_', ' ', $request->status)) }}
                                 </span>
                             </td>
@@ -46,7 +43,7 @@
                             <td>
                                 <a href="#" class="btn btn-sm btn-info" data-bs-toggle="modal"
                                     data-bs-target="#detailModal{{ $request->id }}">
-                                    Details
+                                    <i class="fas fa-eye"></i> Details
                                 </a>
                             </td>
                         </tr>
@@ -62,15 +59,14 @@
                                     <div class="modal-body">
                                         <p><strong>Service Type:</strong> {{ ucfirst($request->request_type) }}</p>
                                         <p><strong>Priority:</strong> {{ ucfirst($request->priority) }}</p>
-                                        <p><strong>Status:</strong>
-                                            {{ ucfirst(str_replace('_', ' ', $request->status)) }}</p>
+                                        <p><strong>Status:</strong> {{ ucfirst(str_replace('_', ' ', $request->status)) }}
+                                        </p>
                                         <p><strong>Description:</strong></p>
                                         <p>{{ $request->description ?? 'No additional details' }}</p>
-                                        <p><strong>Requested:</strong> {{ $request->created_at->format('M d, Y H:i') }}
-                                        </p>
+                                        <p><strong>Requested:</strong> {{ $request->created_at->format('M d, Y H:i') }}</p>
                                         @if ($request->completed_at)
                                             <p><strong>Completed:</strong>
-                                                {{ $request->completed_at->format('M d, Y H:i') }}</p>
+                                                {{ $request->completed_at?->format('M d, Y H:i') }}</p>
                                         @endif
                                     </div>
                                 </div>
@@ -78,17 +74,21 @@
                         </div>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">No requests found</td>
+                            <td colspan="6" class="text-center py-4">
+                                <p class="text-muted">No requests found</p>
+                                <a href="{{ route('guest.cleaning.create') }}" class="btn btn-primary btn-sm">Create Your
+                                    First Request</a>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-
-        {{ $requests->links() }}
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
-</html>
+    @if ($requests->hasPages())
+        <div class="mt-3">
+            {{ $requests->links() }}
+        </div>
+    @endif
+@endsection

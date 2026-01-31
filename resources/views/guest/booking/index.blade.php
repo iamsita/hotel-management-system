@@ -1,18 +1,18 @@
-<!DOCTYPE html>
-<html>
+@extends('guest-layout')
 
-<head>
-    <title>My Bookings</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+@section('title', 'My Bookings')
+@section('page-title', 'My Bookings')
 
-<body>
-    <div class="container mt-4">
-        <h2>My Bookings</h2>
-        <a href="{{ route('guest.booking.create') }}" class="btn btn-primary mb-3">New Booking</a>
+@section('content')
+    <div class="mb-3">
+        <a href="{{ route('guest.booking.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Booking
+        </a>
+    </div>
 
+    <div class="card">
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped table-hover mb-0">
                 <thead>
                     <tr>
                         <th>Room</th>
@@ -32,24 +32,34 @@
                             <td>{{ $res->check_out_date->format('M d, Y') }}</td>
                             <td>{{ $res->number_of_guests }}</td>
                             <td>${{ number_format($res->total_amount, 2) }}</td>
-                            <td><span
-                                    class="badge bg-{{ $res->status === 'checked_in' ? 'success' : 'info' }}">{{ ucfirst($res->status) }}</span>
+                            <td>
+                                <span class="status-badge status-{{ str_replace('_', '-', $res->status) }}">
+                                    {{ ucfirst(str_replace('_', ' ', $res->status)) }}
+                                </span>
                             </td>
                             <td>
-                                <a href="{{ route('guest.booking.show', $res) }}" class="btn btn-sm btn-primary">View</a>
+                                <a href="{{ route('guest.booking.show', $res) }}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center">No bookings found</td>
+                            <td colspan="7" class="text-center py-4">
+                                <p class="text-muted">No bookings found</p>
+                                <a href="{{ route('guest.booking.create') }}" class="btn btn-primary btn-sm">Create Your
+                                    First Booking</a>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-
-        {{ $reservations->links() }}
     </div>
-</body>
 
-</html>
+    @if ($reservations->hasPages())
+        <div class="mt-3">
+            {{ $reservations->links() }}
+        </div>
+    @endif
+@endsection

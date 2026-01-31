@@ -19,6 +19,14 @@ class CleaningRequest extends Model
         'completed_at',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'requested_at' => 'datetime',
+            'completed_at' => 'datetime',
+        ];
+    }
+
     public function reservation()
     {
         return $this->belongsTo(Reservation::class);
