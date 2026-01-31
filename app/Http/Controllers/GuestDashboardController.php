@@ -13,7 +13,7 @@ class GuestDashboardController extends Controller
 
     public function index()
     {
-        $guest = Auth::guard('guest')->user();
+        $guest = Auth::user();
 
         $activeBooking = $guest->reservations()
             ->where('status', 'checked_in')
@@ -38,14 +38,14 @@ class GuestDashboardController extends Controller
 
     public function profile()
     {
-        $guest = Auth::guard('guest')->user();
+        $guest = Auth::user();
 
         return view('guest.profile.edit', compact('guest'));
     }
 
     public function updateProfile(Request $request)
     {
-        $guest = Auth::guard('guest')->user();
+        $guest = Auth::user();
 
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',

@@ -34,7 +34,7 @@ class GuestAuthController extends Controller
 
         $guest = Guest::create($validated);
 
-        Auth::guard('guest')->login($guest);
+        Auth::login($guest);
 
         return redirect()->route('guest.dashboard')->with('success', 'Account created successfully!');
     }
@@ -51,7 +51,7 @@ class GuestAuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (Auth::guard('guest')->attempt($credentials)) {
+        if (Auth::attempt($credentials)) {
             return redirect()->route('guest.dashboard')->with('success', 'Logged in successfully!');
         }
 
@@ -60,7 +60,7 @@ class GuestAuthController extends Controller
 
     public function logout()
     {
-        Auth::guard('guest')->logout();
+        Auth::logout();
 
         return redirect()->route('guest.login')->with('success', 'Logged out successfully!');
     }

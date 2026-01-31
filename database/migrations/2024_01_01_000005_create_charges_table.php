@@ -17,8 +17,17 @@ return new class extends Migration
             $table->foreignId('service_id')->nullable()->constrained('services')->onDelete('set null');
             $table->string('description');
             $table->decimal('amount', 10, 2);
-            $table->enum('charge_type', ['room', 'service', 'extra', 'deposit'])->default('service');
-            $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');
+            $table->enum('charge_type', [
+                'room',
+                'service',
+                'extra',
+                'deposit',
+            ])->default('service');
+            $table->enum('status', [
+                'pending',
+                'paid',
+                'cancelled',
+            ])->default('pending');
             $table->timestamps();
         });
     }

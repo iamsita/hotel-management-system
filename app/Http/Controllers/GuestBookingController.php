@@ -54,7 +54,7 @@ class GuestBookingController extends Controller
         $nights = (strtotime($validated['check_out_date']) - strtotime($validated['check_in_date'])) / 86400;
         $total_amount = $nights * $room->price_per_night;
 
-        $validated['guest_id'] = Auth::guard('guest')->id();
+        $validated['user_id'] = Auth::id();
         $validated['status'] = 'pending';
         $validated['total_amount'] = $total_amount;
 
@@ -68,7 +68,7 @@ class GuestBookingController extends Controller
 
     public function show(Reservation $reservation)
     {
-        if ($reservation->guest_id !== Auth::guard('guest')->id()) {
+        if ($reservation->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -77,7 +77,7 @@ class GuestBookingController extends Controller
 
     public function myBookings()
     {
-        $reservations = Auth::guard('guest')->user()->reservations()->latest()->paginate(10);
+        $reservations = Auth::user()->reservations()->latest()->paginate(10);
 
         return view('guest.booking.index', compact('reservations'));
     }

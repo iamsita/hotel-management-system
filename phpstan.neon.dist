@@ -1,0 +1,14 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
+parameters:
+    tips:
+        treatPhpDocTypesAsCertain: false
+    paths:
+        - app/
+        - config/
+        - database/
+        - routes/
+    level: 1
+    ignoreErrors:
+        - '#Trait .* is used zero times and is not analysed#'

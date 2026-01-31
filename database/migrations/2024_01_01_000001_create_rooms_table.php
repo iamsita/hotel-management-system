@@ -14,11 +14,26 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->string('room_number')->unique();
-            $table->enum('room_type', ['single', 'double', 'suite', 'deluxe'])->default('single');
+            $table->enum('room_type', [
+                'single',
+                'double',
+                'suite',
+                'deluxe',
+            ])->default('single');
             $table->integer('capacity')->default(1);
             $table->decimal('price_per_night', 10, 2);
-            $table->enum('status', ['available', 'occupied', 'maintenance', 'reserved'])->default('available');
-            $table->enum('housekeeping_status', ['clean', 'dirty', 'in_progress', 'inspected'])->default('clean');
+            $table->enum('status', [
+                'available',
+                'occupied',
+                'maintenance',
+                'reserved',
+            ])->default('available');
+            $table->enum('housekeeping_status', [
+                'clean',
+                'dirty',
+                'in_progress',
+                'inspected',
+            ])->default('clean');
             $table->text('description')->nullable();
             $table->integer('floor')->nullable();
             $table->timestamps();

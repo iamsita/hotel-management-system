@@ -18,7 +18,7 @@ class GuestFoodOrderController extends Controller
     public function showMenu()
     {
         $foods = Food::where('available', true)->get()->groupBy('category');
-        $reservations = Auth::guard('guest')->user()->reservations()
+        $reservations = Auth::user()->reservations()
             ->where('status', 'checked_in')
             ->get();
 
@@ -35,7 +35,7 @@ class GuestFoodOrderController extends Controller
         ]);
 
         $reservation = Reservation::findOrFail($validated['reservation_id']);
-        if ($reservation->guest_id !== Auth::guard('guest')->id()) {
+        if ($reservation->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -55,7 +55,7 @@ class GuestFoodOrderController extends Controller
 
     public function orderHistory()
     {
-        $guest = Auth::guard('guest')->user();
+        $guest = Auth::user();
         $orders = FoodOrder::whereIn('reservation_id', $guest->reservations->pluck('id'))
             ->with('food', 'reservation')
             ->latest()
@@ -66,7 +66,7 @@ class GuestFoodOrderController extends Controller
 
     public function cancelOrder(FoodOrder $order)
     {
-        if ($order->reservation->guest_id !== Auth::guard('guest')->id()) {
+        if ($order->reservation->user_id !== Auth::id()) {
             abort(403);
         }
 

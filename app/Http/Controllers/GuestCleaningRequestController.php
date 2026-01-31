@@ -16,7 +16,7 @@ class GuestCleaningRequestController extends Controller
 
     public function create()
     {
-        $reservations = Auth::guard('guest')->user()->reservations()
+        $reservations = Auth::user()->reservations()
             ->whereIn('status', ['checked_in'])
             ->get();
 
@@ -33,7 +33,7 @@ class GuestCleaningRequestController extends Controller
         ]);
 
         $reservation = Reservation::findOrFail($validated['reservation_id']);
-        if ($reservation->guest_id !== Auth::guard('guest')->id()) {
+        if ($reservation->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -51,7 +51,7 @@ class GuestCleaningRequestController extends Controller
 
     public function myRequests()
     {
-        $guest = Auth::guard('guest')->user();
+        $guest = Auth::user();
         $requests = CleaningRequest::whereIn('reservation_id', $guest->reservations->pluck('id'))
             ->latest()
             ->paginate(15);

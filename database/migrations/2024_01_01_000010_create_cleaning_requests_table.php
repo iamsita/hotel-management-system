@@ -14,8 +14,19 @@ return new class extends Migration
             $table->foreignId('room_id')->constrained('rooms')->cascadeOnDelete();
             $table->string('request_type'); // Towels, Cleaning, Linens, Maintenance
             $table->text('description');
-            $table->enum('priority', ['low', 'medium', 'high', 'urgent'])->default('medium');
-            $table->enum('status', ['requested', 'acknowledged', 'in_progress', 'completed', 'cancelled'])->default('requested');
+            $table->enum('priority', [
+                'low',
+                'medium',
+                'high',
+                'urgent',
+            ])->default('medium');
+            $table->enum('status', [
+                'requested',
+                'acknowledged',
+                'in_progress',
+                'completed',
+                'cancelled',
+            ])->default('requested');
             $table->timestamp('requested_at')->useCurrent();
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();

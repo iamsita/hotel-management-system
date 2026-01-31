@@ -15,7 +15,7 @@ class GuestPaymentController extends Controller
 
     public function showPaymentForm()
     {
-        $guest = Auth::guard('guest')->user();
+        $guest = Auth::user();
         $reservations = $guest->reservations()->active()->get();
 
         return view('guest.payment.create', compact('reservations'));
@@ -23,7 +23,7 @@ class GuestPaymentController extends Controller
 
     public function processPayment(Request $request)
     {
-        $guest = Auth::guard('guest')->user();
+        $guest = Auth::user();
         $reservation = $guest->reservations()->findOrFail($request->reservation_id);
 
         $validated = $request->validate([
@@ -48,7 +48,7 @@ class GuestPaymentController extends Controller
 
     public function receipt(Payment $payment)
     {
-        if ($payment->reservation->guest_id !== Auth::guard('guest')->id()) {
+        if ($payment->reservation->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -57,7 +57,7 @@ class GuestPaymentController extends Controller
 
     public function history()
     {
-        $guest = Auth::guard('guest')->user();
+        $guest = Auth::user();
         $payments = Payment::whereIn('reservation_id', $guest->reservations->pluck('id'))
             ->latest()
             ->paginate(15);

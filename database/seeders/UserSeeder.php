@@ -4,45 +4,72 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@gmail.com',
-            'password' => 'password',
-            'phone' => '+1-800-123-4567',
-            'role' => 'admin',
-            'status' => 'active',
-        ]);
+        // Admin
+        User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Admin',
+                'password' => 'password',
+                'phone' => '9800000000',
+                'type' => 'admin',
+                'status' => 'active',
+            ]
+        );
 
-        User::create([
-            'name' => 'Manager User',
-            'email' => 'manager@gmail.com',
-            'password' => 'password',
-            'phone' => '+1-800-123-4568',
-            'role' => 'manager',
-            'status' => 'active',
-        ]);
+        // Manager
+        User::firstOrCreate(
+            ['email' => 'manager@gmail.com'],
+            [
+                'name' => 'Manager',
+                'password' => 'password',
+                'phone' => '9800000001',
+                'type' => 'manager',
+                'status' => 'active',
+                'email_verified_at' => now(),
+                'remember_token' => Str::random(10),
+            ]
+        );
 
-        User::create([
-            'name' => 'Staff Member 1',
-            'email' => 'staff1@gmail.com',
-            'password' => 'password',
-            'phone' => '+1-800-123-4569',
-            'role' => 'staff',
-            'status' => 'active',
-        ]);
+        // Staff
+        User::firstOrCreate(
+            ['email' => 'staff@gmail.com'],
+            [
+                'name' => 'Staff',
+                'password' => 'password',
+                'phone' => '9800000002',
+                'type' => 'staff',
+                'status' => 'active',
+                'email_verified_at' => now(),
+                'remember_token' => Str::random(10),
+            ]
+        );
 
-        User::create([
-            'name' => 'Staff Member 2',
-            'email' => 'staff2@gmail.com',
-            'password' => 'password',
-            'phone' => '+1-800-123-4570',
-            'role' => 'staff',
-            'status' => 'active',
-        ]);
+        // Some guest users
+        $guestUsers = [
+            ['name' => 'Guest One', 'email' => 'guest1@gmail.com', 'phone' => '9800000003'],
+            ['name' => 'Guest Two', 'email' => 'guest2@gmail.com', 'phone' => '9800000004'],
+            ['name' => 'Guest Three', 'email' => 'guest3@gmail.com', 'phone' => null],
+        ];
+
+        foreach ($guestUsers as $u) {
+            User::firstOrCreate(
+                ['email' => $u['email']],
+                [
+                    'name' => $u['name'],
+                    'password' => 'password',
+                    'phone' => $u['phone'],
+                    'type' => 'guest',
+                    'status' => 'active',
+                    'email_verified_at' => now(),
+                    'remember_token' => Str::random(10),
+                ]
+            );
+        }
     }
 }

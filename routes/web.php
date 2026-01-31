@@ -17,12 +17,13 @@ use App\Http\Controllers\PaymentManagementController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
-use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Http\Middleware\UserTypeMiddleware;
 use App\Models\CleaningRequest;
 use App\Models\FoodOrder;
 use App\Models\Guest;
 use App\Models\Payment;
 use App\Models\Reservation;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 // ==================== GUEST ROUTES (No Auth Required) ====================
@@ -59,7 +60,7 @@ Route::prefix('guest')->name('guest.')->group(function () {
         Route::post('logout', [GuestAuthController::class, 'logout'])->name('logout');
     });
 
-    Route::middleware(RedirectIfAuthenticated::class.':guest')->group(function () {
+    Route::middleware(UserTypeMiddleware::class.':guest')->group(function () {
         Route::get('register', [GuestAuthController::class, 'showRegister'])->name('register');
         Route::post('register', [GuestAuthController::class, 'register'])->name('register.store');
         Route::get('login', [GuestAuthController::class, 'showLogin'])->name('login');
@@ -72,7 +73,7 @@ Route::middleware('auth.staff')->group(function () {
     Route::get('staff/dashboard', function () {
         // Show staff dashboard
         return view('staff.dashboard', [
-            'totalGuests' => Guest::count(),
+            'totalGuests' => User::where('type', 'guest')->count(),
             'checkedIn' => Reservation::where('status', 'checked_in')->count(),
             'pendingOrders' => FoodOrder::where('status', '!=', 'delivered')->count(),
             'totalRevenue' => Payment::where('status', 'completed')->sum('amount'),
@@ -139,7 +140,7 @@ Route::middleware('auth.staff')->group(function () {
 });
 
 // ==================== AUTH ROUTES ====================
-Route::middleware(RedirectIfAuthenticated::class)->group(function () {
+Route::middleware(UserTypeMiddleware::class)->group(function () {
     Route::get('login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('login', [AuthController::class, 'login'])->name('login.store');
 });

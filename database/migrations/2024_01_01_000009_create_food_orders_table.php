@@ -15,7 +15,13 @@ return new class extends Migration
             $table->integer('quantity');
             $table->decimal('price', 10, 2);
             $table->text('special_notes')->nullable();
-            $table->enum('status', ['pending', 'preparing', 'ready', 'delivered', 'cancelled'])->default('pending');
+            $table->enum('status', [
+                'pending',
+                'preparing',
+                'ready',
+                'delivered',
+                'cancelled',
+            ])->default('pending');
             $table->timestamp('ordered_at')->useCurrent();
             $table->timestamp('delivered_at')->nullable();
             $table->timestamps();

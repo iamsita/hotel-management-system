@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'guest' => \App\Http\Middleware\EnsureGuestIsAuthenticated::class,
             'auth.staff' => \App\Http\Middleware\EnsureUserIsAuthenticated::class,
+            'type' => \App\Http\Middleware\UserTypeMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

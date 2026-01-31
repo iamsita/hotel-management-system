@@ -30,7 +30,7 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'guest_id' => 'required|exists:guests,id',
+            'user_id' => 'required|exists:guests,id',
             'room_id' => 'required|exists:rooms,id',
             'check_in_date' => 'required|date',
             'check_out_date' => 'required|date|after:check_in_date',
@@ -73,7 +73,7 @@ class ReservationController extends Controller
     public function update(Request $request, Reservation $reservation)
     {
         $validated = $request->validate([
-            'guest_id' => 'required|exists:guests,id',
+            'user_id' => 'required|exists:guests,id',
             'room_id' => 'required|exists:rooms,id',
             'check_in_date' => 'required|date',
             'check_out_date' => 'required|date|after:check_in_date',

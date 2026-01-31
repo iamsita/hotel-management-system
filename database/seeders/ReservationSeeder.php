@@ -16,7 +16,7 @@ class ReservationSeeder extends Seeder
     {
         // Reservation 1: Checked-in
         $reservation1 = Reservation::create([
-            'guest_id' => 1,
+            'user_id' => 1,
             'room_id' => 1,
             'check_in_date' => now()->subDays(2),
             'check_out_date' => now()->addDays(3),
@@ -90,7 +90,7 @@ class ReservationSeeder extends Seeder
 
         // Reservation 2: Confirmed
         $reservation2 = Reservation::create([
-            'guest_id' => 2,
+            'user_id' => 2,
             'room_id' => 3,
             'check_in_date' => now()->addDays(5),
             'check_out_date' => now()->addDays(8),
@@ -117,7 +117,7 @@ class ReservationSeeder extends Seeder
 
         // Reservation 3: Pending
         $reservation3 = Reservation::create([
-            'guest_id' => 3,
+            'user_id' => 3,
             'room_id' => 6,
             'check_in_date' => now()->addDays(10),
             'check_out_date' => now()->addDays(12),
@@ -140,7 +140,7 @@ class ReservationSeeder extends Seeder
 
         // Reservation 4: Cancelled
         $reservation4 = Reservation::create([
-            'guest_id' => 4,
+            'user_id' => 4,
             'room_id' => 11,
             'check_in_date' => now()->subDays(15),
             'check_out_date' => now()->subDays(13),
@@ -153,7 +153,7 @@ class ReservationSeeder extends Seeder
 
         // Reservation 5: Checked out
         $reservation5 = Reservation::create([
-            'guest_id' => 5,
+            'user_id' => 5,
             'room_id' => 8,
             'check_in_date' => now()->subDays(8),
             'check_out_date' => now()->subDays(3),

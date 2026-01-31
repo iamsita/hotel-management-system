@@ -19,11 +19,21 @@ return new class extends Migration
             $table->decimal('tax', 10, 2)->default(0);
             $table->decimal('discount', 10, 2)->default(0);
             $table->decimal('total_amount', 10, 2);
-            $table->enum('status', ['draft', 'sent', 'paid', 'cancelled'])->default('draft');
+            $table->enum('status', [
+                'draft',
+                'sent',
+                'paid',
+                'cancelled',
+            ])->default('draft');
             $table->date('issue_date');
             $table->date('due_date')->nullable();
             $table->date('paid_date')->nullable();
-            $table->enum('payment_method', ['cash', 'card', 'bank_transfer', 'check'])->nullable();
+            $table->enum('payment_method', [
+                'cash',
+                'card',
+                'bank_transfer',
+                'check',
+            ])->nullable();
             $table->timestamps();
         });
     }

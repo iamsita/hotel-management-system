@@ -15,18 +15,18 @@
                             @method('PUT')
 
                             <div class="mb-3">
-                                <label for="guest_id" class="form-label">Guest *</label>
-                                <select class="form-select @error('guest_id') is-invalid @enderror" id="guest_id"
-                                    name="guest_id" required>
+                                <label for="user_id" class="form-label">Guest *</label>
+                                <select class="form-select @error('user_id') is-invalid @enderror" id="user_id"
+                                    name="user_id" required>
                                     <option value="">Select Guest</option>
                                     @foreach ($guests as $guest)
                                         <option value="{{ $guest->id }}"
-                                            {{ $reservation->guest_id === $guest->id ? 'selected' : '' }}>
+                                            {{ $reservation->user_id === $guest->id ? 'selected' : '' }}>
                                             {{ $guest->full_name }} ({{ $guest->email }})
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('guest_id')
+                                @error('user_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>

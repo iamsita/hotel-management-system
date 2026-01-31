@@ -14,7 +14,13 @@ return new class extends Migration
         Schema::create('services', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('type', ['room_service', 'restaurant', 'laundry', 'spa', 'other'])->default('room_service');
+            $table->enum('type', [
+                'room_service',
+                'restaurant',
+                'laundry',
+                'spa',
+                'other',
+            ])->default('room_service');
             $table->decimal('price', 10, 2);
             $table->text('description')->nullable();
             $table->boolean('active')->default(true);
