@@ -265,6 +265,16 @@
                 </ul>
             </li>
 
+            <li @if (str_starts_with(Route::currentRouteName(), 'users')) class="active" @endif>
+                <a href="#usersMenu" data-toggle="collapse">
+                    <i class="fas fa-users-cog"></i> Staff Users
+                </a>
+                <ul class="submenu" id="usersMenu">
+                    <li><a href="{{ route('users.index') }}">All Users</a></li>
+                    <li><a href="{{ route('users.create') }}">Add User</a></li>
+                </ul>
+            </li>
+
             <li @if (str_starts_with(Route::currentRouteName(), 'guests')) class="active" @endif>
                 <a href="#guestsMenu" data-toggle="collapse">
                     <i class="fas fa-users"></i> Guests

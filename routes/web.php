@@ -17,6 +17,7 @@ use App\Http\Controllers\PaymentManagementController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\UserController;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +67,9 @@ Route::middleware(['auth', 'type:admin,manager,staff'])
         Route::resource('rooms', RoomController::class);
         Route::patch('rooms/{room}/update-status', [RoomController::class, 'updateStatus'])->name('rooms.update-status');
         Route::get('api/rooms/status', [RoomController::class, 'getRoomStatus'])->name('rooms.status');
+
+        // Users Management
+        Route::resource('users', UserController::class);
 
         // Guest Management
         Route::resource('guests', GuestController::class);
