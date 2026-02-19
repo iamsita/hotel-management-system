@@ -18,7 +18,6 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\UserController;
-use App\Models\Payment;
 use Illuminate\Support\Facades\Route;
 
 // ==================== PUBLIC ROUTES ====================
