@@ -35,19 +35,19 @@
             <div class="col-md-3">
                 <div class="stat-card" style="border-top-color: #27ae60;">
                     <h6>Room Revenue</h6>
-                    <div class="value">${{ number_format($roomRevenue, 0) }}</div>
+                    <div class="value">{{ number_format($roomRevenue, 0) }}</div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stat-card" style="border-top-color: #f39c12;">
                     <h6>Service Revenue</h6>
-                    <div class="value">${{ number_format($serviceRevenue, 0) }}</div>
+                    <div class="value">{{ number_format($serviceRevenue, 0) }}</div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stat-card" style="border-top-color: #9b59b6;">
                     <h6>Total Revenue</h6>
-                    <div class="value">${{ number_format($totalRevenue, 0) }}</div>
+                    <div class="value">{{ number_format($totalRevenue, 0) }}</div>
                 </div>
             </div>
             <div class="col-md-3">
@@ -77,7 +77,7 @@
                                     @foreach ($byPaymentMethod as $method)
                                         <tr>
                                             <td>{{ ucfirst(str_replace('_', ' ', $method->payment_method)) }}</td>
-                                            <td class="text-end">${{ number_format($method->amount, 2) }}</td>
+                                            <td class="text-end">{{ number_format($method->amount, 2) }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -96,20 +96,20 @@
                         <div class="mb-3">
                             <div class="d-flex justify-content-between">
                                 <span>Room Charges:</span>
-                                <strong>${{ number_format($roomRevenue, 2) }}</strong>
+                                <strong>{{ number_format($roomRevenue, 2) }}</strong>
                             </div>
                         </div>
                         <div class="mb-3">
                             <div class="d-flex justify-content-between">
                                 <span>Service Charges:</span>
-                                <strong>${{ number_format($serviceRevenue, 2) }}</strong>
+                                <strong>{{ number_format($serviceRevenue, 2) }}</strong>
                             </div>
                         </div>
                         <hr>
                         <div>
                             <div class="d-flex justify-content-between">
                                 <span><strong>Total Revenue:</strong></span>
-                                <h5 class="text-success">${{ number_format($totalRevenue, 2) }}</h5>
+                                <h5 class="text-success">{{ number_format($totalRevenue, 2) }}</h5>
                             </div>
                         </div>
                     </div>
@@ -140,7 +140,7 @@
                                     <td>{{ $invoice->invoice_number }}</td>
                                     <td>{{ $invoice->reservation->user->name }}</td>
                                     <td>{{ $invoice->issue_date->format('M d, Y') }}</td>
-                                    <td>${{ number_format($invoice->total_amount, 2) }}</td>
+                                    <td>{{ number_format($invoice->total_amount, 2) }}</td>
                                     <td>
                                         <span class="status-badge status-{{ $invoice->status }}">
                                             {{ ucfirst($invoice->status) }}

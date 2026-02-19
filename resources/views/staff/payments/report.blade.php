@@ -23,7 +23,7 @@
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Total Amount</h5>
-                        <h2>${{ number_format($totalAmount, 0) }}</h2>
+                        <h2>{{ number_format($totalAmount, 0) }}</h2>
                     </div>
                 </div>
             </div>
@@ -64,7 +64,7 @@
                             <tr>
                                 <td>{{ ucfirst(str_replace('_', ' ', $method)) }}</td>
                                 <td>{{ $data['count'] }}</td>
-                                <td>${{ number_format($data['amount'], 2) }}</td>
+                                <td>{{ number_format($data['amount'], 2) }}</td>
                                 <td>{{ round(($data['amount'] / $totalAmount) * 100, 1) }}%</td>
                             </tr>
                         @endforeach
@@ -97,7 +97,7 @@
                                     </span>
                                 </td>
                                 <td>{{ $data['count'] }}</td>
-                                <td>${{ number_format($data['amount'], 2) }}</td>
+                                <td>{{ number_format($data['amount'], 2) }}</td>
                                 <td>{{ round(($data['amount'] / $totalAmount) * 100, 1) }}%</td>
                             </tr>
                         @endforeach

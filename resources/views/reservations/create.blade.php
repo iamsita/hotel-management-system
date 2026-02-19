@@ -69,7 +69,7 @@
                                                 <option value="{{ $room->id }}"
                                                     {{ old('room_id') === (string) $room->id ? 'selected' : '' }}>
                                                     {{ $room->room_number }} ({{ ucfirst($room->room_type) }} -
-                                                    ${{ number_format($room->price_per_night, 2) }}/night)
+                                                    {{ number_format($room->price_per_night, 2) }}/night)
                                                 </option>
                                             @endforeach
                                         </select>

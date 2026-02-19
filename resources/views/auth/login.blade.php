@@ -24,7 +24,7 @@
 <body>
     <div class="login-card card">
         <div class="card-body p-5">
-            <h2 class="card-title text-center mb-4">HMS Staff Login</h2>
+            <h2 class="card-title text-center mb-4">HMS Login</h2>
 
             @if ($errors->any())
                 <div class="alert alert-danger">
@@ -56,19 +56,10 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" name="remember" id="remember">
-                    <label class="form-check-label" for="remember">Remember me</label>
-                </div>
-
                 <button type="submit" class="btn btn-primary w-100">Login</button>
             </form>
 
-            <hr>
-            <p class="text-center text-muted small">
-                Staff use only. For guest login, <a href="{{ route('login') }}">click here</a>.
-            </p>
+
         </div>
     </div>
 

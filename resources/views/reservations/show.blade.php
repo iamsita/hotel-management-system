@@ -52,7 +52,7 @@
                         <p><strong>Room:</strong> {{ $reservation->room->room_number }}</p>
                         <p><strong>Type:</strong> {{ ucfirst($reservation->room->room_type) }}</p>
                         <p><strong>Capacity:</strong> {{ $reservation->room->capacity }} persons</p>
-                        <p><strong>Price/Night:</strong> ${{ number_format($reservation->room->price_per_night, 2) }}</p>
+                        <p><strong>Price/Night:</strong> {{ number_format($reservation->room->price_per_night, 2) }}</p>
                     </div>
                 </div>
             </div>
@@ -91,7 +91,7 @@
                             </div>
                             <div class="col-md-6">
                                 <p><strong>Total Amount:</strong>
-                                <h4 class="text-success">${{ number_format($reservation->total_amount, 2) }}</h4>
+                                <h4 class="text-success">{{ number_format($reservation->total_amount, 2) }}</h4>
                                 </p>
                             </div>
                         </div>
@@ -135,7 +135,7 @@
                                             <tr>
                                                 <td>{{ $charge->description }}</td>
                                                 <td>{{ ucfirst(str_replace('_', ' ', $charge->charge_type)) }}</td>
-                                                <td>${{ number_format($charge->amount, 2) }}</td>
+                                                <td>{{ number_format($charge->amount, 2) }}</td>
                                                 <td>
                                                     <span class="status-badge status-{{ $charge->status }}">
                                                         {{ ucfirst($charge->status) }}
@@ -145,7 +145,7 @@
                                         @endforeach
                                         <tr style="background: #f8f9fa;">
                                             <td colspan="2"><strong>Total Charges:</strong></td>
-                                            <td><strong>${{ number_format($reservation->total_charges, 2) }}</strong></td>
+                                            <td><strong>{{ number_format($reservation->total_charges, 2) }}</strong></td>
                                             <td></td>
                                         </tr>
                                     </tbody>
@@ -166,7 +166,7 @@
                             <p><strong>Invoice Number:</strong> <a
                                     href="{{ route('invoices.show', $reservation->invoice) }}">{{ $reservation->invoice->invoice_number }}</a>
                             </p>
-                            <p><strong>Total:</strong> ${{ number_format($reservation->invoice->total_amount, 2) }}</p>
+                            <p><strong>Total:</strong> {{ number_format($reservation->invoice->total_amount, 2) }}</p>
                             <p><strong>Status:</strong> <span
                                     class="status-badge status-{{ $reservation->invoice->status }}">{{ ucfirst($reservation->invoice->status) }}</span>
                             </p>

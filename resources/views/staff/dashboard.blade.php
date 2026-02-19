@@ -40,7 +40,7 @@
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Total Revenue</h5>
-                        <h2>${{ number_format($totalRevenue, 0) }}</h2>
+                        <h2>{{ number_format($totalRevenue, 0) }}</h2>
                     </div>
                 </div>
             </div>

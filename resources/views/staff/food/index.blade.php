@@ -31,7 +31,7 @@
                             <td>{{ $food->id }}</td>
                             <td>{{ $food->name }}</td>
                             <td><span class="badge bg-info">{{ ucfirst($food->category) }}</span></td>
-                            <td>${{ number_format($food->price, 2) }}</td>
+                            <td>{{ number_format($food->price, 2) }}</td>
                             <td>
                                 <span class="badge bg-{{ $food->available ? 'success' : 'danger' }}">
                                     {{ $food->available ? 'Available' : 'Unavailable' }}

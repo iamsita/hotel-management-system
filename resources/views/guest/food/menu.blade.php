@@ -35,7 +35,7 @@
                                 <div class="card-body">
                                     <h6 class="card-title">{{ $food->name }}</h6>
                                     <p class="card-text text-muted small">{{ $food->description ?? 'No description' }}</p>
-                                    <h5 class="text-primary mb-3">${{ number_format($food->price, 2) }}</h5>
+                                    <h5 class="text-primary mb-3">{{ number_format($food->price, 2) }}</h5>
                                     <div class="input-group">
                                         <input type="hidden" name="food_id[]" value="{{ $food->id }}">
                                         <input type="number" name="quantity[]" class="form-control" min="0"

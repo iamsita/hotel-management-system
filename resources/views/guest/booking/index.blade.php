@@ -31,7 +31,7 @@
                             <td>{{ $res->check_in_date->format('M d, Y') }}</td>
                             <td>{{ $res->check_out_date->format('M d, Y') }}</td>
                             <td>{{ $res->number_of_guests }}</td>
-                            <td>${{ number_format($res->total_amount, 2) }}</td>
+                            <td>{{ number_format($res->total_amount, 2) }}</td>
                             <td>
                                 <span class="status-badge status-{{ str_replace('_', '-', $res->status) }}">
                                     {{ ucfirst(str_replace('_', ' ', $res->status)) }}

@@ -50,7 +50,7 @@
                                     @foreach ($rooms as $room)
                                         <option value="{{ $room->id }}">
                                             Room {{ $room->room_number }} - {{ ucfirst($room->room_type) }}
-                                            (${{ $room->price_per_night }}/night)
+                                            ({{ $room->price_per_night }}/night)
                                         </option>
                                     @endforeach
                                 </select>

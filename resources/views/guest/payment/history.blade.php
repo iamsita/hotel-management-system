@@ -29,7 +29,7 @@
                         <tr>
                             <td>{{ $payment->transaction_id }}</td>
                             <td>Room {{ $payment->reservation->room->room_number }}</td>
-                            <td>${{ number_format($payment->amount, 2) }}</td>
+                            <td>{{ number_format($payment->amount, 2) }}</td>
                             <td>{{ ucfirst(str_replace('_', ' ', $payment->payment_method)) }}</td>
                             <td>
                                 <span class="status-badge status-{{ $payment->status }}">

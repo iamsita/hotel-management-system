@@ -34,7 +34,7 @@
                                     <td><strong>{{ $invoice->invoice_number }}</strong></td>
                                     <td>{{ $invoice->reservation->user->name }}</td>
                                     <td>{{ $invoice->issue_date->format('M d, Y') }}</td>
-                                    <td>${{ number_format($invoice->total_amount, 2) }}</td>
+                                    <td>{{ number_format($invoice->total_amount, 2) }}</td>
                                     <td>
                                         <span class="status-badge status-{{ $invoice->status }}">
                                             {{ ucfirst($invoice->status) }}

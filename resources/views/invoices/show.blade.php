@@ -93,7 +93,7 @@
                                             <td>{{ $charge->description }}
                                                 ({{ ucfirst(str_replace('_', ' ', $charge->charge_type)) }})
                                             </td>
-                                            <td class="text-end">${{ number_format($charge->amount, 2) }}</td>
+                                            <td class="text-end">{{ number_format($charge->amount, 2) }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -111,24 +111,24 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
                             <span>Subtotal:</span>
-                            <span>${{ number_format($invoice->subtotal, 2) }}</span>
+                            <span>{{ number_format($invoice->subtotal, 2) }}</span>
                         </div>
                         @if ($invoice->tax > 0)
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Tax:</span>
-                                <span>${{ number_format($invoice->tax, 2) }}</span>
+                                <span>{{ number_format($invoice->tax, 2) }}</span>
                             </div>
                         @endif
                         @if ($invoice->discount > 0)
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Discount:</span>
-                                <span>-${{ number_format($invoice->discount, 2) }}</span>
+                                <span>-{{ number_format($invoice->discount, 2) }}</span>
                             </div>
                         @endif
                         <hr>
                         <div class="d-flex justify-content-between">
                             <strong>Total Amount:</strong>
-                            <h5 class="text-success">${{ number_format($invoice->total_amount, 2) }}</h5>
+                            <h5 class="text-success">{{ number_format($invoice->total_amount, 2) }}</h5>
                         </div>
                     </div>
                 </div>

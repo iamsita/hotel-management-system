@@ -54,8 +54,8 @@
                                         <td class="text-center">
                                             <span class="badge bg-primary">{{ $service['count'] }}</span>
                                         </td>
-                                        <td class="text-end">${{ number_format($service['total'], 2) }}</td>
-                                        <td class="text-end">${{ number_format($service['average'], 2) }}</td>
+                                        <td class="text-end">{{ number_format($service['total'], 2) }}</td>
+                                        <td class="text-end">{{ number_format($service['average'], 2) }}</td>
                                     </tr>
                                 @endforeach
                                 <tr style="background: #f8f9fa;">
@@ -64,10 +64,10 @@
                                         <strong>{{ array_sum(array_column($serviceBreakdown, 'count')) }}</strong>
                                     </td>
                                     <td class="text-end">
-                                        <strong>${{ number_format(array_sum(array_column($serviceBreakdown, 'total')), 2) }}</strong>
+                                        <strong>{{ number_format(array_sum(array_column($serviceBreakdown, 'total')), 2) }}</strong>
                                     </td>
                                     <td class="text-end">
-                                        <strong>${{ number_format(
+                                        <strong>{{ number_format(
                                             array_sum(array_column($serviceBreakdown, 'total')) / max(1, array_sum(array_column($serviceBreakdown, 'count'))),
                                             2,
                                         ) }}</strong>

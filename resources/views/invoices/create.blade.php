@@ -43,12 +43,12 @@
                                         @foreach ($charges as $charge)
                                             <tr>
                                                 <td>{{ $charge->description }}</td>
-                                                <td class="text-end">${{ number_format($charge->amount, 2) }}</td>
+                                                <td class="text-end">{{ number_format($charge->amount, 2) }}</td>
                                             </tr>
                                         @endforeach
                                         <tr style="background: #f8f9fa;">
                                             <td><strong>Subtotal</strong></td>
-                                            <td class="text-end"><strong>${{ number_format($subtotal, 2) }}</strong></td>
+                                            <td class="text-end"><strong>{{ number_format($subtotal, 2) }}</strong></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -74,7 +74,7 @@
                                     </div>
 
                                     <div class="mb-3" style="background: #f0f0f0; padding: 15px; border-radius: 5px;">
-                                        <h5>Total: <span id="totalAmount">${{ number_format($total, 2) }}</span></h5>
+                                        <h5>Total: <span id="totalAmount">{{ number_format($total, 2) }}</span></h5>
                                         <input type="hidden" id="total_amount" name="total_amount"
                                             value="{{ $total }}">
                                     </div>

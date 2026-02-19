@@ -42,7 +42,7 @@
                                     <td>{{ $reservation->check_in_date->format('M d, Y') }}</td>
                                     <td>{{ $reservation->check_out_date->format('M d, Y') }}</td>
                                     <td>{{ $reservation->number_of_nights }}</td>
-                                    <td>${{ number_format($reservation->total_amount, 2) }}</td>
+                                    <td>{{ number_format($reservation->total_amount, 2) }}</td>
                                     <td>
                                         <span class="status-badge status-{{ $reservation->status }}">
                                             {{ ucfirst(str_replace('_', ' ', $reservation->status)) }}

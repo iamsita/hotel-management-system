@@ -38,7 +38,7 @@
                                     <td><strong>{{ $room->room_number }}</strong></td>
                                     <td>{{ ucfirst($room->room_type) }}</td>
                                     <td>{{ $room->floor ?? '-' }}</td>
-                                    <td>${{ number_format($room->price_per_night, 2) }}</td>
+                                    <td>{{ number_format($room->price_per_night, 2) }}</td>
                                     <td>
                                         <span class="status-badge status-{{ $room->status }}">
                                             {{ ucfirst(str_replace('_', ' ', $room->status)) }}

@@ -55,13 +55,13 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <p><strong>Price per Night:</strong> <span
-                                    class="text-success">${{ number_format($reservation->room->price_per_night, 2) }}</span>
+                                    class="text-success">{{ number_format($reservation->room->price_per_night, 2) }}</span>
                             </p>
                             <p><strong>Number of Nights:</strong> {{ $nights }}</p>
                         </div>
                         <div class="col-md-6">
                             <p><strong>Total Room Cost:</strong> <span
-                                    class="text-primary">${{ number_format($baseCost, 2) }}</span></p>
+                                    class="text-primary">{{ number_format($baseCost, 2) }}</span></p>
                         </div>
                     </div>
                     <p><strong>Room Features:</strong></p>
@@ -97,7 +97,7 @@
                                     @foreach ($reservation->charges as $charge)
                                         <tr>
                                             <td>{{ $charge->service?->name ?? 'Extra Charge' }}</td>
-                                            <td>${{ number_format($charge->amount, 2) }}</td>
+                                            <td>{{ number_format($charge->amount, 2) }}</td>
                                             <td>{{ $charge->created_at->format('M d, Y') }}</td>
                                         </tr>
                                     @endforeach
@@ -130,8 +130,8 @@
                                         <tr>
                                             <td>{{ $order->food->name }}</td>
                                             <td>{{ $order->quantity }}</td>
-                                            <td>${{ number_format($order->price, 2) }}</td>
-                                            <td>${{ number_format($order->price * $order->quantity, 2) }}</td>
+                                            <td>{{ number_format($order->price, 2) }}</td>
+                                            <td>{{ number_format($order->price * $order->quantity, 2) }}</td>
                                             <td>
                                                 <span class="status-badge status-{{ $order->status }}">
                                                     {{ ucfirst($order->status) }}
@@ -179,28 +179,28 @@
                 <div class="card-body">
                     <div class="mb-3 pb-3 border-bottom">
                         <small class="text-muted">Base Room Cost</small>
-                        <p class="mb-0 h6">${{ number_format($baseCost, 2) }}</p>
+                        <p class="mb-0 h6">{{ number_format($baseCost, 2) }}</p>
                         <small class="text-muted">{{ $nights }} nights ×
-                            ${{ number_format($reservation->room->price_per_night, 2) }}</small>
+                            {{ number_format($reservation->room->price_per_night, 2) }}</small>
                     </div>
 
                     @if ($additionalCharges > 0)
                         <div class="mb-3 pb-3 border-bottom">
                             <small class="text-muted">Additional Charges</small>
-                            <p class="mb-0 h6">${{ number_format($additionalCharges, 2) }}</p>
+                            <p class="mb-0 h6">{{ number_format($additionalCharges, 2) }}</p>
                         </div>
                     @endif
 
                     @if ($foodCost > 0)
                         <div class="mb-3 pb-3 border-bottom">
                             <small class="text-muted">Food Orders</small>
-                            <p class="mb-0 h6">${{ number_format($foodCost, 2) }}</p>
+                            <p class="mb-0 h6">{{ number_format($foodCost, 2) }}</p>
                         </div>
                     @endif
 
                     <div class="pt-3">
                         <small class="text-muted">Total Amount</small>
-                        <p class="mb-0 h5 text-success"><strong>${{ number_format($totalCost, 2) }}</strong></p>
+                        <p class="mb-0 h5 text-success"><strong>{{ number_format($totalCost, 2) }}</strong></p>
                     </div>
                 </div>
             </div>

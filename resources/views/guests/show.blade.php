@@ -67,7 +67,7 @@
                                                         {{ ucfirst(str_replace('_', ' ', $reservation->status)) }}
                                                     </span>
                                                 </td>
-                                                <td>${{ number_format($reservation->total_amount, 2) }}</td>
+                                                <td>{{ number_format($reservation->total_amount, 2) }}</td>
                                                 <td>
                                                     <a href="{{ route('reservations.show', $reservation) }}"
                                                         class="btn btn-sm btn-primary">

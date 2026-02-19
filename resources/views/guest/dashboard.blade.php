@@ -14,7 +14,7 @@
         <div class="col-md-3">
             <div class="stat-card">
                 <h6>Total Spent</h6>
-                <div class="value">${{ number_format($totalSpent, 2) }}</div>
+                <div class="value">{{ number_format($totalSpent, 2) }}</div>
             </div>
         </div>
         <div class="col-md-3">

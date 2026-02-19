@@ -23,7 +23,7 @@
                             <td>{{ $order->created_at->format('M d, Y H:i') }}</td>
                             <td>{{ $order->food->name }}</td>
                             <td>{{ $order->quantity }}</td>
-                            <td>${{ number_format($order->price * $order->quantity, 2) }}</td>
+                            <td>{{ number_format($order->price * $order->quantity, 2) }}</td>
                             <td>
                                 <span class="status-badge status-{{ $order->status }}">
                                     {{ ucfirst($order->status) }}

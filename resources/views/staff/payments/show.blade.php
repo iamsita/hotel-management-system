@@ -20,7 +20,7 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <p><strong>Receipt ID:</strong> {{ $payment->transaction_id }}</p>
-                                <p><strong>Amount:</strong> ${{ number_format($payment->amount, 2) }}</p>
+                                <p><strong>Amount:</strong> {{ number_format($payment->amount, 2) }}</p>
                                 <p><strong>Payment Method:</strong>
                                     {{ ucfirst(str_replace('_', ' ', $payment->payment_method)) }}</p>
                             </div>

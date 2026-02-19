@@ -55,7 +55,7 @@
             <div class="col-md-3">
                 <div class="stat-card" style="border-top-color: #16a085;">
                     <h6>Total Revenue</h6>
-                    <div class="value">${{ number_format($totalRevenue, 0) }}</div>
+                    <div class="value">{{ number_format($totalRevenue, 0) }}</div>
                 </div>
             </div>
         </div>
@@ -69,11 +69,11 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <h6>Total Revenue (Paid)</h6>
-                            <h4 class="text-success">${{ number_format($totalRevenue, 2) }}</h4>
+                            <h4 class="text-success">{{ number_format($totalRevenue, 2) }}</h4>
                         </div>
                         <div>
                             <h6>Pending Invoices</h6>
-                            <h4 class="text-warning">${{ number_format($pendingInvoices, 2) }}</h4>
+                            <h4 class="text-warning">{{ number_format($pendingInvoices, 2) }}</h4>
                         </div>
                     </div>
                 </div>

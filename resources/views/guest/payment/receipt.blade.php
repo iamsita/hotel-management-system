@@ -81,7 +81,7 @@
                 <hr>
                 <div class="receipt-row receipt-total">
                     <span>Amount Paid:</span>
-                    <span>${{ number_format($payment->amount, 2) }}</span>
+                    <span>{{ number_format($payment->amount, 2) }}</span>
                 </div>
             </div>
         </div>

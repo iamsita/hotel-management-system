@@ -45,8 +45,8 @@
                         <p><strong>Food Item:</strong> {{ $order->food->name }}</p>
                         <p><strong>Category:</strong> {{ ucfirst($order->food->category) }}</p>
                         <p><strong>Quantity:</strong> {{ $order->quantity }}</p>
-                        <p><strong>Unit Price:</strong> ${{ number_format($order->price, 2) }}</p>
-                        <p><strong>Total Price:</strong> ${{ number_format($order->price * $order->quantity, 2) }}</p>
+                        <p><strong>Unit Price:</strong> {{ number_format($order->price, 2) }}</p>
+                        <p><strong>Total Price:</strong> {{ number_format($order->price * $order->quantity, 2) }}</p>
                         @if ($order->special_notes)
                             <p><strong>Special Notes:</strong></p>
                             <p>{{ $order->special_notes }}</p>
