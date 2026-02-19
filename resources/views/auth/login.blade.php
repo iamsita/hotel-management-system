@@ -57,6 +57,7 @@
                     @enderror
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Login</button>
+                <a href="{{ route('register') }}" class="btn btn-link w-100 mt-2">Don't have an account? Register</a>
             </form>
 
 
