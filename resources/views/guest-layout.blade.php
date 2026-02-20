@@ -241,6 +241,7 @@
         }
     </style>
     @stack('styles')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body>
@@ -257,44 +258,28 @@
             </li>
 
             <li @if (str_starts_with(Route::currentRouteName(), 'guest.booking')) class="active" @endif>
-                <a href="#bookingMenu" data-toggle="collapse">
+                <a href="{{ route('guest.bookings') }}" @if (Route::currentRouteName() === 'guest.bookings') class="active" @endif>
                     <i class="fas fa-calendar-check"></i> Bookings
                 </a>
-                <ul class="submenu" id="bookingMenu">
-                    <li><a href="{{ route('guest.bookings') }}">My Bookings</a></li>
-                    <li><a href="{{ route('guest.booking.create') }}">New Booking</a></li>
-                </ul>
             </li>
 
             <li @if (str_starts_with(Route::currentRouteName(), 'guest.food') ||
                     str_starts_with(Route::currentRouteName(), 'guest.orders')) class="active" @endif>
-                <a href="#foodMenu" data-toggle="collapse">
+                <a href="{{ route('guest.food.menu') }}" @if (Route::currentRouteName() === 'guest.food.menu') class="active" @endif>
                     <i class="fas fa-utensils"></i> Food & Orders
                 </a>
-                <ul class="submenu" id="foodMenu">
-                    <li><a href="{{ route('guest.food.menu') }}">Menu</a></li>
-                    <li><a href="{{ route('guest.orders') }}">Order History</a></li>
-                </ul>
             </li>
 
             <li @if (str_starts_with(Route::currentRouteName(), 'guest.cleaning')) class="active" @endif>
-                <a href="#cleaningMenu" data-toggle="collapse">
+                <a href="{{ route('guest.cleaning.requests') }}" @if (Route::currentRouteName() === 'guest.cleaning.requests') class="active" @endif>
                     <i class="fas fa-broom"></i> Cleaning Requests
                 </a>
-                <ul class="submenu" id="cleaningMenu">
-                    <li><a href="{{ route('guest.cleaning.requests') }}">My Requests</a></li>
-                    <li><a href="{{ route('guest.cleaning.create') }}">Request Cleaning</a></li>
-                </ul>
             </li>
 
             <li @if (str_starts_with(Route::currentRouteName(), 'guest.payment')) class="active" @endif>
-                <a href="#paymentMenu" data-toggle="collapse">
+                <a href="{{ route('guest.payments') }}" @if (Route::currentRouteName() === 'guest.payments') class="active" @endif>
                     <i class="fas fa-credit-card"></i> Payments
                 </a>
-                <ul class="submenu" id="paymentMenu">
-                    <li><a href="{{ route('guest.payments') }}">Payment History</a></li>
-                    <li><a href="{{ route('guest.payment.create') }}">Make Payment</a></li>
-                </ul>
             </li>
 
             <li @if (Route::currentRouteName() === 'guest.profile') class="active" @endif>

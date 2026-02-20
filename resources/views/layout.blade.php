@@ -240,6 +240,8 @@
         }
     </style>
     @stack('styles')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
 
 <body>
@@ -254,54 +256,35 @@
                     <i class="fas fa-chart-line"></i> Dashboard
                 </a>
             </li>
-
-            <li @if (str_starts_with(Route::currentRouteName(), 'rooms')) class="active" @endif>
-                <a href="#roomsMenu" data-toggle="collapse">
+            <li @if (Route::currentRouteName() === 'rooms') class="active" @endif>
+                <a href="{{ route('rooms.index') }}" @if (Route::currentRouteName() === 'rooms') class="active" @endif>
                     <i class="fas fa-door-open"></i> Rooms
                 </a>
-                <ul class="submenu" id="roomsMenu">
-                    <li><a href="{{ route('rooms.index') }}">All Rooms</a></li>
-                    <li><a href="{{ route('rooms.create') }}">Add Room</a></li>
-                </ul>
+            </li>
+            <li @if (Route::currentRouteName() === 'users') class="active" @endif>
+                <a href="{{ route('users.index') }}" @if (Route::currentRouteName() === 'users') class="active" @endif>
+                    <i class="fas fa-users"></i> Users
+                </a>
             </li>
 
-            <li @if (str_starts_with(Route::currentRouteName(), 'users')) class="active" @endif>
-                <a href="#usersMenu" data-toggle="collapse">
-                    <i class="fas fa-users-cog"></i> Staff Users
-                </a>
-                <ul class="submenu" id="usersMenu">
-                    <li><a href="{{ route('users.index') }}">All Users</a></li>
-                    <li><a href="{{ route('users.create') }}">Add User</a></li>
-                </ul>
-            </li>
 
             <li @if (str_starts_with(Route::currentRouteName(), 'guests')) class="active" @endif>
-                <a href="#guestsMenu" data-toggle="collapse">
+                <a href="{{ route('guests.index') }}" @if (Route::currentRouteName() === 'guests.index') class="active" @endif>
                     <i class="fas fa-users"></i> Guests
                 </a>
-                <ul class="submenu" id="guestsMenu">
-                    <li><a href="{{ route('guests.index') }}">All Guests</a></li>
-                    <li><a href="{{ route('guests.create') }}">Add Guest</a></li>
-                </ul>
+
             </li>
 
             <li @if (str_starts_with(Route::currentRouteName(), 'reservations')) class="active" @endif>
-                <a href="#reservationsMenu" data-toggle="collapse">
+                <a href="{{ route('reservations.index') }}" @if (Route::currentRouteName() === 'reservations.index') class="active" @endif>
                     <i class="fas fa-calendar-alt"></i> Reservations
                 </a>
-                <ul class="submenu" id="reservationsMenu">
-                    <li><a href="{{ route('reservations.index') }}">All Reservations</a></li>
-                    <li><a href="{{ route('reservations.create') }}">New Reservation</a></li>
-                </ul>
             </li>
 
             <li @if (str_starts_with(Route::currentRouteName(), 'invoices') || str_starts_with(Route::currentRouteName(), 'charges')) class="active" @endif>
-                <a href="#billingMenu" data-toggle="collapse">
+                <a href="{{ route('invoices.index') }}" @if (Route::currentRouteName() === 'invoices.index') class="active" @endif>
                     <i class="fas fa-receipt"></i> Billing
                 </a>
-                <ul class="submenu" id="billingMenu">
-                    <li><a href="{{ route('invoices.index') }}">Invoices</a></li>
-                </ul>
             </li>
 
             <li>
@@ -316,7 +299,8 @@
                 </ul>
             </li>
             <li>
-               <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <a href="{{ route('logout') }}"
+                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -353,8 +337,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         // Sidebar menu toggle
-        document.querySelectorAll('.sidebar-menu a[href^="#"]').forEach(function(element) {
-            element.addEventListener('click', function(e) {
+        document.querySelectorAll('.sidebar-menu a[href^="#"]').forEach(function (element) {
+            element.addEventListener('click', function (e) {
                 e.preventDefault();
                 const submenu = document.querySelector(this.getAttribute('href'));
                 if (submenu) {
