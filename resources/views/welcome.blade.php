@@ -10,7 +10,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-indigo:#1A3263;
+            /* Updated Primary Color to Navy */
+            --primary-indigo: #1A3263; 
             --dark-slate: #1e293b;
             --soft-slate: #475569;
             --bg-neutral: #f8fafc;
@@ -82,14 +83,15 @@
 
         .feature-card:hover {
             border-color: var(--primary-indigo);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 20px 25px -5px rgba(26, 50, 99, 0.1);
             transform: translateY(-5px);
         }
 
         .icon-box {
             width: 56px;
             height: 56px;
-            background: rgba(79, 70, 229, 0.1);
+            /* Adjusted opacity for darker navy */
+            background: rgba(26, 50, 99, 0.08); 
             color: var(--primary-indigo);
             display: flex;
             align-items: center;
@@ -120,12 +122,12 @@
             font-weight: 600;
             border-radius: 8px;
             border: none;
-            transition: background 0.2s;
         }
 
         .btn-indigo:hover {
-            background-color:rgb(91, 79, 230);
+            background-color: #12244a; /* Slightly darker shade for hover */
             color: white;
+            box-shadow: 0 4px 12px rgba(26, 50, 99, 0.2);
         }
 
         .btn-outline-indigo {
@@ -205,7 +207,7 @@
 
     <section class="hero">
         <div class="container">
-            <span class="badge rounded-pill px-3 py-2 mb-3" style="background: rgba(79,70,229,0.1); color: var(--primary-indigo);">v2.0 Now Live</span>
+            <span class="badge rounded-pill px-3 py-2 mb-3" style="background: rgba(26, 50, 99, 0.1); color: var(--primary-indigo);">v2.0 Now Live</span>
             <h1>Modern Hospitality <br><span style="color: var(--primary-indigo)">Management</span></h1>
             <p>A unified, web-based platform designed to streamline reservations, room service, and billing for the modern hotel industry in Nepal.</p>
             

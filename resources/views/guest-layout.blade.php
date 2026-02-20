@@ -299,6 +299,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2>@yield('page-title')</h2>
             <div>
+                <a href="{{ route('home') }}" class="btn btn-sm btn-primary"><i class="fas fa-home"></i> Home</a>
                 <form action="{{ route('guest.logout') }}" method="POST" style="display:inline;">
                     @csrf
                     <button type="submit" class="btn btn-sm btn-danger">
