@@ -5,13 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hotel Management System | Welcome</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
             /* Updated Primary Color to Navy */
-            --primary-indigo: #1A3263; 
+            --primary-indigo: #1A3263;
             --dark-slate: #1e293b;
             --soft-slate: #475569;
             --bg-neutral: #f8fafc;
@@ -91,7 +90,7 @@
             width: 56px;
             height: 56px;
             /* Adjusted opacity for darker navy */
-            background: rgba(26, 50, 99, 0.08); 
+            background: rgba(26, 50, 99, 0.08);
             color: var(--primary-indigo);
             display: flex;
             align-items: center;
@@ -210,7 +209,7 @@
             <span class="badge rounded-pill px-3 py-2 mb-3" style="background: rgba(26, 50, 99, 0.1); color: var(--primary-indigo);">v2.0 Now Live</span>
             <h1>Modern Hospitality <br><span style="color: var(--primary-indigo)">Management</span></h1>
             <p>A unified, web-based platform designed to streamline reservations, room service, and billing for the modern hotel industry in Nepal.</p>
-            
+
             <div class="d-flex justify-content-center gap-3">
                 @auth
                     <a href="{{ Auth::user()->type === 'guest' ? route('guest.dashboard') : route('dashboard') }}" class="btn btn-indigo shadow-sm">Enter Dashboard</a>
@@ -285,7 +284,6 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

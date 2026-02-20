@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Login | HMS</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -107,8 +107,8 @@
 
                 <div class="mb-3">
                     <label for="email" class="form-label">Email Address</label>
-                    <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                           name="email" id="email" placeholder="name@company.com" 
+                    <input type="email" class="form-control @error('email') is-invalid @enderror"
+                           name="email" id="email" placeholder="name@company.com"
                            value="{{ old('email') }}" required autofocus>
                     @error('email')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -119,7 +119,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <label for="password" class="form-label">Password</label>
                     </div>
-                    <input type="password" class="form-control @error('password') is-invalid @enderror" 
+                    <input type="password" class="form-control @error('password') is-invalid @enderror"
                            name="password" id="password" placeholder="••••••••" required>
                     @error('password')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -127,9 +127,9 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 shadow-sm">Sign In</button>
-                
+
                 <div class="text-center mt-4">
-                    <p class="mb-0 small text-muted">Don't have an account? 
+                    <p class="mb-0 small text-muted">Don't have an account?
                         <a href="{{ route('register') }}" class="btn-link fw-medium">Register here</a>
                     </p>
                 </div>
@@ -137,7 +137,6 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
