@@ -57,6 +57,15 @@
                                             class="btn btn-sm btn-info">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <form action="{{ route('reservations.destroy', $reservation) }}" method="POST"
+                                            class="d-inline-block"
+                                            onsubmit="return confirm('Are you sure you want to delete this reservation?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach

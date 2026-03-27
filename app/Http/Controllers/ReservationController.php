@@ -140,9 +140,7 @@ class ReservationController extends Controller
 
     public function destroy(Reservation $reservation)
     {
-        $reservation->update(['status' => 'cancelled']);
-        $reservation->room->update(['status' => 'available']);
-
+        $reservation->delete();
         return redirect()->route('reservations.index')->with('success', 'Reservation cancelled successfully');
     }
 }

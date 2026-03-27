@@ -13,11 +13,11 @@ class DatabaseSeeder extends Seeder
     {
         // Call individual seeders in order
         $this->call([
-            ServiceSeeder::class,
-            FoodSeeder::class,
+            // ServiceSeeder::class,
+            // FoodSeeder::class,
             UserSeeder::class,
-            RoomSeeder::class,
-            ReservationSeeder::class,
+            // RoomSeeder::class,
+            // ReservationSeeder::class,
         ]);
     }
 }
