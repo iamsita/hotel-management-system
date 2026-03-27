@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html>
+@extends('layout')
 
-<head>
-    <title>Payment Report</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'Payment Report')
 
-<body>
+@section('content')
     <div class="container mt-4">
         <h2>Payment Report</h2>
 
@@ -111,6 +107,4 @@
             <button class="btn btn-outline-secondary" onclick="window.print()">Print Report</button>
         </div>
     </div>
-</body>
-
-</html>
+@endsection

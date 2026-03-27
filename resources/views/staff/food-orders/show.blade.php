@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html>
+@extends('layout')
 
-<head>
-    <title>Food Order Details</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'Food Order Details')
 
-<body>
+@section('content')
     <div class="container mt-4">
         <h2>Food Order Details</h2>
 
@@ -69,12 +65,12 @@
                                         <option value="">-- Select Status --</option>
                                         <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>
                                             Pending</option>
-                                        <option value="preparing"
-                                            {{ $order->status === 'preparing' ? 'selected' : '' }}>Preparing</option>
+                                        <option value="preparing" {{ $order->status === 'preparing' ? 'selected' : '' }}>
+                                            Preparing</option>
                                         <option value="ready" {{ $order->status === 'ready' ? 'selected' : '' }}>Ready
                                         </option>
-                                        <option value="delivered"
-                                            {{ $order->status === 'delivered' ? 'selected' : '' }}>Delivered</option>
+                                        <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>
+                                            Delivered</option>
                                         <option value="cancelled">Cancelled</option>
                                     </select>
                                 </div>
@@ -97,20 +93,24 @@
                         <p><strong>Room:</strong> {{ $order->reservation->room->room_number }}</p>
                     </div>
                 </div>
-
-                <div class="card mt-3">
-                    <div class="card-header">
-                        <h5>Actions</h5>
-                    </div>
-                    <div class="card-body d-flex flex-column gap-2">
-                        <a href="{{ route('food-orders.index') }}" class="btn btn-secondary">Back to Orders</a>
-                        <a href="{{ route('reservations.show', $order->reservation) }}" class="btn btn-info">View
-                            Booking</a>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
+@endsection
+
+<div class="card mt-3">
+    <div class="card-header">
+        <h5>Actions</h5>
+    </div>
+    <div class="card-body d-flex flex-column gap-2">
+        <a href="{{ route('food-orders.index') }}" class="btn btn-secondary">Back to Orders</a>
+        <a href="{{ route('reservations.show', $order->reservation) }}" class="btn btn-info">View
+            Booking</a>
+    </div>
+</div>
+</div>
+</div>
+</div>
 </body>
 
 </html>

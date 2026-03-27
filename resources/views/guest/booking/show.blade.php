@@ -4,7 +4,7 @@
 @section('page-title', 'Booking Details - #' . $reservation->id)
 
 @php
-    $nights = $reservation->check_out_date->diffInDays($reservation->check_in_date);
+    $nights = $reservation->check_in_date->diffInDays($reservation->check_out_date);
     $baseCost = $reservation->room->price_per_night * $nights;
     $additionalCharges = $reservation->charges->sum('amount');
     $foodCost = $reservation->foodOrders->sum(fn($o) => $o->price * $o->quantity);

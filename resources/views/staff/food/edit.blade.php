@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html>
+@extends('layout')
 
-<head>
-    <title>Edit Food Item</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'Edit Food Item')
 
-<body>
+@section('content')
     <div class="container mt-4">
         <h2>Edit Food Item</h2>
 
@@ -26,8 +22,8 @@
 
             <div class="mb-3">
                 <label for="name" class="form-label">Food Name</label>
-                <input type="text" class="form-control @error('name') is-invalid @enderror" name="name"
-                    id="name" value="{{ old('name', $food->name) }}" required>
+                <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" id="name"
+                    value="{{ old('name', $food->name) }}" required>
                 @error('name')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -35,8 +31,7 @@
 
             <div class="mb-3">
                 <label for="category" class="form-label">Category</label>
-                <select class="form-select @error('category') is-invalid @enderror" name="category" id="category"
-                    required>
+                <select class="form-select @error('category') is-invalid @enderror" name="category" id="category" required>
                     <option value="">-- Select Category --</option>
                     <option value="breakfast" {{ old('category', $food->category) == 'breakfast' ? 'selected' : '' }}>
                         Breakfast</option>
@@ -103,6 +98,7 @@
             </div>
         </form>
     </div>
+@endsection
 </body>
 
 </html>

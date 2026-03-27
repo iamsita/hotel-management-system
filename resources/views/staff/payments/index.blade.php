@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html>
+@extends('layout')
 
-<head>
-    <title>Payment Management</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'Payment Management')
 
-<body>
+@section('content')
     <div class="container mt-4">
-        <h2>Payment Management</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Payment Management</h2>
+        </div>
 
         <div class="table-responsive">
             <table class="table table-striped">
@@ -58,6 +56,4 @@
             <a href="{{ route('payments.report') }}" class="btn btn-primary">View Payment Report</a>
         </div>
     </div>
-</body>
-
-</html>
+@endsection

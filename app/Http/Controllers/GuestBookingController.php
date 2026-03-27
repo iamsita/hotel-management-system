@@ -56,6 +56,7 @@ class GuestBookingController extends Controller
         $nights = (strtotime($validated['check_out_date']) - strtotime($validated['check_in_date'])) / 86400;
         $total_amount = $nights * $room->price_per_night;
 
+
         $validated['user_id'] = Auth::id();
         $validated['status'] = 'pending';
         $validated['total_amount'] = $total_amount;

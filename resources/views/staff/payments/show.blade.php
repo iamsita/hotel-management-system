@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html>
+@extends('layout')
 
-<head>
-    <title>Payment Details</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'Payment Details')
 
-<body>
+@section('content')
     <div class="container mt-4">
         <h2>Payment Details</h2>
 
@@ -68,8 +64,8 @@
                                         <option value="">-- Select Status --</option>
                                         <option value="pending" {{ $payment->status === 'pending' ? 'selected' : '' }}>
                                             Pending</option>
-                                        <option value="completed"
-                                            {{ $payment->status === 'completed' ? 'selected' : '' }}>Completed</option>
+                                        <option value="completed" {{ $payment->status === 'completed' ? 'selected' : '' }}>
+                                            Completed</option>
                                         <option value="failed">Failed</option>
                                         <option value="refunded">Refunded</option>
                                     </select>
@@ -95,6 +91,4 @@
             </div>
         </div>
     </div>
-</body>
-
-</html>
+@endsection

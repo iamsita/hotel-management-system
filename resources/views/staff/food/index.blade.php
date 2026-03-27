@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html>
+@extends('layout')
 
-<head>
-    <title>Food Menu Management</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'Edit Reservation')
 
-<body>
-    <div class="container mt-4">
+@section('content')
+    <div class="container-fluid mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Food Menu Management</h2>
             <a href="{{ route('food.create') }}" class="btn btn-primary">Add New Food Item</a>
@@ -39,8 +35,7 @@
                             </td>
                             <td>
                                 <a href="{{ route('food.edit', $food) }}" class="btn btn-sm btn-warning">Edit</a>
-                                <form action="{{ route('food.destroy', $food) }}" method="POST"
-                                    style="display:inline;">
+                                <form action="{{ route('food.destroy', $food) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger"
@@ -59,6 +54,4 @@
 
         {{ $foods->links() }}
     </div>
-</body>
-
-</html>
+@endsection

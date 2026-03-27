@@ -67,7 +67,7 @@ class Reservation extends Model
 
     public function getNumberOfNightsAttribute()
     {
-        return $this->check_out_date->diffInDays($this->check_in_date);
+        return $this->check_in_date->diffInDays($this->check_out_date);
     }
 
     public function getTotalChargesAttribute()
