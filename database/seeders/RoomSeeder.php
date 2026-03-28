@@ -9,47 +9,21 @@ class RoomSeeder extends Seeder
 {
     public function run(): void
     {
-        // (optional) clear old data
-        // Room::truncate();
-
         $types = ['single', 'double', 'suite', 'deluxe'];
-        $statuses = ['available', 'occupied', 'maintenance', 'reserved'];
-        $hkStatuses = ['clean', 'dirty', 'in_progress', 'inspected'];
+        $prices = ['single' => 80, 'double' => 120, 'suite' => 220, 'deluxe' => 170];
+        $capacities = ['single' => 1, 'double' => 2, 'suite' => 4, 'deluxe' => 3];
 
-        // Simple mapping for realistic values
-        $capacityByType = [
-            'single' => 1,
-            'double' => 2,
-            'suite' => 4,
-            'deluxe' => 3,
-        ];
-
-        $priceByType = [
-            'single' => 80.00,
-            'double' => 120.00,
-            'suite' => 220.00,
-            'deluxe' => 170.00,
-        ];
-
-        $floors = [1, 2, 3, 4, 5]; // 5 floors
-        $roomsPerFloor = 10;       // 10 rooms each = 50 rooms
-
-        foreach ($floors as $floor) {
-            for ($i = 1; $i <= $roomsPerFloor; $i++) {
+        for ($floor = 1; $floor <= 3; $floor++) {
+            for ($i = 1; $i <= 5; $i++) {
                 $type = $types[array_rand($types)];
-
-                Room::updateOrCreate(
-                    ['room_number' => sprintf('%d%02d', $floor, $i)], // 101, 102, ..., 510
-                    [
-                        'room_type' => $type,
-                        'capacity' => $capacityByType[$type],
-                        'price_per_night' => $priceByType[$type],
-                        'status' => $statuses[array_rand($statuses)],
-                        'housekeeping_status' => $hkStatuses[array_rand($hkStatuses)],
-                        'description' => ucfirst($type)." room on floor {$floor}",
-                        'floor' => $floor,
-                    ]
-                );
+                Room::create([
+                    'room_number' => $floor . '0' . $i,
+                    'type' => $type,
+                    'capacity' => $capacities[$type],
+                    'price_per_night' => $prices[$type],
+                    'status' => 'available',
+                    'floor' => $floor,
+                ]);
             }
         }
     }

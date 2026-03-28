@@ -3,30 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Room extends Model
 {
-    protected $fillable = [
-        'room_number',
-        'room_type',
-        'capacity',
-        'price_per_night',
-        'status',
-        'housekeeping_status',
-        'description',
-        'floor',
-    ];
+    protected $fillable = ['room_number', 'type', 'capacity', 'price_per_night', 'status', 'floor'];
 
-    public function reservations(): HasMany
+    public function reservations()
     {
         return $this->hasMany(Reservation::class);
-    }
-
-    public function current_reservation()
-    {
-        return $this->hasOne(Reservation::class)
-            ->where('status', 'checked_in')
-            ->latest();
     }
 }

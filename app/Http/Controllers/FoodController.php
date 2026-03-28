@@ -9,61 +9,55 @@ class FoodController extends Controller
 {
     public function index()
     {
-        $foods = Food::paginate(15);
+        $foods = Food::all();
 
-        return view('staff.food.index', compact('foods'));
+        return view('admin.foods.index', compact('foods'));
     }
 
     public function create()
     {
-        return view('staff.food.create');
+        return view('admin.foods.create');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string',
-            'price' => 'required|numeric|min:0.01',
-            'description' => 'nullable|string',
-            'image_url' => 'nullable|url',
-            'available' => 'nullable|boolean',
+            'category' => 'required|in:breakfast,lunch,dinner,snacks,beverages',
+            'price' => 'required|numeric|min:0',
         ]);
 
-        $validated['available'] = $request->has('available') ? 1 : 0;
+        $validated['available'] = $request->has('available');
 
         Food::create($validated);
 
-        return redirect()->route('food.index')->with('success', 'Food item created!');
+        return redirect()->route('admin.foods.index')->with('success', 'Food item added.');
     }
 
     public function edit(Food $food)
     {
-        return view('staff.food.edit', compact('food'));
+        return view('admin.foods.edit', compact('food'));
     }
 
     public function update(Request $request, Food $food)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string',
-            'price' => 'required|numeric|min:0.01',
-            'description' => 'nullable|string',
-            'image_url' => 'nullable|url',
-            'available' => 'nullable|boolean',
+            'category' => 'required|in:breakfast,lunch,dinner,snacks,beverages',
+            'price' => 'required|numeric|min:0',
         ]);
 
-        $validated['available'] = $request->has('available') ? 1 : 0;
+        $validated['available'] = $request->has('available');
 
         $food->update($validated);
 
-        return redirect()->route('food.index')->with('success', 'Food item updated!');
+        return redirect()->route('admin.foods.index')->with('success', 'Food item updated.');
     }
 
     public function destroy(Food $food)
     {
         $food->delete();
 
-        return redirect()->route('food.index')->with('success', 'Food item deleted!');
+        return redirect()->route('admin.foods.index')->with('success', 'Food item deleted.');
     }
 }

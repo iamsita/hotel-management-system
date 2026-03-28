@@ -1,309 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') - Hotel Management System</title>
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <title>@yield('title') - HMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --success-color: #27ae60;
-            --danger-color: #e74c3c;
-            --warning-color: #f39c12;
-            --light-color: #ecf0f1;
-        }
-
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .sidebar {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #34495e 100%);
-            min-height: 100vh;
-            padding: 20px 0;
-            position: fixed;
-            width: 250px;
-            left: 0;
-            top: 0;
-            z-index: 1000;
-            color: white;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar-brand {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .sidebar-brand h4 {
-            margin: 0;
-            color: white;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .sidebar-menu li {
-            margin: 0;
-        }
-
-        .sidebar-menu a {
-            display: block;
-            padding: 12px 20px;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
-        }
-
-        .sidebar-menu a:hover,
-        .sidebar-menu a.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border-left-color: var(--secondary-color);
-        }
-
-        .sidebar-menu .submenu {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .sidebar-menu li.active .submenu {
-            max-height: 500px;
-        }
-
-        .sidebar-menu .submenu a {
-            padding-left: 40px;
-            font-size: 0.9rem;
-        }
-
-        main {
-            margin-left: 250px;
-            padding: 20px;
-        }
-
-        .navbar {
-            background: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-
-  
-       
-
-        .btn-primary {
-            background: var(--secondary-color);
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background: #2980b9;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            text-align: center;
-            border-top: 4px solid var(--secondary-color);
-        }
-
-        .stat-card h6 {
-            color: #666;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-        }
-
-        .stat-card .value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .status-available {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-occupied {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-maintenance {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .status-reserved {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-confirmed {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-checked-in {
-            background: #cce5ff;
-            color: #004085;
-        }
-
-        .status-checked-out {
-            background: #e2e3e5;
-            color: #383d41;
-        }
-
-        .status-cancelled {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .table thead th {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .alert {
-            border-radius: 8px;
-            border: none;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
-
-            main {
-                margin-left: 200px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .sidebar {
-                position: relative;
-                width: 100%;
-                min-height: auto;
-                margin-bottom: 20px;
-            }
-
-            main {
-                margin-left: 0;
-            }
-        }
+        .sidebar { background: #1a3263; min-height: 100vh; width: 220px; position: fixed; top: 0; left: 0; padding-top: 20px; }
+        .sidebar .brand { color: #fff; text-align: center; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; }
+        .sidebar a { display: block; color: rgba(255,255,255,0.8); padding: 10px 20px; text-decoration: none; font-size: 0.9rem; }
+        .sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,0.1); color: #fff; }
+        main { margin-left: 220px; padding: 20px; background: #f8f9fa; min-height: 100vh; }
+        .table thead th { background: #1a3263; color: #fff; }
     </style>
-    @stack('styles')
-
 </head>
-
 <body>
     <div class="sidebar">
-        <div class="sidebar-brand">
-            <h4><i class="fas fa-hotel"></i> HMS</h4>
-            <small>Hotel Management</small>
+        <div class="brand">
+            <h5 class="mb-0">HMS</h5>
+            <small class="text-white-50">Hotel Management</small>
         </div>
-        <ul class="sidebar-menu">
-            <li @if (Route::currentRouteName() === 'dashboard') class="active" @endif>
-                <a href="{{ route('dashboard') }}" @if (Route::currentRouteName() === 'dashboard') class="active" @endif>
-                    <i class="fas fa-chart-line"></i> Dashboard
-                </a>
-            </li>
-            <li @if (Route::currentRouteName() === 'rooms') class="active" @endif>
-                <a href="{{ route('rooms.index') }}" @if (Route::currentRouteName() === 'rooms') class="active" @endif>
-                    <i class="fas fa-door-open"></i> Rooms
-                </a>
-            </li>
-            <li @if (Route::currentRouteName() === 'users') class="active" @endif>
-                <a href="{{ route('users.index') }}" @if (Route::currentRouteName() === 'users') class="active" @endif>
-                    <i class="fas fa-users"></i> Users
-                </a>
-            </li>
 
+        @if(auth()->user()->isAdmin())
+            <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a>
+            <a href="{{ route('admin.rooms.index') }}" class="{{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}">Rooms</a>
+            <a href="{{ route('admin.reservations.index') }}" class="{{ request()->routeIs('admin.reservations.*') ? 'active' : '' }}">Reservations</a>
+            <a href="{{ route('admin.guests.index') }}" class="{{ request()->routeIs('admin.guests.*') ? 'active' : '' }}">Guests</a>
+            <a href="{{ route('admin.foods.index') }}" class="{{ request()->routeIs('admin.foods.*') ? 'active' : '' }}">Food Menu</a>
+            <a href="{{ route('admin.food-orders.index') }}" class="{{ request()->routeIs('admin.food-orders.*') ? 'active' : '' }}">Food Orders</a>
+            <a href="{{ route('admin.payments.index') }}" class="{{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">Payments</a>
+        @else
+            <a href="{{ route('guest.dashboard') }}" class="{{ request()->routeIs('guest.dashboard') ? 'active' : '' }}">My Bookings</a>
+            <a href="{{ route('guest.rooms') }}" class="{{ request()->routeIs('guest.rooms') ? 'active' : '' }}">Browse Rooms</a>
+            <a href="{{ route('guest.menu') }}" class="{{ request()->routeIs('guest.menu') ? 'active' : '' }}">Food Menu</a>
+        @endif
 
-            <li @if (str_starts_with(Route::currentRouteName(), 'guests')) class="active" @endif>
-                <a href="{{ route('guests.index') }}" @if (Route::currentRouteName() === 'guests.index') class="active" @endif>
-                    <i class="fas fa-users"></i> Guests
-                </a>
-
-            </li>
-
-            <li @if (str_starts_with(Route::currentRouteName(), 'reservations')) class="active" @endif>
-                <a href="{{ route('reservations.index') }}" @if (Route::currentRouteName() === 'reservations.index') class="active" @endif>
-                    <i class="fas fa-calendar-alt"></i> Reservations
-                </a>
-            </li>
-
-            <li @if (str_starts_with(Route::currentRouteName(), 'invoices') || str_starts_with(Route::currentRouteName(), 'charges')) class="active" @endif>
-                <a href="{{ route('invoices.index') }}" @if (Route::currentRouteName() === 'invoices.index') class="active" @endif>
-                    <i class="fas fa-receipt"></i> Billing
-                </a>
-            </li>
-
-            <li>
-                <a href="#reportsMenu" data-toggle="collapse">
-                    <i class="fas fa-chart-bar"></i> Reports
-                </a>
-                <ul class="submenu" id="reportsMenu">
-                    <li><a href="{{ route('reports.occupancy') }}">Occupancy Report</a></li>
-                    <li><a href="{{ route('reports.revenue') }}">Revenue Report</a></li>
-                    <li><a href="{{ route('reports.guests') }}">Guest Report</a></li>
-                    <li><a href="{{ route('reports.services') }}">Service Report</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="{{ route('logout') }}"
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
-            </li>
-        </ul>
+        <hr class="border-secondary mx-3">
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" style="display:block;width:100%;background:none;border:none;color:rgba(255,255,255,0.8);padding:10px 20px;text-align:left;font-size:0.9rem;cursor:pointer;">Logout</button>
+        </form>
     </div>
 
     <main>
-        @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Error!</strong>
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show">
                 <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
+                    @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
@@ -311,46 +61,9 @@
             </div>
         @endif
 
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
         @yield('content')
     </main>
 
-    <script>
-        // Sidebar menu toggle
-        document.querySelectorAll('.sidebar-menu a[href^="#"]').forEach(function (element) {
-            element.addEventListener('click', function (e) {
-                e.preventDefault();
-                const submenu = document.querySelector(this.getAttribute('href'));
-                if (submenu) {
-                    submenu.parentElement.classList.toggle('active');
-                }
-            });
-        });
-
-        // Auto-refresh room status
-        function refreshRoomStatus() {
-            fetch('{{ route('rooms.status') }}')
-                .then(response => response.json())
-                .then(data => {
-                    if (document.getElementById('available-rooms')) {
-                        document.getElementById('available-rooms').innerText = data.available;
-                    }
-                    if (document.getElementById('occupied-rooms')) {
-                        document.getElementById('occupied-rooms').innerText = data.occupied;
-                    }
-                });
-        }
-
-        // Refresh every 30 seconds
-        setInterval(refreshRoomStatus, 30000);
-    </script>
-    @stack('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

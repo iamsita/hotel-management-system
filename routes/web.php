@@ -1,125 +1,57 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ChargeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FoodController;
-use App\Http\Controllers\FoodOrderManagementController;
-use App\Http\Controllers\GuestAuthController;
+use App\Http\Controllers\FoodOrderController;
 use App\Http\Controllers\GuestBookingController;
-use App\Http\Controllers\GuestCleaningRequestController;
 use App\Http\Controllers\GuestController;
-use App\Http\Controllers\GuestDashboardController;
-use App\Http\Controllers\GuestFoodOrderController;
-use App\Http\Controllers\GuestPaymentController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\PaymentManagementController;
-use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-// ==================== PUBLIC ROUTES ====================
+// Home
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// ==================== GUEST PORTAL ROUTES ====================
-Route::middleware(['auth', 'type:guest'])
-    ->prefix('guest')
-    ->name('guest.')
-    ->group(function () {
-        Route::get('dashboard', [GuestDashboardController::class, 'index'])->name('dashboard');
-        Route::get('profile', [GuestDashboardController::class, 'profile'])->name('profile');
-        Route::post('profile', [GuestDashboardController::class, 'updateProfile'])->name('profile.update');
-
-        Route::get('booking', [GuestBookingController::class, 'showBooking'])->name('booking.create');
-        Route::post('booking/check-availability', [GuestBookingController::class, 'checkAvailability'])->name('booking.check-availability');
-        Route::post('booking', [GuestBookingController::class, 'store'])->name('booking.store');
-        Route::get('bookings', [GuestBookingController::class, 'myBookings'])->name('bookings');
-        Route::get('booking/{reservation}', [GuestBookingController::class, 'show'])->name('booking.show');
-
-        Route::get('food/menu', [GuestFoodOrderController::class, 'showMenu'])->name('food.menu');
-        Route::post('food/order', [GuestFoodOrderController::class, 'placeOrder'])->name('food.order');
-        Route::get('orders', [GuestFoodOrderController::class, 'orderHistory'])->name('orders');
-        Route::post('orders/{order}/cancel', [GuestFoodOrderController::class, 'cancelOrder'])->name('orders.cancel');
-
-        Route::get('cleaning', [GuestCleaningRequestController::class, 'create'])->name('cleaning.create');
-        Route::post('cleaning', [GuestCleaningRequestController::class, 'store'])->name('cleaning.store');
-        Route::get('cleaning-requests', [GuestCleaningRequestController::class, 'myRequests'])->name('cleaning.requests');
-
-        Route::get('payment', [GuestPaymentController::class, 'showPaymentForm'])->name('payment.create');
-        Route::post('payment', [GuestPaymentController::class, 'processPayment'])->name('payment.process');
-        Route::get('payment/{payment}/receipt', [GuestPaymentController::class, 'receipt'])->name('payment.receipt');
-        Route::get('payments', [GuestPaymentController::class, 'history'])->name('payments');
-
-        Route::post('logout', [GuestAuthController::class, 'logout'])->name('logout');
-    });
-
-// ==================== STAFF PORTAL ROUTES ====================
-Route::middleware(['auth', 'type:admin,manager,staff'])
-    ->group(function () {
-        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-        // Rooms Management
-        Route::resource('rooms', RoomController::class);
-        Route::patch('rooms/{room}/update-status', [RoomController::class, 'updateStatus'])->name('rooms.update-status');
-        Route::get('api/rooms/status', [RoomController::class, 'getRoomStatus'])->name('rooms.status');
-
-        // Users Management
-        Route::resource('users', UserController::class);
-
-        // Guest Management
-        Route::resource('guests', GuestController::class);
-
-        // Reservations Management
-        Route::resource('reservations', ReservationController::class);
-        Route::post('reservations/{reservation}/check-in', [ReservationController::class, 'checkIn'])->name('reservations.check-in');
-        Route::post('reservations/{reservation}/check-out', [ReservationController::class, 'checkOut'])->name('reservations.check-out');
-        Route::get('api/reservations/available-rooms', [ReservationController::class, 'getAvailableRooms'])->name('reservations.available-rooms');
-
-        // Charges Management
-        Route::post('charges', [ChargeController::class, 'store'])->name('charges.store');
-        Route::get('api/charges/{reservation}', [ChargeController::class, 'getReservationCharges'])->name('charges.get');
-        Route::patch('charges/{charge}/mark-paid', [ChargeController::class, 'markAsPaid'])->name('charges.mark-paid');
-        Route::delete('charges/{charge}', [ChargeController::class, 'destroy'])->name('charges.destroy');
-
-        // Invoices Management
-        Route::resource('invoices', InvoiceController::class);
-        Route::post('invoices/{invoice}/mark-sent', [InvoiceController::class, 'markAsSent'])->name('invoices.mark-sent');
-        Route::post('invoices/{invoice}/mark-paid', [InvoiceController::class, 'markAsPaid'])->name('invoices.mark-paid');
-        Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'generatePDF'])->name('invoices.pdf');
-        Route::post('invoices/{invoice}/email', [InvoiceController::class, 'email'])->name('invoices.email');
-
-        // Food Management
-        Route::resource('food', FoodController::class);
-        Route::get('food-orders', [FoodOrderManagementController::class, 'index'])->name('food-orders.index');
-        Route::get('food-orders/{order}', [FoodOrderManagementController::class, 'show'])->name('food-orders.show');
-        Route::put('food-orders/{order}/status', [FoodOrderManagementController::class, 'updateStatus'])->name('food-orders.update-status');
-
-        // Payment Management
-        Route::get('payments', [PaymentManagementController::class, 'index'])->name('payments.index');
-        Route::get('payments/{payment}', [PaymentManagementController::class, 'show'])->name('payments.show');
-        Route::put('payments/{payment}/status', [PaymentManagementController::class, 'updateStatus'])->name('payments.update-status');
-        Route::get('payments-report', [PaymentManagementController::class, 'report'])->name('payments.report');
-
-        // Reports
-        Route::get('reports/dashboard', [ReportController::class, 'dashboard'])->name('reports.dashboard');
-        Route::get('reports/occupancy', [ReportController::class, 'occupancyReport'])->name('reports.occupancy');
-        Route::get('reports/revenue', [ReportController::class, 'revenueReport'])->name('reports.revenue');
-        Route::get('reports/guests', [ReportController::class, 'guestReport'])->name('reports.guests');
-        Route::get('reports/food', [ReportController::class, 'foodReport'])->name('reports.food');
-        Route::get('reports/services', [ReportController::class, 'serviceReport'])->name('reports.services');
-
-        // Auth
-        Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-    });
-
-// ==================== AUTH ROUTES ====================
+// Auth (guests only)
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('login', [AuthController::class, 'login'])->name('login.store');
+    Route::post('login', [AuthController::class, 'login']);
     Route::get('register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('register', [AuthController::class, 'register'])->name('register.store');
+    Route::post('register', [AuthController::class, 'register']);
+});
+
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('dashboard', [DashboardController::class, 'admin'])->name('dashboard');
+
+    Route::resource('rooms', RoomController::class);
+    Route::resource('reservations', ReservationController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
+    Route::patch('reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.update-status');
+    Route::post('reservations/{reservation}/check-in', [ReservationController::class, 'checkIn'])->name('reservations.checkin');
+    Route::post('reservations/{reservation}/check-out', [ReservationController::class, 'checkOut'])->name('reservations.checkout');
+
+    Route::get('guests', [GuestController::class, 'index'])->name('guests.index');
+
+    Route::resource('foods', FoodController::class);
+
+    Route::get('food-orders', [FoodOrderController::class, 'index'])->name('food-orders.index');
+    Route::patch('food-orders/{order}/{status}', [FoodOrderController::class, 'updateStatus'])->name('food-orders.status');
+
+    Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+});
+
+// Guest Routes
+Route::middleware('auth')->prefix('guest')->name('guest.')->group(function () {
+    Route::get('dashboard', [DashboardController::class, 'guest'])->name('dashboard');
+    Route::get('rooms', [GuestBookingController::class, 'rooms'])->name('rooms');
+    Route::post('book', [GuestBookingController::class, 'book'])->name('book');
+    Route::get('menu', [GuestBookingController::class, 'menu'])->name('menu');
+    Route::post('order-food', [GuestBookingController::class, 'orderFood'])->name('order-food');
+    Route::post('pay', [GuestBookingController::class, 'pay'])->name('pay');
 });

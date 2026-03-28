@@ -12,19 +12,17 @@ class ReservationController extends Controller
 {
     public function index()
     {
-        $reservations = Reservation::with('user', 'room')
-            ->orderBy('check_in_date', 'desc')
-            ->paginate(15);
+        $reservations = Reservation::with('user', 'room')->latest()->paginate(15);
 
-        return view('reservations.index', compact('reservations'));
+        return view('admin.reservations.index', compact('reservations'));
     }
 
     public function create()
     {
-        $guests = User::all();
-        $availableRooms = Room::where('status', 'available')->get();
+        $guests = User::where('role', 'guest')->get();
+        $rooms = Room::where('status', 'available')->get();
 
-        return view('reservations.create', compact('guests', 'availableRooms'));
+        return view('admin.reservations.create', compact('guests', 'rooms'));
     }
 
     public function store(Request $request)
@@ -32,118 +30,73 @@ class ReservationController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'room_id' => 'required|exists:rooms,id',
-            'check_in_date' => 'required|date',
-            'check_out_date' => 'required|date|after:check_in_date',
-            'number_of_guests' => 'required|integer|min:1',
-            'special_requests' => 'nullable|string',
+            'check_in' => 'required|date|after_or_equal:today',
+            'check_out' => 'required|date|after:check_in',
+            'guests' => 'required|integer|min:1',
         ]);
 
-        $checkInDate = Carbon::parse($validated['check_in_date']);
-        $checkOutDate = Carbon::parse($validated['check_out_date']);
-        $nights = $checkOutDate->diffInDays($checkInDate);
-        $pricePerNight = Room::find($validated['room_id'])->price_per_night;
-        $totalAmount = $nights * $pricePerNight;
-
-        $validated['total_amount'] = $totalAmount;
+        $room = Room::findOrFail($validated['room_id']);
+        $nights = Carbon::parse($validated['check_in'])->diffInDays(Carbon::parse($validated['check_out']));
+        $validated['total_amount'] = $nights * $room->price_per_night;
         $validated['status'] = 'confirmed';
 
-        dd($validated);
+        Reservation::create($validated);
+        $room->update(['status' => 'occupied']);
 
-        $reservation = Reservation::create($validated);
-
-        // Update room status
-        Room::find($validated['room_id'])->update(['status' => 'reserved']);
-
-        return redirect()->route('reservations.show', $reservation)->with('success', 'Reservation created successfully');
+        return redirect()->route('admin.reservations.index')->with('success', 'Reservation created.');
     }
 
     public function show(Reservation $reservation)
     {
-        $reservation->load('user', 'room', 'charges');
+        $reservation->load('user', 'room', 'foodOrders.food', 'payments');
 
-        return view('reservations.show', compact('reservation'));
+        return view('admin.reservations.show', compact('reservation'));
     }
 
-    public function edit(Reservation $reservation)
-    {
-        $guests = User::all();
-        $rooms = Room::all();
-
-        return view('reservations.edit', compact('reservation', 'guests', 'rooms'));
-    }
-
-    public function update(Request $request, Reservation $reservation)
+    public function updateStatus(Request $request, Reservation $reservation)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'room_id' => 'required|exists:rooms,id',
-            'check_in_date' => 'required|date',
-            'check_out_date' => 'required|date|after:check_in_date',
-            'number_of_guests' => 'required|integer|min:1',
-            'special_requests' => 'nullable|string',
             'status' => 'required|in:pending,confirmed,checked_in,checked_out,cancelled',
         ]);
 
-        $checkInDate = Carbon::parse($validated['check_in_date']);
-        $checkOutDate = Carbon::parse($validated['check_out_date']);
-        $nights = $checkOutDate->diffInDays($checkInDate);
-        $pricePerNight = Room::find($validated['room_id'])->price_per_night;
-        $totalAmount = $nights * $pricePerNight;
+        $oldStatus = $reservation->status;
+        $newStatus = $validated['status'];
 
-        $validated['total_amount'] = $totalAmount;
+        $reservation->update(['status' => $newStatus]);
 
-        $reservation->update($validated);
+        // Update room status based on reservation status
+        if ($newStatus === 'checked_in') {
+            $reservation->room->update(['status' => 'occupied']);
+        } elseif (in_array($newStatus, ['checked_out', 'cancelled'])) {
+            $reservation->room->update(['status' => 'available']);
+        } elseif ($newStatus === 'confirmed') {
+            $reservation->room->update(['status' => 'occupied']);
+        }
 
-        return redirect()->route('reservations.show', $reservation)->with('success', 'Reservation updated successfully');
+        return back()->with('success', "Status changed from {$oldStatus} to {$newStatus}.");
     }
 
     public function checkIn(Reservation $reservation)
     {
-        if ($reservation->status !== 'confirmed') {
-            return back()->with('error', 'Only confirmed reservations can be checked in');
-        }
-
         $reservation->update(['status' => 'checked_in']);
         $reservation->room->update(['status' => 'occupied']);
 
-        return redirect()->route('reservations.show', $reservation)->with('success', 'Guest checked in successfully');
+        return back()->with('success', 'Guest checked in.');
     }
 
     public function checkOut(Reservation $reservation)
     {
-        if ($reservation->status !== 'checked_in') {
-            return back()->with('error', 'Only checked-in reservations can be checked out');
-        }
-
         $reservation->update(['status' => 'checked_out']);
-        $reservation->room->update([
-            'status' => 'available',
-            'housekeeping_status' => 'dirty',
-        ]);
+        $reservation->room->update(['status' => 'available']);
 
-        return redirect()->route('reservations.show', $reservation)->with('success', 'Guest checked out successfully');
-    }
-
-    public function getAvailableRooms(Request $request)
-    {
-        $checkInDate = Carbon::parse($request->check_in_date);
-        $checkOutDate = Carbon::parse($request->check_out_date);
-
-        $bookedRooms = Reservation::whereBetween('check_in_date', [$checkInDate, $checkOutDate])
-            ->orWhereBetween('check_out_date', [$checkInDate, $checkOutDate])
-            ->pluck('room_id');
-
-        $availableRooms = Room::whereNotIn('id', $bookedRooms)
-            ->where('status', '!=', 'maintenance')
-            ->get();
-
-        return response()->json($availableRooms);
+        return back()->with('success', 'Guest checked out.');
     }
 
     public function destroy(Reservation $reservation)
     {
-        $reservation->delete();
+        $reservation->room->update(['status' => 'available']);
+        $reservation->update(['status' => 'cancelled']);
 
-        return redirect()->route('reservations.index')->with('success', 'Reservation cancelled successfully');
+        return redirect()->route('admin.reservations.index')->with('success', 'Reservation cancelled.');
     }
 }

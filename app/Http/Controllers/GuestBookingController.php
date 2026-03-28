@@ -2,86 +2,83 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Food;
+use App\Models\FoodOrder;
+use App\Models\Payment;
 use App\Models\Reservation;
 use App\Models\Room;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class GuestBookingController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth:guest',
-        ];
-    }
-
-    public function showBooking()
+    public function rooms()
     {
         $rooms = Room::where('status', 'available')->get();
 
-        return view('guest.booking.create', compact('rooms'));
+        return view('guest.rooms', compact('rooms'));
     }
 
-    public function checkAvailability(Request $request)
-    {
-        $request->validate([
-            'check_in_date' => 'required|date|after:today',
-            'check_out_date' => 'required|date|after:check_in_date',
-            'room_type' => 'required|string',
-        ]);
-
-        $rooms = Room::where('room_type', $request->room_type)
-            ->whereDoesntHave('reservations', function ($query) use ($request) {
-                $query->whereBetween('check_in_date', [$request->check_in_date, $request->check_out_date])
-                    ->orWhereBetween('check_out_date', [$request->check_in_date, $request->check_out_date]);
-            })
-            ->get();
-
-        return response()->json(['rooms' => $rooms]);
-    }
-
-    public function store(Request $request)
+    public function book(Request $request)
     {
         $validated = $request->validate([
             'room_id' => 'required|exists:rooms,id',
-            'check_in_date' => 'required|date|after_or_equal:today',
-            'check_out_date' => 'required|date|after:today',
-            'number_of_guests' => 'required|integer|min:1',
-            'special_requests' => 'nullable|string',
+            'check_in' => 'required|date|after_or_equal:today',
+            'check_out' => 'required|date|after:check_in',
+            'guests' => 'required|integer|min:1',
         ]);
 
         $room = Room::findOrFail($validated['room_id']);
+        $nights = Carbon::parse($validated['check_in'])->diffInDays(Carbon::parse($validated['check_out']));
 
-        $nights = (strtotime($validated['check_out_date']) - strtotime($validated['check_in_date'])) / 86400;
-        $total_amount = $nights * $room->price_per_night;
-
-
-        $validated['user_id'] = Auth::id();
+        $validated['user_id'] = auth()->id();
+        $validated['total_amount'] = $nights * $room->price_per_night;
         $validated['status'] = 'pending';
-        $validated['total_amount'] = $total_amount;
 
-        $reservation = Reservation::create($validated);
+        Reservation::create($validated);
 
-        // Update room status
-        $room->update(['status' => 'reserved']);
-
-        return redirect()->route('guest.booking.show', $reservation)->with('success', 'Booking created! Proceed to payment.');
+        return redirect()->route('guest.dashboard')->with('success', 'Booking request submitted!');
     }
 
-    public function show(Reservation $reservation)
+    public function menu()
     {
-        if ($reservation->user_id !== Auth::id()) {
-            abort(403);
-        }
+        $foods = Food::where('available', true)->get();
+        $activeReservation = auth()->user()->reservations()
+            ->whereIn('status', ['confirmed', 'checked_in'])
+            ->first();
 
-        return view('guest.booking.show', compact('reservation'));
+        return view('guest.menu', compact('foods', 'activeReservation'));
     }
 
-    public function myBookings()
+    public function orderFood(Request $request)
     {
-        $reservations = Auth::user()->reservations()->latest()->paginate(10);
+        $validated = $request->validate([
+            'reservation_id' => 'required|exists:reservations,id',
+            'food_id' => 'required|exists:foods,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
 
-        return view('guest.booking.index', compact('reservations'));
+        $food = Food::findOrFail($validated['food_id']);
+        $validated['total_price'] = $food->price * $validated['quantity'];
+        $validated['status'] = 'pending';
+
+        FoodOrder::create($validated);
+
+        return back()->with('success', 'Food order placed!');
+    }
+
+    public function pay(Request $request)
+    {
+        $validated = $request->validate([
+            'reservation_id' => 'required|exists:reservations,id',
+            'amount' => 'required|numeric|min:1',
+            'method' => 'required|in:cash,card,upi',
+        ]);
+
+        $validated['status'] = 'completed';
+
+        Payment::create($validated);
+
+        return redirect()->route('guest.dashboard')->with('success', 'Payment recorded!');
     }
 }

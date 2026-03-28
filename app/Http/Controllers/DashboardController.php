@@ -2,25 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CleaningRequest;
 use App\Models\FoodOrder;
 use App\Models\Payment;
 use App\Models\Reservation;
+use App\Models\Room;
 use App\Models\User;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function admin()
     {
-        $data = [
-            'totalGuests' => User::where('type', 'guest')->count(),
+        return view('admin.dashboard', [
+            'totalRooms' => Room::count(),
+            'availableRooms' => Room::where('status', 'available')->count(),
+            'totalGuests' => User::where('role', 'guest')->count(),
+            'totalReservations' => Reservation::count(),
             'checkedIn' => Reservation::where('status', 'checked_in')->count(),
-            'pendingOrders' => FoodOrder::where('status', '!=', 'delivered')->count(),
+            'pendingOrders' => FoodOrder::where('status', 'pending')->count(),
             'totalRevenue' => Payment::where('status', 'completed')->sum('amount'),
-            'recentBookings' => Reservation::with(['user'])->orderBy('check_in_date', 'desc')->limit(5)->get(),
-            'pendingCleaning' => CleaningRequest::where('status', '!=', 'completed')->limit(5)->get(),
-        ];
+            'recentReservations' => Reservation::with('user', 'room')->latest()->limit(5)->get(),
+        ]);
+    }
 
-        return view('staff.dashboard', $data);
+    public function guest()
+    {
+        $user = auth()->user();
+
+        return view('guest.dashboard', [
+            'reservations' => $user->reservations()->with('room')->latest()->get(),
+        ]);
     }
 }
