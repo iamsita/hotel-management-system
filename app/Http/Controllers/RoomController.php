@@ -42,7 +42,7 @@ class RoomController extends Controller
     public function update(Request $request, Room $room)
     {
         $validated = $request->validate([
-            'room_number' => 'required|unique:rooms,room_number,' . $room->id,
+            'room_number' => 'required|unique:rooms,room_number,'.$room->id,
             'type' => 'required|in:single,double,suite,deluxe',
             'capacity' => 'required|integer|min:1',
             'price_per_night' => 'required|numeric|min:0',

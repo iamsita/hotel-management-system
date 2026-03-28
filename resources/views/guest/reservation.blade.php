@@ -3,10 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4>Reservation #{{ $reservation->id }}</h4>
-    <div>
-        <a href="{{ route('admin.reservations.edit', $reservation) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-        <a href="{{ route('admin.reservations.index') }}" class="btn btn-sm btn-secondary">Back</a>
-    </div>
+    <a href="{{ route('guest.dashboard') }}" class="btn btn-secondary btn-sm">Back to Bookings</a>
 </div>
 
 @php
@@ -20,13 +17,13 @@
 
 <div class="row">
     <div class="col-md-6">
-        {{-- Booking Details --}}
+        {{-- Booking Info --}}
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-white"><h6 class="mb-0">Booking Details</h6></div>
             <div class="card-body">
                 <table class="table table-borderless mb-0">
-                    <tr><th>Guest:</th><td>{{ $reservation->user->name }} ({{ $reservation->user->email }})</td></tr>
                     <tr><th>Room:</th><td>{{ $reservation->room->room_number }} ({{ ucfirst($reservation->room->type) }})</td></tr>
+                    <tr><th>Floor:</th><td>{{ $reservation->room->floor }}</td></tr>
                     <tr><th>Check In:</th><td>{{ $reservation->check_in->format('M d, Y') }}</td></tr>
                     <tr><th>Check Out:</th><td>{{ $reservation->check_out->format('M d, Y') }}</td></tr>
                     <tr><th>Nights:</th><td>{{ $nights }}</td></tr>
@@ -72,66 +69,27 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-
-        {{-- Record Payment --}}
-        @if($balanceDue > 0)
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white"><h6 class="mb-0">Record Payment</h6></div>
-            <div class="card-body">
-                <form method="POST" action="{{ route('admin.reservations.pay', $reservation) }}">
-                    @csrf
-                    <div class="row g-2 align-items-end">
-                        <div class="col-md-4">
-                            <label class="form-label form-label-sm">Amount (Rs.)</label>
-                            <input type="number" name="amount" class="form-control form-control-sm" value="{{ number_format($balanceDue, 2, '.', '') }}" step="0.01" min="1" max="{{ number_format($balanceDue, 2, '.', '') }}" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label form-label-sm">Method</label>
-                            <select name="method" class="form-select form-select-sm">
-                                <option value="cash">Cash</option>
-                                <option value="card">Card</option>
-                                <option value="upi">UPI</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <button type="submit" class="btn btn-success btn-sm w-100">Record Payment</button>
-                        </div>
-                    </div>
-                </form>
+            @if($balanceDue > 0)
+            <div class="card-footer bg-white">
+                <small class="text-muted">Please contact the front desk to make a payment.</small>
             </div>
-        </div>
-        @else
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body text-center">
-                <span class="text-success fw-bold">Fully Paid</span>
+            @else
+            <div class="card-footer bg-white">
+                <small class="text-success fw-bold">Fully Paid</small>
             </div>
-        </div>
-        @endif
-
-        {{-- Change Status --}}
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white"><h6 class="mb-0">Change Status</h6></div>
-            <div class="card-body">
-                <form method="POST" action="{{ route('admin.reservations.update-status', $reservation) }}">
-                    @csrf @method('PATCH')
-                    <div class="input-group">
-                        <select name="status" class="form-select">
-                            @foreach(['pending', 'confirmed', 'checked_in', 'checked_out', 'cancelled'] as $status)
-                                <option value="{{ $status }}" {{ $reservation->status === $status ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
-                            @endforeach
-                        </select>
-                        <button type="submit" class="btn btn-primary" style="background:#1a3263;border:none">Update</button>
-                    </div>
-                </form>
-            </div>
+            @endif
         </div>
     </div>
 
     <div class="col-md-6">
         {{-- Food Orders --}}
         <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white"><h6 class="mb-0">Food Orders</h6></div>
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Food Orders</h6>
+                @if($reservation->status === 'checked_in')
+                    <a href="{{ route('guest.menu') }}" class="btn btn-sm btn-outline-primary">Order Food</a>
+                @endif
+            </div>
             <div class="card-body p-0">
                 <table class="table table-sm mb-0">
                     <thead><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Total</th><th>Status</th></tr></thead>
@@ -142,10 +100,14 @@
                             <td>{{ $order->quantity }}</td>
                             <td>Rs. {{ number_format($order->food->price, 2) }}</td>
                             <td>Rs. {{ number_format($order->total_price, 2) }}</td>
-                            <td><span class="badge bg-{{ match($order->status) { 'delivered' => 'success', 'preparing' => 'info', 'pending' => 'warning', 'cancelled' => 'danger', default => 'secondary' } }}">{{ ucfirst($order->status) }}</span></td>
+                            <td>
+                                <span class="badge bg-{{ match($order->status) { 'delivered' => 'success', 'preparing' => 'info', 'pending' => 'warning', 'cancelled' => 'danger', default => 'secondary' } }}">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                            </td>
                         </tr>
                         @empty
-                        <tr><td colspan="5" class="text-center text-muted py-2">No food orders.</td></tr>
+                        <tr><td colspan="5" class="text-center text-muted py-3">No food orders yet.</td></tr>
                         @endforelse
                     </tbody>
                     @if($reservation->foodOrders->count())
@@ -180,18 +142,6 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
-        </div>
-
-        {{-- Delete --}}
-        <div class="card border-0 shadow-sm border-danger">
-            <div class="card-body">
-                <h6 class="text-danger">Danger Zone</h6>
-                <p class="text-muted small mb-2">Permanently delete this reservation along with all food orders and payments.</p>
-                <form action="{{ route('admin.reservations.destroy', $reservation) }}" method="POST" onsubmit="return confirm('Are you sure? This will permanently delete this reservation and all related data.')">
-                    @csrf @method('DELETE')
-                    <button class="btn btn-danger btn-sm">Delete Reservation</button>
-                </form>
             </div>
         </div>
     </div>

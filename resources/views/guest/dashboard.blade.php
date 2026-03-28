@@ -23,32 +23,25 @@
                     <strong>Room {{ $r->room->room_number }}</strong>
                     <br><small class="text-muted">{{ ucfirst($r->room->type) }}</small>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <small class="text-muted">Check In</small>
                     <br>{{ $r->check_in->format('M d, Y') }}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <small class="text-muted">Check Out</small>
                     <br>{{ $r->check_out->format('M d, Y') }}
                 </div>
                 <div class="col-md-2">
                     <small class="text-muted">Total</small>
-                    <br><strong>${{ number_format($r->total_amount, 2) }}</strong>
+                    <br><strong>Rs. {{ number_format($r->total_amount, 2) }}</strong>
+                </div>
+                <div class="col-md-2">
+                    <span class="badge bg-{{ match($r->status) { 'checked_in' => 'success', 'confirmed' => 'primary', 'pending' => 'warning', 'cancelled' => 'danger', default => 'secondary' } }}">
+                        {{ ucfirst(str_replace('_', ' ', $r->status)) }}
+                    </span>
                 </div>
                 <div class="col-md-2 text-end">
-                    <span class="badge bg-{{ match($r->status) { 'checked_in' => 'success', 'confirmed' => 'primary', 'pending' => 'warning', 'cancelled' => 'danger', default => 'secondary' } }} mb-2">
-                        {{ $r->status }}
-                    </span>
-                    @if(in_array($r->status, ['confirmed', 'checked_in']))
-                    <br>
-                    <form action="{{ route('guest.pay') }}" method="POST" class="d-inline">
-                        @csrf
-                        <input type="hidden" name="reservation_id" value="{{ $r->id }}">
-                        <input type="hidden" name="amount" value="{{ $r->total_amount }}">
-                        <input type="hidden" name="method" value="card">
-                        <button class="btn btn-sm btn-success">Pay Now</button>
-                    </form>
-                    @endif
+                    <a href="{{ route('guest.reservation.show', $r) }}" class="btn btn-sm btn-outline-primary">View Details</a>
                 </div>
             </div>
         </div>

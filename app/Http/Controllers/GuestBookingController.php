@@ -15,12 +15,24 @@ class GuestBookingController extends Controller
     public function rooms()
     {
         $rooms = Room::where('status', 'available')->get();
+        $hasActive = auth()->user()->reservations()
+            ->whereIn('status', ['pending', 'confirmed', 'checked_in'])
+            ->exists();
 
-        return view('guest.rooms', compact('rooms'));
+        return view('guest.rooms', compact('rooms', 'hasActive'));
     }
 
     public function book(Request $request)
     {
+        // Only one active reservation at a time
+        $hasActive = auth()->user()->reservations()
+            ->whereIn('status', ['pending', 'confirmed', 'checked_in'])
+            ->exists();
+
+        if ($hasActive) {
+            return back()->withErrors(['booking' => 'You already have an active reservation. Complete or cancel it before booking again.']);
+        }
+
         $validated = $request->validate([
             'room_id' => 'required|exists:rooms,id',
             'check_in' => 'required|date|after_or_equal:today',
@@ -40,11 +52,22 @@ class GuestBookingController extends Controller
         return redirect()->route('guest.dashboard')->with('success', 'Booking request submitted!');
     }
 
+    public function show(Reservation $reservation)
+    {
+        if ($reservation->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $reservation->load('room', 'foodOrders.food', 'payments');
+
+        return view('guest.reservation', compact('reservation'));
+    }
+
     public function menu()
     {
         $foods = Food::where('available', true)->get();
         $activeReservation = auth()->user()->reservations()
-            ->whereIn('status', ['confirmed', 'checked_in'])
+            ->where('status', 'checked_in')
             ->first();
 
         return view('guest.menu', compact('foods', 'activeReservation'));
@@ -57,6 +80,12 @@ class GuestBookingController extends Controller
             'food_id' => 'required|exists:foods,id',
             'quantity' => 'required|integer|min:1',
         ]);
+
+        // Ensure reservation belongs to this user and is active
+        $reservation = Reservation::where('id', $validated['reservation_id'])
+            ->where('user_id', auth()->id())
+            ->where('status', 'checked_in')
+            ->firstOrFail();
 
         $food = Food::findOrFail($validated['food_id']);
         $validated['total_price'] = $food->price * $validated['quantity'];
@@ -75,10 +104,26 @@ class GuestBookingController extends Controller
             'method' => 'required|in:cash,card,upi',
         ]);
 
+        $reservation = Reservation::where('id', $validated['reservation_id'])
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        $grandTotal = $reservation->total_amount + $reservation->foodOrders()->where('status', 'delivered')->sum('total_price');
+        $paidTotal = $reservation->payments()->where('status', 'completed')->sum('amount');
+        $balanceDue = $grandTotal - $paidTotal;
+
+        if ($balanceDue <= 0) {
+            return back()->withErrors(['amount' => 'This reservation is already fully paid.']);
+        }
+
+        if ($validated['amount'] > $balanceDue) {
+            return back()->withErrors(['amount' => 'Payment amount cannot exceed the balance due of Rs. '.number_format($balanceDue, 2)]);
+        }
+
         $validated['status'] = 'completed';
 
         Payment::create($validated);
 
-        return redirect()->route('guest.dashboard')->with('success', 'Payment recorded!');
+        return redirect()->route('guest.reservation.show', $reservation)->with('success', 'Payment of Rs. '.number_format($validated['amount'], 2).' recorded!');
     }
 }

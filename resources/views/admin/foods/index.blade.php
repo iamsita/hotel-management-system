@@ -17,7 +17,7 @@
                 <tr>
                     <td>{{ $food->name }}</td>
                     <td>{{ ucfirst($food->category) }}</td>
-                    <td>${{ number_format($food->price, 2) }}</td>
+                    <td>Rs. {{ number_format($food->price, 2) }}</td>
                     <td><span class="badge bg-{{ $food->available ? 'success' : 'danger' }}">{{ $food->available ? 'Yes' : 'No' }}</span></td>
                     <td>
                         <a href="{{ route('admin.foods.edit', $food) }}" class="btn btn-sm btn-outline-primary">Edit</a>

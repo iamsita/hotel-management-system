@@ -4,7 +4,7 @@
 <h4 class="mb-4">Food Menu</h4>
 
 @if(!$activeReservation)
-    <div class="alert alert-warning">You need an active reservation to order food. <a href="{{ route('guest.rooms') }}">Book a room first.</a></div>
+    <div class="alert alert-warning">You can only order food during check-in. <a href="{{ route('guest.dashboard') }}">View your bookings.</a></div>
 @endif
 
 @php $categories = $foods->groupBy('category'); @endphp
@@ -17,7 +17,7 @@
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body">
                 <h6>{{ $food->name }}</h6>
-                <p class="text-success fw-bold mb-2">${{ number_format($food->price, 2) }}</p>
+                <p class="text-success fw-bold mb-2">Rs. {{ number_format($food->price, 2) }}</p>
 
                 @if($activeReservation)
                 <form method="POST" action="{{ route('guest.order-food') }}">

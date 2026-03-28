@@ -34,7 +34,7 @@
         <div class="card text-center border-0 shadow-sm">
             <div class="card-body">
                 <h6 class="text-muted">Total Revenue</h6>
-                <h2 class="fw-bold text-success">${{ number_format($totalRevenue, 2) }}</h2>
+                <h2 class="fw-bold text-success">Rs. {{ number_format($totalRevenue, 2) }}</h2>
             </div>
         </div>
     </div>

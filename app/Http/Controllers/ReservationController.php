@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\User;
@@ -53,6 +54,46 @@ class ReservationController extends Controller
         return view('admin.reservations.show', compact('reservation'));
     }
 
+    public function edit(Reservation $reservation)
+    {
+        $guests = User::where('role', 'guest')->get();
+        $rooms = Room::whereIn('status', ['available', 'occupied'])->get();
+
+        return view('admin.reservations.edit', compact('reservation', 'guests', 'rooms'));
+    }
+
+    public function update(Request $request, Reservation $reservation)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'room_id' => 'required|exists:rooms,id',
+            'check_in' => 'required|date',
+            'check_out' => 'required|date|after:check_in',
+            'guests' => 'required|integer|min:1',
+            'status' => 'required|in:pending,confirmed,checked_in,checked_out,cancelled',
+        ]);
+
+        $room = Room::findOrFail($validated['room_id']);
+        $nights = Carbon::parse($validated['check_in'])->diffInDays(Carbon::parse($validated['check_out']));
+        $validated['total_amount'] = $nights * $room->price_per_night;
+
+        $oldRoomId = $reservation->room_id;
+        $reservation->update($validated);
+
+        // Update room statuses
+        if ($oldRoomId != $validated['room_id']) {
+            Room::find($oldRoomId)?->update(['status' => 'available']);
+        }
+
+        if (in_array($validated['status'], ['checked_out', 'cancelled'])) {
+            $room->update(['status' => 'available']);
+        } elseif (in_array($validated['status'], ['confirmed', 'checked_in'])) {
+            $room->update(['status' => 'occupied']);
+        }
+
+        return redirect()->route('admin.reservations.show', $reservation)->with('success', 'Reservation updated.');
+    }
+
     public function updateStatus(Request $request, Reservation $reservation)
     {
         $validated = $request->validate([
@@ -64,7 +105,6 @@ class ReservationController extends Controller
 
         $reservation->update(['status' => $newStatus]);
 
-        // Update room status based on reservation status
         if ($newStatus === 'checked_in') {
             $reservation->room->update(['status' => 'occupied']);
         } elseif (in_array($newStatus, ['checked_out', 'cancelled'])) {
@@ -76,27 +116,42 @@ class ReservationController extends Controller
         return back()->with('success', "Status changed from {$oldStatus} to {$newStatus}.");
     }
 
-    public function checkIn(Reservation $reservation)
+    public function recordPayment(Request $request, Reservation $reservation)
     {
-        $reservation->update(['status' => 'checked_in']);
-        $reservation->room->update(['status' => 'occupied']);
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:1',
+            'method' => 'required|in:cash,card,upi',
+        ]);
 
-        return back()->with('success', 'Guest checked in.');
-    }
+        $grandTotal = $reservation->total_amount + $reservation->foodOrders()->where('status', 'delivered')->sum('total_price');
+        $paidTotal = $reservation->payments()->where('status', 'completed')->sum('amount');
+        $balanceDue = $grandTotal - $paidTotal;
 
-    public function checkOut(Reservation $reservation)
-    {
-        $reservation->update(['status' => 'checked_out']);
-        $reservation->room->update(['status' => 'available']);
+        if ($balanceDue <= 0) {
+            return back()->withErrors(['amount' => 'This reservation is already fully paid.']);
+        }
 
-        return back()->with('success', 'Guest checked out.');
+        if ($validated['amount'] > $balanceDue) {
+            return back()->withErrors(['amount' => 'Amount cannot exceed balance due of Rs. '.number_format($balanceDue, 2)]);
+        }
+
+        Payment::create([
+            'reservation_id' => $reservation->id,
+            'amount' => $validated['amount'],
+            'method' => $validated['method'],
+            'status' => 'completed',
+        ]);
+
+        return back()->with('success', 'Payment of Rs. '.number_format($validated['amount'], 2).' recorded.');
     }
 
     public function destroy(Reservation $reservation)
     {
         $reservation->room->update(['status' => 'available']);
-        $reservation->update(['status' => 'cancelled']);
+        $reservation->foodOrders()->delete();
+        $reservation->payments()->delete();
+        $reservation->delete();
 
-        return redirect()->route('admin.reservations.index')->with('success', 'Reservation cancelled.');
+        return redirect()->route('admin.reservations.index')->with('success', 'Reservation deleted.');
     }
 }

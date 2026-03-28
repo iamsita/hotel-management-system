@@ -26,7 +26,7 @@
                     <input type="number" name="capacity" class="form-control" value="{{ old('capacity', 1) }}" min="1" required>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Price Per Night ($)</label>
+                    <label class="form-label">Price Per Night (Rs.)</label>
                     <input type="number" name="price_per_night" class="form-control" value="{{ old('price_per_night') }}" step="0.01" min="0" required>
                 </div>
                 <div class="col-md-4 mb-3">

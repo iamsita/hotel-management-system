@@ -21,7 +21,7 @@
                     </select>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <label class="form-label">Price ($)</label>
+                    <label class="form-label">Price (Rs.)</label>
                     <input type="number" name="price" class="form-control" value="{{ $food->price }}" step="0.01" min="0" required>
                 </div>
             </div>

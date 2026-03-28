@@ -17,7 +17,7 @@
                     <td>{{ $order->reservation->room->room_number ?? '-' }}</td>
                     <td>{{ $order->food->name }}</td>
                     <td>{{ $order->quantity }}</td>
-                    <td>${{ number_format($order->total_price, 2) }}</td>
+                    <td>Rs. {{ number_format($order->total_price, 2) }}</td>
                     <td><span class="badge bg-{{ match($order->status) { 'delivered' => 'success', 'preparing' => 'info', 'pending' => 'warning', default => 'secondary' } }}">{{ $order->status }}</span></td>
                     <td>
                         @if($order->status === 'pending')

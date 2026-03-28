@@ -15,7 +15,7 @@
                     <td>{{ $payment->id }}</td>
                     <td>{{ $payment->reservation->user->name }}</td>
                     <td>#{{ $payment->reservation_id }}</td>
-                    <td>${{ number_format($payment->amount, 2) }}</td>
+                    <td>Rs. {{ number_format($payment->amount, 2) }}</td>
                     <td>{{ strtoupper($payment->method) }}</td>
                     <td><span class="badge bg-{{ $payment->status === 'completed' ? 'success' : 'warning' }}">{{ $payment->status }}</span></td>
                     <td>{{ $payment->created_at->format('M d, Y') }}</td>

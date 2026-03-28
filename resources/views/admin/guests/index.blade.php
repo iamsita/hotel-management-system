@@ -1,7 +1,10 @@
 @extends('layout')
 @section('title', 'Guests')
 @section('content')
-<h4 class="mb-4">Guests</h4>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4>Guests</h4>
+    <a href="{{ route('admin.guests.create') }}" class="btn btn-primary" style="background:#1a3263;border:none">Add Guest</a>
+</div>
 
 <div class="card border-0 shadow-sm">
     <div class="card-body p-0">

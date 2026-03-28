@@ -31,12 +31,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('dashboard', [DashboardController::class, 'admin'])->name('dashboard');
 
     Route::resource('rooms', RoomController::class);
-    Route::resource('reservations', ReservationController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
+    Route::resource('reservations', ReservationController::class);
     Route::patch('reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.update-status');
-    Route::post('reservations/{reservation}/check-in', [ReservationController::class, 'checkIn'])->name('reservations.checkin');
-    Route::post('reservations/{reservation}/check-out', [ReservationController::class, 'checkOut'])->name('reservations.checkout');
+    Route::post('reservations/{reservation}/pay', [ReservationController::class, 'recordPayment'])->name('reservations.pay');
 
     Route::get('guests', [GuestController::class, 'index'])->name('guests.index');
+    Route::get('guests/create', [GuestController::class, 'create'])->name('guests.create');
+    Route::post('guests', [GuestController::class, 'store'])->name('guests.store');
 
     Route::resource('foods', FoodController::class);
 
@@ -51,7 +52,7 @@ Route::middleware('auth')->prefix('guest')->name('guest.')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'guest'])->name('dashboard');
     Route::get('rooms', [GuestBookingController::class, 'rooms'])->name('rooms');
     Route::post('book', [GuestBookingController::class, 'book'])->name('book');
+    Route::get('reservation/{reservation}', [GuestBookingController::class, 'show'])->name('reservation.show');
     Route::get('menu', [GuestBookingController::class, 'menu'])->name('menu');
     Route::post('order-food', [GuestBookingController::class, 'orderFood'])->name('order-food');
-    Route::post('pay', [GuestBookingController::class, 'pay'])->name('pay');
 });

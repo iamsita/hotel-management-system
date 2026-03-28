@@ -22,7 +22,7 @@
                     <select name="room_id" class="form-select" required>
                         <option value="">Select Room</option>
                         @foreach($rooms as $room)
-                            <option value="{{ $room->id }}">{{ $room->room_number }} - {{ ucfirst($room->type) }} (${{ $room->price_per_night }}/night)</option>
+                            <option value="{{ $room->id }}">{{ $room->room_number }} - {{ ucfirst($room->type) }} (Rs. {{ $room->price_per_night }}/night)</option>
                         @endforeach
                     </select>
                 </div>
