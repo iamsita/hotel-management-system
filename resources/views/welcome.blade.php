@@ -59,8 +59,18 @@
 
         <div class="text-center mt-5">
             <h5 class="text-muted">Demo Credentials</h5>
-            <p><strong>Admin:</strong> admin@gmail.com / password</p>
-            <p><strong>Guest:</strong> guest@gmail.com / password</p>
+            <form id="admin-login" method="POST" action="{{ route('login') }}" class="d-none">
+                @csrf
+                <input type="hidden" name="email" value="admin@gmail.com">
+                <input type="hidden" name="password" value="password">
+            </form>
+            <form id="guest-login" method="POST" action="{{ route('login') }}" class="d-none">
+                @csrf
+                <input type="hidden" name="email" value="guest@gmail.com">
+                <input type="hidden" name="password" value="password">
+            </form>
+            <p><a href="#" onclick="document.getElementById('admin-login').submit();" class="btn btn-outline-primary btn-sm">Login as Admin</a> admin@gmail.com / password</p>
+            <p><a href="#" onclick="document.getElementById('guest-login').submit();" class="btn btn-outline-success btn-sm">Login as Guest</a> guest@gmail.com / password</p>
         </div>
     </div>
 </body>

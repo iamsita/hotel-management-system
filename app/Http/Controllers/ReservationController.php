@@ -37,6 +37,12 @@ class ReservationController extends Controller
         ]);
 
         $room = Room::findOrFail($validated['room_id']);
+
+        // ALGORITHM: Interval Overlap Detection - prevent double booking
+        if (!$room->isAvailable($validated['check_in'], $validated['check_out'])) {
+            return back()->withErrors(['room_id' => 'This room is already booked for the selected dates.'])->withInput();
+        }
+
         $nights = Carbon::parse($validated['check_in'])->diffInDays(Carbon::parse($validated['check_out']));
         $validated['total_amount'] = $nights * $room->price_per_night;
         $validated['status'] = 'confirmed';
@@ -74,6 +80,12 @@ class ReservationController extends Controller
         ]);
 
         $room = Room::findOrFail($validated['room_id']);
+
+        // ALGORITHM: Interval Overlap Detection - prevent double booking (exclude current reservation)
+        if (!$room->isAvailable($validated['check_in'], $validated['check_out'], $reservation->id)) {
+            return back()->withErrors(['room_id' => 'This room is already booked for the selected dates.'])->withInput();
+        }
+
         $nights = Carbon::parse($validated['check_in'])->diffInDays(Carbon::parse($validated['check_out']));
         $validated['total_amount'] = $nights * $room->price_per_night;
 

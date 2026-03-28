@@ -12,9 +12,11 @@ use Illuminate\Http\Request;
 
 class GuestBookingController extends Controller
 {
-    public function rooms()
+    public function rooms(Request $request)
     {
-        $rooms = Room::where('status', 'available')->get();
+        // ALGORITHM: Search, Filter & Sort
+        $rooms = Room::searchAndFilter($request->all());
+
         $hasActive = auth()->user()->reservations()
             ->whereIn('status', ['pending', 'confirmed', 'checked_in'])
             ->exists();
@@ -24,7 +26,6 @@ class GuestBookingController extends Controller
 
     public function book(Request $request)
     {
-        // Only one active reservation at a time
         $hasActive = auth()->user()->reservations()
             ->whereIn('status', ['pending', 'confirmed', 'checked_in'])
             ->exists();
@@ -41,6 +42,12 @@ class GuestBookingController extends Controller
         ]);
 
         $room = Room::findOrFail($validated['room_id']);
+
+        // ALGORITHM: Interval Overlap Detection - check if room is available for these dates
+        if (!$room->isAvailable($validated['check_in'], $validated['check_out'])) {
+            return back()->withErrors(['booking' => 'This room is already booked for the selected dates. Please choose different dates.']);
+        }
+
         $nights = Carbon::parse($validated['check_in'])->diffInDays(Carbon::parse($validated['check_out']));
 
         $validated['user_id'] = auth()->id();
@@ -81,7 +88,6 @@ class GuestBookingController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        // Ensure reservation belongs to this user and is active
         $reservation = Reservation::where('id', $validated['reservation_id'])
             ->where('user_id', auth()->id())
             ->where('status', 'checked_in')
