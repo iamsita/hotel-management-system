@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone')->nullable();
             $table->enum('role', ['admin', 'guest'])->default('guest');
+            $table->enum('segment', ['vip', 'loyal', 'at_risk', 'high_value_new', 'unreliable', 'regular'])->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

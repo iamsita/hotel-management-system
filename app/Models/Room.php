@@ -55,20 +55,20 @@ class Room extends Model
         $query = static::where('status', 'available');
 
         // Filter by type
-        if (!empty($filters['type'])) {
+        if (! empty($filters['type'])) {
             $query->where('type', $filters['type']);
         }
 
         // Filter by price range
-        if (!empty($filters['min_price'])) {
+        if (! empty($filters['min_price'])) {
             $query->where('price_per_night', '>=', $filters['min_price']);
         }
-        if (!empty($filters['max_price'])) {
+        if (! empty($filters['max_price'])) {
             $query->where('price_per_night', '<=', $filters['max_price']);
         }
 
         // Filter by minimum capacity
-        if (!empty($filters['capacity'])) {
+        if (! empty($filters['capacity'])) {
             $query->where('capacity', '>=', $filters['capacity']);
         }
 

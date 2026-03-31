@@ -13,6 +13,7 @@ class ProfileController extends Controller
     public function show()
     {
         $user = auth()->user();
+
         return view('profile.show', compact('user'));
     }
 
@@ -22,6 +23,7 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = auth()->user();
+
         return view('profile.edit', compact('user'));
     }
 
@@ -34,7 +36,7 @@ class ProfileController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'required|email|max:255|unique:users,email,'.$user->id,
             'phone' => 'nullable|string|max:20',
             'current_password' => 'nullable|string',
             'password' => 'nullable|string|min:8|confirmed',
@@ -49,7 +51,7 @@ class ProfileController extends Controller
 
         // Update password if provided
         if (isset($validated['password']) && $validated['password']) {
-            if (!Hash::check($validated['current_password'], $user->password)) {
+            if (! Hash::check($validated['current_password'], $user->password)) {
                 return back()->withErrors(['current_password' => 'Current password is incorrect.']);
             }
             $user->update(['password' => Hash::make($validated['password'])]);

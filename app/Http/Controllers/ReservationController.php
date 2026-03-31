@@ -39,7 +39,7 @@ class ReservationController extends Controller
         $room = Room::findOrFail($validated['room_id']);
 
         // ALGORITHM: Interval Overlap Detection - prevent double booking
-        if (!$room->isAvailable($validated['check_in'], $validated['check_out'])) {
+        if (! $room->isAvailable($validated['check_in'], $validated['check_out'])) {
             return back()->withErrors(['room_id' => 'This room is already booked for the selected dates.'])->withInput();
         }
 
@@ -82,7 +82,7 @@ class ReservationController extends Controller
         $room = Room::findOrFail($validated['room_id']);
 
         // ALGORITHM: Interval Overlap Detection - prevent double booking (exclude current reservation)
-        if (!$room->isAvailable($validated['check_in'], $validated['check_out'], $reservation->id)) {
+        if (! $room->isAvailable($validated['check_in'], $validated['check_out'], $reservation->id)) {
             return back()->withErrors(['room_id' => 'This room is already booked for the selected dates.'])->withInput();
         }
 

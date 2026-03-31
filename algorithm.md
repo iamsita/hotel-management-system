@@ -1,350 +1,313 @@
-# Algorithms Used in Hotel Management System
+# Algorithm Used in Hotel Management System
+
+## 1. Introduction
+
+This document describes the algorithm implemented in the Hotel Management System developed as part of the college minor project. The system is built using the Laravel framework (PHP) with a MySQL database. The algorithm implemented is a **Rule-Based Decision Tree** for automatic guest segmentation, which classifies hotel guests into behavioral categories based on their reservation history, spending patterns, and cancellation behavior.
+
+---
+
+## 2. Rule-Based Decision Tree Algorithm (Guest Segmentation)
+
+### 2.1 Purpose
+
+The Rule-Based Decision Tree Algorithm automatically classifies hotel guests into distinct behavioral segments based on their historical booking data, total spending, and cancellation patterns. This enables the hotel administration to understand their guest base and provide personalized service to different types of guests.
+
+### 2.2 Problem Statement
+
+Not all hotel guests behave the same way. Some guests are frequent, high-spending visitors who deserve premium service. Others have not returned in months and may need re-engagement. Some guests repeatedly cancel reservations, which creates operational challenges. The system needs an automated method to categorize guests so that administrators can identify each type at a glance and take appropriate action — without manually analyzing individual guest records.
+
+### 2.3 Algorithm Logic
+
+The algorithm implements a **Rule-Based Decision Tree** — a hierarchical series of IF-THEN conditions evaluated sequentially in order of priority. Each guest is assigned to the first segment whose conditions they satisfy. The rules are applied to four features derived from the existing database tables.
+
+### 2.4 Mathematical Formulation
+
+Let **G** be the set of all guests in the system, and let each guest be represented as **g ∈ G**.
+
+For each guest g, four feature values are computed from the database:
+
+---
+
+**Feature 1 — Total Spend (M)**
+
+    M(g) = Σ  payment.amount
+             ∀ payments linked to g where payment.status = "completed"
+
+This is the sum of all completed payment amounts made by guest g across all reservations.
+
+---
+
+**Feature 2 — Visit Count (F)**
+
+    F(g) = | { r ∈ Reservations : r.user_id = g.id } |
+
+This is the total number of reservations made by guest g (the cardinality of the reservation set).
+
+---
+
+**Feature 3 — Days Since Last Visit (R)**
+
+    R(g) = D_today  −  max({ r.check_out : r.user_id = g.id })
+
+Where D_today is the current date. R(g) measures how many days have passed since the guest's most recent checkout. A smaller value of R means the guest visited more recently.
+
+---
+
+**Feature 4 — Cancellation Rate (C)**
+
+    C(g) =  | { r : r.user_id = g.id  AND  r.status = "cancelled" } |
+            ─────────────────────────────────────────────────────────
+                   | { r : r.user_id = g.id } |
+
+This is the proportion of reservations that were cancelled. C(g) ∈ [0, 1], where 0 means no cancellations and 1 means all reservations were cancelled.
+
+---
+
+**Classification Function**
+
+The classification function φ maps each guest's feature vector to a segment label:
+
+    φ : (M, F, R, C)  →  { vip, loyal, at_risk, high_value_new, unreliable, regular }
+
+The function is defined as a priority-ordered piecewise rule:
+
+              ⎧  "vip"            if  M(g) ≥ 10000  AND  F(g) ≥ 5
+              ⎪  "loyal"          if  F(g) ≥ 3       AND  C(g) < 0.2
+    φ(g)  =   ⎨  "at_risk"        if  R(g) > 90      AND  F(g) ≥ 2
+              ⎪  "high_value_new" if  F(g) = 1        AND  M(g) ≥ 5000
+              ⎪  "unreliable"     if  C(g) ≥ 0.5
+              ⎩  "regular"        (default)
+
+Rules are evaluated strictly from top to bottom. The guest is assigned to the segment of the **first rule that evaluates to true**. If no rule matches, the default "regular" segment is assigned.
+
+---
+
+**Segmentation Procedure**
+
+The full segmentation over all guests can be expressed as:
+
+    S = { (g, φ(g))  :  g ∈ G }
+
+Where S is the complete mapping of every guest to their computed segment. This mapping is stored by updating the segment field in the users table for each guest g.
+
+---
+
+### 2.5 Features Used from the Database
+
+| Feature | Source Table | Derivation |
+|---|---|---|
+| Total Spend | payments | SUM(amount) WHERE status = 'completed' |
+| Visit Count | reservations | COUNT(id) per guest |
+| Days Since Last Visit | reservations | DATEDIFF(today, MAX(check_out)) |
+| Cancellation Rate | reservations | cancelled reservations ÷ total reservations |
+
+### 2.5 Decision Tree
+
+```
+INPUT: guest features (total_spend, visit_count, days_since_last_visit, cancellation_rate)
+
+├── IF total_spend >= 10000 AND visit_count >= 5
+│       └── ASSIGN segment = "VIP"
+│
+├── ELSE IF visit_count >= 3 AND cancellation_rate < 0.2
+│       └── ASSIGN segment = "Loyal"
+│
+├── ELSE IF days_since_last_visit > 90 AND visit_count >= 2
+│       └── ASSIGN segment = "At Risk"
+│
+├── ELSE IF visit_count = 1 AND total_spend >= 5000
+│       └── ASSIGN segment = "High Value New"
+│
+├── ELSE IF cancellation_rate >= 0.5
+│       └── ASSIGN segment = "Unreliable"
+│
+└── ELSE
+        └── ASSIGN segment = "Regular"
+
+OUTPUT: segment label stored in users.segment
+```
+
+### 2.6 Segment Definitions
+
+| Segment | Description | Recommended Admin Action |
+|---|---|---|
+| VIP | High-spending guest with 5 or more completed stays | Complimentary room upgrade, priority service, loyalty rewards |
+| Loyal | Repeat visitor with at least 3 stays and low cancellation rate | Discount on next booking, loyalty acknowledgement |
+| At Risk | Previously active guest who has not visited in over 90 days | Re-engagement promotional offer via email |
+| High Value New | First-time guest with a high-value booking | Assign dedicated staff, personalized welcome |
+| Unreliable | Guest who cancels 50% or more of their bookings | Require advance deposit on future reservations |
+| Regular | Guest who does not meet any of the above criteria | Standard hotel service |
+
+### 2.7 Pseudocode
+
+```
+FUNCTION classifyGuest(total_spend, visit_count, days_since_last_visit, cancellation_rate):
+
+    IF total_spend >= 10000 AND visit_count >= 5:
+        RETURN "vip"
+
+    IF visit_count >= 3 AND cancellation_rate < 0.2:
+        RETURN "loyal"
+
+    IF days_since_last_visit > 90 AND visit_count >= 2:
+        RETURN "at_risk"
+
+    IF visit_count = 1 AND total_spend >= 5000:
+        RETURN "high_value_new"
+
+    IF cancellation_rate >= 0.5:
+        RETURN "unreliable"
+
+    RETURN "regular"
+
+END FUNCTION
 
 
-## 1. Interval Overlap Detection Algorithm (Room Availability Check)
+PROCEDURE runSegmentation():
 
-### Purpose
-To prevent double booking of rooms by checking whether a requested date range conflicts with any existing reservation for the same room.
+    guests = SQL query to aggregate features for all guest-role users
+             from reservations, payments tables
 
-### Problem Statement
-When a guest or admin tries to book a room for a specific check-in and check-out date, the system must verify that no other active reservation exists for that room during the same time period. If an overlap is detected, the booking must be rejected.
+    FOR EACH guest IN guests:
+        segment = classifyGuest(guest.total_spend, guest.visit_count,
+                                guest.days_since_last_visit, guest.cancellation_rate)
+        UPDATE users SET segment = segment WHERE id = guest.user_id
 
-### Algorithm Logic
-The algorithm uses the mathematical **Interval Overlap Formula** to detect conflicts between two date ranges:
+END PROCEDURE
+```
 
-Two date intervals [A_start, A_end] and [B_start, B_end] overlap if and only if:
+### 2.8 Step-by-Step Process
 
-    A_start < B_end AND B_start < A_end
+1. A single SQL query joins the `users`, `reservations`, and `payments` tables to compute the four feature values for each guest.
+2. For each guest record, the `classifyGuest` function evaluates the rules in order from top to bottom.
+3. The guest is assigned the segment of the first rule that evaluates to true.
+4. If no rule matches, the guest is assigned the "regular" segment by default.
+5. The computed segment label is saved to the `segment` column of the `users` table.
+6. This process is scheduled to run automatically every day at midnight via Laravel's task scheduler.
+7. The Admin Guest Segmentation page reads the `segment` field and displays a color-coded badge next to each guest's name along with the feature values used for classification.
 
-Where:
-- A_start, A_end = Check-in and Check-out dates of the existing reservation
-- B_start, B_end = Check-in and Check-out dates of the new booking request
+### 2.9 Example
 
-If both conditions are true, the intervals overlap, meaning the room is NOT available.
+```
+Guest: Alice
+  total_spend          = Rs. 12,000
+  visit_count          = 6
+  days_since_last_visit = 10
+  cancellation_rate    = 0.0
 
-### Step-by-Step Process
-1. User selects a room and enters desired check-in and check-out dates.
-2. The system queries all existing reservations for that room where:
-   - The reservation status is NOT "cancelled" or "checked_out" (only active bookings are considered).
-3. For each existing reservation, the system checks:
-   - Is the existing check-in date BEFORE the requested check-out date? (existing_start < new_end)
-   - Is the existing check-out date AFTER the requested check-in date? (existing_end > new_start)
-4. If any reservation satisfies both conditions, an overlap is detected and the booking is rejected.
-5. If no overlaps are found, the room is available and the booking proceeds.
+Rule 1: total_spend >= 10000 AND visit_count >= 5 → TRUE
+Result: segment = "VIP"
 
-### Example Scenario
+---
 
-    Existing Reservation: Room 101, Check-in: Jan 5, Check-out: Jan 10
-    New Booking Request:  Room 101, Check-in: Jan 8, Check-out: Jan 12
+Guest: Eve
+  total_spend          = Rs. 800
+  visit_count          = 4
+  days_since_last_visit = 20
+  cancellation_rate    = 0.50
 
-    Check: Jan 5 < Jan 12? YES
-    Check: Jan 10 > Jan 8? YES
-    Result: OVERLAP DETECTED - Booking Rejected
+Rule 1: 800 >= 10000 AND 4 >= 5 → FALSE
+Rule 2: 4 >= 3 AND 0.50 < 0.2  → FALSE  (cancellation rate too high)
+Rule 3: 20 > 90 AND 4 >= 2     → FALSE  (visited recently)
+Rule 4: visit_count = 1        → FALSE
+Rule 5: 0.50 >= 0.5            → TRUE
+Result: segment = "Unreliable"
 
-    Another Request:      Room 101, Check-in: Jan 11, Check-out: Jan 15
+---
 
-    Check: Jan 5 < Jan 15? YES
-    Check: Jan 10 > Jan 11? NO
-    Result: NO OVERLAP - Booking Allowed
+Guest: Frank
+  total_spend          = Rs. 250
+  visit_count          = 1
+  days_since_last_visit = 15
+  cancellation_rate    = 0.0
 
-### Implementation Code (app/Models/Room.php)
+Rule 1 → FALSE
+Rule 2 → FALSE (visit_count < 3)
+Rule 3 → FALSE (visited recently)
+Rule 4 → FALSE (total_spend < 5000)
+Rule 5 → FALSE
+Result: segment = "Regular"
+```
+
+### 2.10 Implementation
+
+**Feature Extraction Query**
+
+File: `app/Console/Commands/SegmentGuests.php`
 
 ```php
-public function isAvailable($checkIn, $checkOut, $excludeReservationId = null)
+$guests = DB::select("
+    SELECT
+        u.id AS user_id,
+        COUNT(r.id)                                                        AS visit_count,
+        COALESCE(SUM(p.amount), 0)                                        AS total_spend,
+        COALESCE(DATEDIFF(CURDATE(), MAX(r.check_out)), 9999)             AS days_since_last_visit,
+        COALESCE(
+            SUM(CASE WHEN r.status = 'cancelled' THEN 1 ELSE 0 END)
+            / NULLIF(COUNT(r.id), 0), 0
+        )                                                                  AS cancellation_rate
+    FROM users u
+    LEFT JOIN reservations r  ON r.user_id = u.id
+    LEFT JOIN payments p      ON p.reservation_id = r.id AND p.status = 'completed'
+    WHERE u.role = 'guest'
+    GROUP BY u.id
+");
+```
+
+**Classification Function**
+
+```php
+private function classify(float $spend, int $visits, int $daysSince, float $cancellationRate): string
 {
-    $query = $this->reservations()
-        ->whereNotIn('status', ['cancelled', 'checked_out'])
-        ->where('check_in', '<', $checkOut)    // existing start < new end
-        ->where('check_out', '>', $checkIn);   // existing end > new start
-
-    if ($excludeReservationId) {
-        $query->where('id', '!=', $excludeReservationId);
-    }
-
-    return $query->count() === 0;
+    if ($spend >= 10000 && $visits >= 5)          return 'vip';
+    if ($visits >= 3 && $cancellationRate < 0.2)  return 'loyal';
+    if ($daysSince > 90 && $visits >= 2)          return 'at_risk';
+    if ($visits == 1 && $spend >= 5000)           return 'high_value_new';
+    if ($cancellationRate >= 0.5)                 return 'unreliable';
+    return 'regular';
 }
 ```
 
-### Where It Is Used
-- Guest booking (GuestBookingController@book) - when a guest books a room from the Browse Rooms page.
-- Admin creating reservation (ReservationController@store) - when admin creates a new reservation.
-- Admin updating reservation (ReservationController@update) - when admin changes the room or dates of an existing reservation. The current reservation is excluded from the overlap check using the excludeReservationId parameter.
+**Daily Schedule**
 
-### Time Complexity
-- O(n) where n is the number of active reservations for that specific room.
-- In practice, each room has very few active reservations at any time, making this nearly O(1).
+File: `routes/console.php`
 
+```php
+Schedule::command('guests:segment')->daily();
+```
+
+### 2.11 Where It Is Used
+
+- **Artisan command** `php artisan guests:segment` — can be run manually to classify all guests immediately.
+- **Laravel Task Scheduler** — runs the command automatically every day so segments stay up to date as guest behavior changes over time.
+- **Admin Guest Segmentation Page** (`/admin/algorithms`) — displays a color-coded segment badge for every guest along with the feature values (visits, spend, days since visit, cancellation rate) used for classification. Includes a **Re-run Segmentation** button to trigger the algorithm from the UI.
+
+### 2.12 Database Change
+
+A `segment` column was added to the existing `users` table migration:
+
+```php
+$table->enum('segment', ['vip', 'loyal', 'at_risk', 'high_value_new', 'unreliable', 'regular'])
+      ->nullable();
+```
+
+### 2.13 Time Complexity
+
+- **O(g)** where g is the total number of guests — each guest is evaluated against a constant number of rules (6 rules), so the classification itself is O(1) per guest.
+- The underlying SQL aggregation is **O(r + p)** where r is the number of reservation rows and p is the number of payment rows — all computed in a single database query.
+- Overall the algorithm scales linearly with the size of the guest database.
 
 ---
 
-
-## 2. Multi-Criteria Search, Filter and Sort Algorithm
-
-### Purpose
-To allow users to find rooms that match their specific requirements by applying multiple filters simultaneously and sorting the results in a desired order.
-
-### Problem Statement
-The hotel has multiple rooms of different types, capacities, floors, and prices. When a guest wants to browse available rooms, they should be able to narrow down the results by specifying criteria such as room type, price range, and minimum capacity, and then sort the results to find the best option.
-
-### Algorithm Logic
-The algorithm applies a **sequential filtering pipeline** followed by a **comparison-based sort**:
-
-1. Start with all available rooms (base dataset).
-2. Apply each filter one by one, eliminating rooms that do not match.
-3. Sort the remaining rooms by the chosen field.
-
-This follows the **Filter-Map-Sort** pattern commonly used in data processing.
-
-### Step-by-Step Process
-1. Begin with all rooms where status = "available".
-2. If room type is specified, filter rooms where type matches exactly (e.g., "single", "double", "suite", "deluxe").
-3. If minimum price is specified, filter rooms where price_per_night >= min_price.
-4. If maximum price is specified, filter rooms where price_per_night <= max_price.
-5. If minimum capacity is specified, filter rooms where capacity >= requested capacity.
-6. Sort the filtered results by the chosen field (price, capacity, room number, or floor) in ascending or descending order.
-7. Return the final sorted and filtered list.
-
-### Example Scenario
-
-    Total Available Rooms: 15 rooms
-
-    User Filters:
-    - Type: "double"
-    - Min Price: Rs. 100
-    - Max Price: Rs. 200
-    - Min Capacity: 2
-    - Sort By: Price (Ascending)
-
-    Step 1: Start with 15 available rooms
-    Step 2: Filter by type "double" -> 5 rooms remain
-    Step 3: Filter by price >= 100 -> 5 rooms remain
-    Step 4: Filter by price <= 200 -> 4 rooms remain
-    Step 5: Filter by capacity >= 2 -> 4 rooms remain
-    Step 6: Sort by price ascending -> [Rs.120, Rs.120, Rs.150, Rs.180]
-    Result: 4 rooms displayed in order of price
-
-### Implementation Code (app/Models/Room.php)
-
-```php
-public static function searchAndFilter($filters)
-{
-    $query = static::where('status', 'available');
-
-    // Filter by type
-    if (!empty($filters['type'])) {
-        $query->where('type', $filters['type']);
-    }
-
-    // Filter by price range
-    if (!empty($filters['min_price'])) {
-        $query->where('price_per_night', '>=', $filters['min_price']);
-    }
-    if (!empty($filters['max_price'])) {
-        $query->where('price_per_night', '<=', $filters['max_price']);
-    }
-
-    // Filter by minimum capacity
-    if (!empty($filters['capacity'])) {
-        $query->where('capacity', '>=', $filters['capacity']);
-    }
-
-    // Sort results
-    $sortBy = $filters['sort_by'] ?? 'price_per_night';
-    $sortOrder = $filters['sort_order'] ?? 'asc';
-    $allowedSorts = ['price_per_night', 'capacity', 'room_number', 'floor'];
-
-    if (in_array($sortBy, $allowedSorts)) {
-        $query->orderBy($sortBy, $sortOrder === 'desc' ? 'desc' : 'asc');
-    }
-
-    return $query->get();
-}
-```
-
-### Where It Is Used
-- Guest Browse Rooms page (GuestBookingController@rooms) - the search and filter form at the top of the Browse Rooms page sends filter parameters via GET request, and the controller passes them to this algorithm.
-
-### Time Complexity
-- Filtering: O(n) where n is the total number of available rooms (each filter scans through the dataset).
-- Sorting: O(n log n) using comparison-based sort (database ORDER BY clause).
-- Overall: O(n log n) dominated by the sorting step.
-
-
----
-
-
-## 3. Billing Aggregation Algorithm
-
-### Purpose
-To calculate the complete bill for a reservation by aggregating room charges and delivered food order charges, then computing the balance due after subtracting payments already made.
-
-### Problem Statement
-At the time of checkout or payment, the system must present an accurate bill that includes the room charge based on the number of nights stayed and the per-night rate, plus the total cost of all food items that were ordered and successfully delivered during the stay. The system must also track partial payments and show the remaining balance.
-
-### Algorithm Logic
-The algorithm uses **summation and aggregation** across multiple related database tables:
-
-    Room Charge  = Number of Nights x Price Per Night
-    Food Charge  = SUM(total_price) of all food orders WHERE status = "delivered"
-    Grand Total  = Room Charge + Food Charge
-    Paid Amount  = SUM(amount) of all payments WHERE status = "completed"
-    Balance Due  = Grand Total - Paid Amount
-
-Only food orders with status "delivered" are included. Orders that are pending, preparing, or cancelled are excluded from the bill.
-
-### Step-by-Step Process
-1. Calculate the number of nights: check_out_date - check_in_date.
-2. Multiply nights by the room's price per night to get the room charge.
-3. Query all food orders linked to this reservation where status is "delivered".
-4. Sum the total_price field of all delivered food orders to get the food charge.
-5. Add room charge and food charge to get the grand total.
-6. Query all payments linked to this reservation where status is "completed".
-7. Sum the amount field of all completed payments to get the paid amount.
-8. Subtract paid amount from grand total to get the balance due.
-9. If balance due is less than or equal to zero, the reservation is fully paid.
-
-### Example Scenario
-
-    Reservation: Room 203, Check-in: Mar 1, Check-out: Mar 4 (3 nights)
-    Room Price: Rs. 120 per night
-
-    Room Charge = 3 x Rs. 120 = Rs. 360
-
-    Food Orders:
-    - Grilled Chicken x2 = Rs. 29.98  (Status: Delivered)  -> Counted
-    - Coffee x1          = Rs. 3.99   (Status: Delivered)  -> Counted
-    - Pasta x1           = Rs. 12.99  (Status: Cancelled)  -> NOT Counted
-    - Steak x1           = Rs. 24.99  (Status: Preparing)  -> NOT Counted
-
-    Food Charge = Rs. 29.98 + Rs. 3.99 = Rs. 33.97
-
-    Grand Total = Rs. 360 + Rs. 33.97 = Rs. 393.97
-
-    Payments Made:
-    - Rs. 200 via Cash (Status: Completed) -> Counted
-
-    Paid Amount = Rs. 200
-    Balance Due = Rs. 393.97 - Rs. 200 = Rs. 193.97
-
-### Implementation Code
-
-In the Blade views (guest/reservation.blade.php and admin/reservations/show.blade.php):
-
-```php
-$nights     = $reservation->check_in->diffInDays($reservation->check_out);
-$roomTotal  = $reservation->total_amount;
-$foodTotal  = $reservation->foodOrders->where('status', 'delivered')->sum('total_price');
-$grandTotal = $roomTotal + $foodTotal;
-$paidTotal  = $reservation->payments->where('status', 'completed')->sum('amount');
-$balanceDue = $grandTotal - $paidTotal;
-```
-
-In the payment validation (ReservationController@recordPayment):
-
-```php
-$grandTotal = $reservation->total_amount
-    + $reservation->foodOrders()->where('status', 'delivered')->sum('total_price');
-$paidTotal  = $reservation->payments()->where('status', 'completed')->sum('amount');
-$balanceDue = $grandTotal - $paidTotal;
-
-if ($balanceDue <= 0) {
-    // Reservation is fully paid - reject payment
-}
-if ($validated['amount'] > $balanceDue) {
-    // Payment exceeds balance - reject to prevent overpayment
-}
-```
-
-### Where It Is Used
-- Guest Reservation Detail page - shows the billing summary to the customer (view only).
-- Admin Reservation Detail page - shows the billing summary and allows admin to record payments.
-- Payment validation in both ReservationController and GuestBookingController - ensures payments do not exceed the balance due.
-
-### Time Complexity
-- O(m + p) where m is the number of food orders and p is the number of payments for that reservation.
-- In practice, both m and p are small numbers per reservation, making this effectively O(1).
-
-
----
-
-
-## 4. Finite State Machine Algorithm (Reservation Lifecycle)
-
-### Purpose
-To manage the lifecycle of a reservation through a defined set of states with controlled transitions, ensuring that reservations follow a valid workflow and room statuses are automatically updated.
-
-### Problem Statement
-A reservation goes through multiple stages from creation to completion. The system must enforce valid transitions (e.g., a guest cannot be checked in before the reservation is confirmed) and automatically update the room's availability status when the reservation state changes.
-
-### Algorithm Logic
-The algorithm implements a **Finite State Machine (FSM)** where:
-
-- **States**: pending, confirmed, checked_in, checked_out, cancelled
-- **Transitions**: Each state can only move to specific next states
-- **Side Effects**: Room status is automatically updated based on the reservation state
-
-### State Transition Diagram
-
-    pending ---------> confirmed ---------> checked_in ---------> checked_out
-       |                  |
-       |                  |
-       v                  v
-    cancelled          cancelled
-
-### Transition Rules and Side Effects
-
-    From State    -> To State      | Room Status Change
-    -----------------------------------------------
-    pending       -> confirmed     | Room -> occupied
-    confirmed     -> checked_in    | Room -> occupied
-    checked_in    -> checked_out   | Room -> available
-    pending       -> cancelled     | Room -> available
-    confirmed     -> cancelled     | Room -> available
-
-### Implementation Code (app/Http/Controllers/ReservationController.php)
-
-```php
-public function updateStatus(Request $request, Reservation $reservation)
-{
-    $validated = $request->validate([
-        'status' => 'required|in:pending,confirmed,checked_in,checked_out,cancelled',
-    ]);
-
-    $oldStatus = $reservation->status;
-    $newStatus = $validated['status'];
-
-    $reservation->update(['status' => $newStatus]);
-
-    // Side effects: automatically update room status
-    if ($newStatus === 'checked_in') {
-        $reservation->room->update(['status' => 'occupied']);
-    } elseif (in_array($newStatus, ['checked_out', 'cancelled'])) {
-        $reservation->room->update(['status' => 'available']);
-    } elseif ($newStatus === 'confirmed') {
-        $reservation->room->update(['status' => 'occupied']);
-    }
-
-    return back()->with('success', "Status changed from {$oldStatus} to {$newStatus}.");
-}
-```
-
-### Where It Is Used
-- Admin Reservation Index page - quick action buttons (Confirm, Check In, Check Out, Cancel) trigger state transitions.
-- Admin Reservation Detail page - status dropdown allows changing to any valid state.
-- The room status is automatically synchronized with the reservation status throughout the system.
-
-### Time Complexity
-- O(1) for each state transition - it is a constant-time operation involving one update to the reservation and one update to the room.
-
-
----
-
-
-## Summary Table
-
-| Algorithm | Purpose | Time Complexity | File Location |
-|---|---|---|---|
-| Interval Overlap Detection | Prevent double booking of rooms | O(n) | app/Models/Room.php |
-| Multi-Criteria Search, Filter & Sort | Find rooms matching user preferences | O(n log n) | app/Models/Room.php |
-| Billing Aggregation | Calculate total bill with room + food charges | O(m + p) | Views + Controllers |
-| Finite State Machine | Manage reservation lifecycle and room status | O(1) | ReservationController.php |
+## 3. Summary
+
+| Property | Detail |
+|---|---|
+| Algorithm Type | Rule-Based Decision Tree |
+| Input | Guest behavioral features from reservations and payments tables |
+| Output | Segment label stored in users.segment |
+| Number of Rules | 5 priority rules + 1 default |
+| Number of Segments | 6 (VIP, Loyal, At Risk, High Value New, Unreliable, Regular) |
+| Time Complexity | O(g) — linear in number of guests |
+| Execution | Manual (artisan command) or automatic (daily scheduler) |
+| File Location | app/Console/Commands/SegmentGuests.php |

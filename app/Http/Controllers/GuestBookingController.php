@@ -44,7 +44,7 @@ class GuestBookingController extends Controller
         $room = Room::findOrFail($validated['room_id']);
 
         // ALGORITHM: Interval Overlap Detection - check if room is available for these dates
-        if (!$room->isAvailable($validated['check_in'], $validated['check_out'])) {
+        if (! $room->isAvailable($validated['check_in'], $validated['check_out'])) {
             return back()->withErrors(['booking' => 'This room is already booked for the selected dates. Please choose different dates.']);
         }
 

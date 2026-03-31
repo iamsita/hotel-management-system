@@ -77,6 +77,8 @@
                 class="{{ request()->routeIs('admin.food-orders.*') ? 'active' : '' }}">Food Orders</a>
             <a href="{{ route('admin.payments.index') }}"
                 class="{{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">Payments</a>
+            <a href="{{ route('admin.algorithms.index') }}"
+                class="{{ request()->routeIs('admin.algorithms.*') ? 'active' : '' }}">Algorithms</a>
         @else
             <a href="{{ route('guest.dashboard') }}"
                 class="{{ request()->routeIs('guest.dashboard') ? 'active' : '' }}">My Bookings</a>

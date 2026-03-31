@@ -10,7 +10,7 @@
     <div class="card-body p-0">
         <table class="table table-hover mb-0">
             <thead>
-                <tr><th>Name</th><th>Email</th><th>Phone</th><th>Reservations</th><th>Joined</th></tr>
+                <tr><th>Name</th><th>Email</th><th>Phone</th><th>Reservations</th><th>Segment</th><th>Joined</th></tr>
             </thead>
             <tbody>
                 @foreach($guests as $guest)
@@ -19,6 +19,20 @@
                     <td>{{ $guest->email }}</td>
                     <td>{{ $guest->phone ?? '-' }}</td>
                     <td>{{ $guest->reservations_count }}</td>
+                    <td>
+                        @php
+                            $colors = [
+                                'vip'            => 'warning',
+                                'loyal'          => 'success',
+                                'at_risk'        => 'danger',
+                                'high_value_new' => 'info',
+                                'unreliable'     => 'secondary',
+                                'regular'        => 'primary',
+                            ];
+                            $color = $colors[$guest->segment] ?? 'primary';
+                        @endphp
+                        <span class="badge bg-{{ $color }}">{{ str_replace('_', ' ', ucfirst($guest->segment)) }}</span>
+                    </td>
                     <td>{{ $guest->created_at->format('M d, Y') }}</td>
                 </tr>
                 @endforeach

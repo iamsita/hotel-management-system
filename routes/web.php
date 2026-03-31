@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AlgorithmDemoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FoodController;
@@ -53,6 +54,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('food-orders/{order}/{status}', [FoodOrderController::class, 'updateStatus'])->name('food-orders.status');
 
     Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+
+    Route::get('algorithms', [AlgorithmDemoController::class, 'index'])->name('algorithms.index');
+    Route::post('algorithms/segment', function () {
+        \Artisan::call('guests:segment');
+        return back()->with('success', 'Guest segmentation re-run successfully.');
+    })->name('algorithms.segment');
 });
 
 // Guest Routes
