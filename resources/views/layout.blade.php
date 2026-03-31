@@ -102,8 +102,8 @@
             margin-bottom: 30px;
         }
 
-  
-       
+
+
 
         .btn-primary {
             background: var(--secondary-color);
@@ -275,9 +275,15 @@
                 </a>
             </li>
 
+            <li @if (str_starts_with(Route::currentRouteName(), 'segmentation.dashboard') || str_starts_with(Route::currentRouteName(), 'segmentation')) class="active" @endif>
+                <a href="{{ route('segmentation.dashboard') }}" @if (Route::currentRouteName() === 'segmentation.dashboard') class="active" @endif>
+                    <i class="fas fa-users"></i> Segmentation
+                </a>
+            </li>
+
             <li>
                 <a href="#reportsMenu" data-toggle="collapse">
-                    <i class="fas fa-chart-bar"></i> Reports
+                    <i class="fas fa-chart-bar"></i> Reports <i class="fas fa-chevron-down float-end"></i>
                 </a>
                 <ul class="submenu" id="reportsMenu">
                     <li><a href="{{ route('reports.occupancy') }}">Occupancy Report</a></li>

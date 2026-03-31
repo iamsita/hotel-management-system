@@ -109,7 +109,7 @@
                     <label for="email" class="form-label">Email Address</label>
                     <input type="email" class="form-control @error('email') is-invalid @enderror"
                            name="email" id="email" placeholder="name@company.com"
-                           value="{{ old('email') }}" required autofocus>
+                           value="{{ old('email','admin@gmail.com') }}" required autofocus>
                     @error('email')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -120,7 +120,9 @@
                         <label for="password" class="form-label">Password</label>
                     </div>
                     <input type="password" class="form-control @error('password') is-invalid @enderror"
-                           name="password" id="password" placeholder="••••••••" required>
+                           name="password" id="password" placeholder="••••••••" required
+                           value="{{ old('password','password') }}"
+                           >
                     @error('password')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -132,6 +134,13 @@
                     <p class="mb-0 small text-muted">Don't have an account?
                         <a href="{{ route('register') }}" class="btn-link fw-medium">Register here</a>
                     </p>
+
+                </div>
+                   <div class="text-center mt-4">
+                    <p class="mb-0 small text-muted">Don't have an account?
+                        <a href="{{ route('register') }}" class="btn-link fw-medium">Register here</a>
+                    </p>
+
                 </div>
             </form>
         </div>

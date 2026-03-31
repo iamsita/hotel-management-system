@@ -29,6 +29,10 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'phone' => fake()->phoneNumber(),
+            'type' => 'guest',
+            'status' => 'active',
+            'segment' => 'REGULAR',
         ];
     }
 
@@ -37,8 +41,52 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a guest.
+     */
+    public function guest(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'type' => 'guest',
+            'status' => 'active',
+        ]);
+    }
+
+    /**
+     * Indicate that the user is staff.
+     */
+    public function staff(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'type' => 'staff',
+            'status' => 'active',
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a manager.
+     */
+    public function manager(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'type' => 'manager',
+            'status' => 'active',
+        ]);
+    }
+
+    /**
+     * Indicate that the user is an admin.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'type' => 'admin',
+            'status' => 'active',
         ]);
     }
 }

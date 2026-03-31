@@ -12,6 +12,7 @@ use App\Http\Controllers\GuestController;
 use App\Http\Controllers\GuestDashboardController;
 use App\Http\Controllers\GuestFoodOrderController;
 use App\Http\Controllers\GuestPaymentController;
+use App\Http\Controllers\GuestSegmentationController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentManagementController;
 use App\Http\Controllers\ReportController;
@@ -111,6 +112,22 @@ Route::middleware(['auth', 'type:admin,manager,staff'])
         Route::get('reports/guests', [ReportController::class, 'guestReport'])->name('reports.guests');
         Route::get('reports/food', [ReportController::class, 'foodReport'])->name('reports.food');
         Route::get('reports/services', [ReportController::class, 'serviceReport'])->name('reports.services');
+
+        // Guest Segmentation
+        Route::prefix('segmentation')->name('segmentation.')->group(function () {
+            // Web Views
+            Route::get('/', [GuestSegmentationController::class, 'dashboard'])->name('dashboard');
+            Route::get('segment/{segment}', [GuestSegmentationController::class, 'showSegment'])->name('segment');
+            Route::get('guest/{user}', [GuestSegmentationController::class, 'showGuest'])->name('guest');
+            Route::get('segment-form', [GuestSegmentationController::class, 'segmentForm'])->name('segment-form');
+
+            // API Endpoints
+            Route::post('segment-guest/{user}', [GuestSegmentationController::class, 'segmentGuest'])->name('api.segment-guest');
+            Route::post('segment-all', [GuestSegmentationController::class, 'segmentAllGuests'])->name('segment-all');
+            Route::get('api/summary', [GuestSegmentationController::class, 'getSummary'])->name('api.summary');
+            Route::get('api/segment/{segment}', [GuestSegmentationController::class, 'getBySegment'])->name('api.by-segment');
+            Route::get('api/insights/{user}', [GuestSegmentationController::class, 'getInsights'])->name('api.insights');
+        });
 
         // Auth
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');

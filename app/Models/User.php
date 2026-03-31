@@ -8,12 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\GuestSegmentHistory;
 
 /**
  * @property-read HasMany $reservations
  * @property-read HasMany $bookings
  * @property-read HasMany $payments
  * @property-read HasManyThrough $foodOrders
+ * @property-read HasMany $history
  */
 class User extends Authenticatable
 {
@@ -26,6 +28,9 @@ class User extends Authenticatable
         'phone',
         'type',
         'status',
+        'segment',
+        'segment_metrics',
+        'last_segmented_at',
     ];
 
     protected $hidden = [
@@ -38,6 +43,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'segment_metrics' => 'json',
+            'last_segmented_at' => 'datetime',
         ];
     }
 
@@ -59,5 +66,30 @@ class User extends Authenticatable
     public function foodOrders(): HasManyThrough
     {
         return $this->hasManyThrough(FoodOrder::class, Reservation::class);
+    }
+
+    public function history(): HasMany
+    {
+        return $this->hasMany(GuestSegmentHistory::class, 'user_id');
+    }
+
+    /**
+     * Magic getter for accessing segment metrics as direct properties
+     */
+    public function __get($key)
+    {
+        // Access segment_metrics from attributes array to avoid recursion
+        $attributes = $this->getAttributes();
+
+        if (isset($attributes['segment_metrics'])) {
+            // segment_metrics is already decoded due to JSON cast
+            $metrics = $this->getAttribute('segment_metrics');
+
+            if (is_array($metrics) && array_key_exists($key, $metrics)) {
+                return $metrics[$key];
+            }
+        }
+
+        return parent::__get($key);
     }
 }

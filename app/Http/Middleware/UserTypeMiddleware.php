@@ -17,14 +17,14 @@ class UserTypeMiddleware
         $user = $request->user();
 
         // Not logged in
-        if (! $user) {
+        if (!$user) {
             abort(401, 'Unauthenticated.');
         }
 
-        // Optional: block inactive accounts
-        if ($user->status !== 'active') {
-            abort(403, 'Account is inactive.');
-        }
+        // // Optional: block inactive accounts
+        // if ($user->status !== 'active') {
+        //     abort(403, 'Account is inactive.');
+        // }
 
         // No roles passed => deny (safe default)
         if (empty($role)) {
@@ -33,7 +33,7 @@ class UserTypeMiddleware
 
         // type check - check if user's type matches allowed types
 
-        if (! $user->type === $role) {
+        if (!$user->type === $role) {
             abort(403, 'Type not allowed.');
         }
 

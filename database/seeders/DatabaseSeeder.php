@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             RoomSeeder::class,
             ReservationSeeder::class,
+            GuestSegmentationSeeder::class,  // Test data for guest segmentation
         ]);
     }
 }

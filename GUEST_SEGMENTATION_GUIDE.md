@@ -1,339 +1,282 @@
-# Guest Segmentation Algorithm - Complete Implementation Guide
+# Guest Segmentation - Complete Implementation Guide
 
 ## Overview
 
-The Guest Segmentation Algorithm is a comprehensive system that classifies hotel guests into meaningful segments based on their booking history, payment patterns, and behavioral metrics. This enables targeted marketing, personalized service delivery, and risk management.
+The Guest Segmentation feature automatically categorizes hotel guests into 7 distinct segments based on their booking history, payment patterns, and spending behavior. This enables targeted marketing, personalized services, and better revenue management.
 
----
+**Now includes:** Full frontend dashboard with visual analytics, guest detail pages, and segment management interface.
 
-## Segment Types
+## Quick Start
 
-### 1. **VIP Guests** 👑
-
-- **Criteria**: Lifetime value ≥ $50,000 AND ≥ 5 bookings
-- **Characteristics**: High-value guests with strong loyalty
-- **Marketing**: Premium services, exclusive offers, dedicated account manager
-- **Benefits**: Priority room selection, complimentary upgrades, reserved rates
-
-### 2. **LOYAL Guests** 🔄
-
-- **Criteria**: ≥ 10 bookings AND average stay ≥ 3 days
-- **Characteristics**: Regular repeat customers with reasonable stays
-- **Marketing**: Loyalty rewards, anniversary offers, customized packages
-- **Benefits**: Loyalty points, special discounts, extended loyalty programs
-
-### 3. **BUSINESS Guests** 💼
-
-- **Criteria**: Average stay ≤ 2 days AND ≥ 4 bookings
-- **Characteristics**: Frequent short-stay travelers
-- **Marketing**: Extended stay discounts, business packages, WiFi bundles
-- **Benefits**: Fast check-in/out, business center access, meeting rooms
-
-### 4. **LEISURE Guests** 🏖️
-
-- **Criteria**: Average stay ≥ 4 days
-- **Characteristics**: Vacation/family travelers with longer stays
-- **Marketing**: All-inclusive packages, family bundles, activity packages
-- **Benefits**: Discounted rates for long stays, family amenities, recreational packages
-
-### 5. **BUDGET Guests** 💰
-
-- **Criteria**: Below median room price AND < 2 services used
-- **Characteristics**: Price-sensitive, minimal service consumption
-- **Marketing**: Value packages, early-bird discounts, last-minute deals
-- **Benefits**: Off-season discounts, package deals, promotional rates
-
-### 6. **RISK Guests** ⚠️
-
-- **Criteria**: Cancellation rate > 30% OR payment reliability < 70%
-- **Characteristics**: Unreliable payment or high cancellation patterns
-- **Actions**: Require deposits before booking, payment verification needed
-- **Caution**: Monitor for fraud, stricter cancellation policies
-
-### 7. **REGULAR Guests** 👤
-
-- **Default**: All guests not matching above criteria
-- **Characteristics**: One-time or occasional visitors
-- **Marketing**: General promotions, seasonal offers
-
----
-
-## Database Schema
-
-### `guest_segments` Table
-
-```sql
-┌─────────────────────────┬──────────────┬─────────────────┐
-│ Column                  │ Type         │ Description     │
-├─────────────────────────┼──────────────┼─────────────────┤
-│ id                      │ BIGINT       │ Primary Key     │
-│ user_id                 │ BIGINT       │ FK to users     │
-│ segment                 │ ENUM         │ VIP/LOYAL/...   │
-│ metrics                 │ JSON         │ Calculated data │
-│ lifetime_value          │ INTEGER      │ Total spent     │
-│ booking_count           │ INTEGER      │ # of bookings   │
-│ avg_stay_days           │ DECIMAL      │ Avg stay length │
-│ avg_room_price          │ DECIMAL      │ Avg room price  │
-│ cancellation_rate       │ DECIMAL      │ % cancelled     │
-│ services_count          │ INTEGER      │ Services used   │
-│ payment_reliability     │ DECIMAL      │ 0-100 score     │
-│ total_nights            │ INTEGER      │ Total nights    │
-│ last_calculated_at      │ TIMESTAMP    │ Last update     │
-│ created_at              │ TIMESTAMP    │ Created at      │
-│ updated_at              │ TIMESTAMP    │ Updated at      │
-└─────────────────────────┴──────────────┴─────────────────┘
-```
-
-### `guest_segment_history` Table
-
-```sql
-┌──────────────────────┬──────────────┬──────────────────────┐
-│ Column               │ Type         │ Description          │
-├──────────────────────┼──────────────┼──────────────────────┤
-│ id                   │ BIGINT       │ Primary Key          │
-│ guest_segment_id     │ BIGINT       │ FK to guest_segments │
-│ previous_segment     │ ENUM         │ Previous segment     │
-│ new_segment          │ ENUM         │ New segment          │
-│ reason               │ TEXT         │ Why changed          │
-│ created_at           │ TIMESTAMP    │ When changed         │
-│ updated_at           │ TIMESTAMP    │ Updated at           │
-└──────────────────────┴──────────────┴──────────────────────┘
-```
-
----
-
-## Installation & Setup
-
-### Step 1: Run Migration
+### 1. Run the Migration
 
 ```bash
 php artisan migrate
 ```
 
-This creates the `guest_segments` and `guest_segment_history` tables with proper indexes.
+This adds three new columns to the `users` table:
 
-### Step 2: Service Provider Registration
+- `segment` (ENUM): The guest's current segment
+- `segment_metrics` (JSON): Calculated metrics used for segmentation
+- `last_segmented_at` (TIMESTAMP): When the guest was last segmented
 
-The service is already available for dependency injection. No additional registration needed.
+### 2. Access the Dashboard
 
-### Step 3: Verify Installation
+Navigate to: `/segmentation` (requires authentication as admin/manager/staff)
+
+### 3. Segment All Guests
+
+Click **"Re-segment All Guests"** button on the dashboard, or run:
 
 ```bash
-php artisan tinker
-> App\Models\GuestSegment::count()
-# Should return 0 until guests are segmented
+php artisan guests:segment --force
 ```
 
----
+This command:
+
+- Analyzes each guest's booking and payment history
+- Assigns them to one of 7 segments
+- Displays segmentation summary and statistics
+
+## Frontend Routes
+
+### Dashboard & Views
+
+- **GET** `/segmentation` — Main dashboard with segment overview
+- **GET** `/segmentation/segment/{segment}` — View guests in a specific segment
+- **GET** `/segmentation/guest/{id}` — Detailed guest profile with metrics
+- **GET** `/segmentation/segment-form` — Form to trigger re-segmentation
+
+### Example URLs
+
+```
+/segmentation                           # Dashboard with analytics
+/segmentation/segment/vip               # All VIP guests list
+/segmentation/segment/loyal             # All Loyal guests list
+/segmentation/guest/5                   # Guest details for user #5
+/segmentation/segment-form              # Trigger re-segmentation
+```
+
+## The 7 Guest Segments
+
+### 1. **VIP** (Very Important Person)
+
+- **Criteria**: Lifetime value ≥ $50,000 AND ≥ 5 bookings
+- **Characteristics**: Your most valuable guests with consistent high spending
+- **Strategy**: Premium service, exclusive offers, dedicated support
+
+### 2. **LOYAL** (Repeat Customers)
+
+- **Criteria**: ≥ 10 bookings AND average stay ≥ 3 days
+- **Characteristics**: Long-term repeat visitors who stay longer
+- **Strategy**: Loyalty programs, exclusive perks, personalized experiences
+
+### 3. **BUSINESS**
+
+- **Criteria**: Average stay ≤ 2 days AND ≥ 4 bookings
+- **Characteristics**: Short-stay frequent visitors (business travelers)
+- **Strategy**: Fast check-in, business amenities, convenient locations
+
+### 4. **LEISURE**
+
+- **Criteria**: Average stay ≥ 4 days
+- **Characteristics**: Vacation/holiday planner guests with longer stays
+- **Strategy**: Leisure packages, tour arrangements, activity bookings
+
+### 5. **BUDGET**
+
+- **Criteria**: Below median guest spending
+- **Characteristics**: Price-conscious guests
+- **Strategy**: Promotions, value packages, seasonal offers
+
+### 6. **RISK** (Potential Issues)
+
+- **Criteria**: Cancellation rate > 30% OR payment reliability < 70%
+- **Characteristics**: Unreliable guests with payment/cancellation issues
+- **Strategy**: Stricter payment terms, deposit requirements, early confirmation
+
+### 7. **REGULAR** (Default)
+
+- **Criteria**: All other guests
+- **Characteristics**: Occasional visitors with average metrics
+- **Strategy**: Standard service, promotional opportunities
 
 ## API Endpoints
 
-All endpoints are prefixed with `/api/segmentation/` and require admin authentication.
+All endpoints are protected by `auth` middleware and require admin/manager/staff roles.
 
-### 1. Segment a Single Guest
+### Segment a Single Guest
 
-**POST** `/api/segmentation/segment-guest/{user}`
+**Request:**
 
 ```bash
-curl -X POST http://localhost:8000/api/segmentation/segment-guest/1 \
+POST /api/segmentation/segment-guest/{userId}
+```
+
+**Example:**
+
+```bash
+curl -X POST http://localhost/api/segmentation/segment-guest/5 \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-**Response**:
+**Response:**
 
 ```json
 {
-    "status": "success",
+    "success": true,
+    "message": "Guest segmented successfully",
     "data": {
-        "user_id": 1,
+        "user_id": 5,
         "segment": "VIP",
-        "segment_description": "High-value guest with excellent lifetime value and loyalty",
         "metrics": {
-            "lifetime_value": 75000,
-            "booking_count": 8,
-            "avg_stay_days": 3.5,
-            "avg_room_price": 9375,
-            "cancellation_rate": "0%",
-            "payment_reliability": "100%",
-            "services_used": 12,
-            "total_nights": 28
+            "lifetime_value": 55000.0,
+            "total_bookings": 8,
+            "avg_stay_duration": 3.5,
+            "payment_reliability": 98.0,
+            "cancellation_rate": 5.0,
+            "avg_booking_value": 6875.0,
+            "membership_years": 3
         },
-        "last_calculated": "2026-03-13T10:30:00Z"
+        "last_segmented_at": "2024-01-15T10:30:00Z"
     }
 }
 ```
 
-### 2. Segment All Guests
+### Segment All Guests
 
-**POST** `/api/segmentation/segment-all`
+**Request:**
 
 ```bash
-curl -X POST http://localhost:8000/api/segmentation/segment-all \
+POST /api/segmentation/segment-all
+```
+
+**Example:**
+
+```bash
+curl -X POST http://localhost/api/segmentation/segment-all \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-**Response**:
+**Response:**
 
 ```json
 {
-    "status": "success",
-    "message": "Segmented 45 guests successfully, 2 failed",
+    "success": true,
+    "message": "All guests segmented successfully",
     "data": {
-        "total_processed": 47,
-        "successful": 45,
-        "failed": 2,
-        "details": {
-            "1": { "status": "success", "segment": "VIP" },
-            "2": { "status": "success", "segment": "LOYAL" }
-        }
+        "total": 150,
+        "successful": 150,
+        "failed": 0,
+        "processing_time_seconds": 5.23
     }
 }
 ```
 
-### 3. Get Segmentation Summary
+### Get Segmentation Summary
 
-**GET** `/api/segmentation/summary`
+**Request:**
 
 ```bash
-curl http://localhost:8000/api/segmentation/summary \
-  -H "Authorization: Bearer YOUR_TOKEN"
+GET /api/segmentation/summary
 ```
 
-**Response**:
+**Response:**
 
 ```json
 {
-    "status": "success",
-    "data": {
-        "total_guests": 47,
+    "success": true,
+    "summary": {
+        "total_guests": 150,
         "by_segment": {
             "vip": 8,
-            "loyal": 12,
-            "business": 10,
-            "leisure": 5,
-            "budget": 7,
-            "risk": 2,
-            "regular": 3
+            "loyal": 15,
+            "business": 22,
+            "leisure": 18,
+            "budget": 45,
+            "risk": 12,
+            "regular": 30
         },
-        "vip_revenue": 600000,
-        "total_revenue": 1200000,
-        "avg_lifetime_value": 25531.91
+        "average_lifetime_value": 5250.0,
+        "highest_segment": "BUDGET",
+        "lowest_segment": "VIP"
     }
 }
 ```
 
-### 4. Get Segment Profile
+### Get Guests by Segment
 
-**GET** `/api/segmentation/segment/{segment}`
+**Request:**
 
 ```bash
-curl http://localhost:8000/api/segmentation/segment/VIP \
+GET /api/segmentation/segment/{segment}
+```
+
+**Example:**
+
+```bash
+curl http://localhost/api/segmentation/segment/vip \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-**Response**:
+**Response:**
 
 ```json
 {
-    "status": "success",
+    "success": true,
+    "segment": "VIP",
+    "guests": [
+        {
+            "id": 5,
+            "name": "John Doe",
+            "email": "john@example.com",
+            "lifetime_value": 55000.0,
+            "total_bookings": 8,
+            "last_segmented_at": "2024-01-15T10:30:00Z"
+        }
+    ],
+    "total": 8
+}
+```
+
+### Get Guest Insights
+
+**Request:**
+
+```bash
+GET /api/segmentation/insights/{userId}
+```
+
+**Response:**
+
+```json
+{
+    "success": true,
     "data": {
+        "user_id": 5,
+        "name": "John Doe",
         "segment": "VIP",
-        "count": 8,
-        "total_revenue": 600000,
-        "avg_lifetime_value": 75000,
-        "avg_stay_days": 3.75,
-        "avg_booking_count": 8.5,
-        "avg_payment_reliability": 98.5,
-        "guests": [
-            {
-                "id": 1,
-                "name": "John Doe",
-                "email": "john@example.com",
-                "lifetime_value": 75000,
-                "bookings": 8,
-                "avg_stay": 3.5
-            }
+        "metrics": {
+            "lifetime_value": 55000.0,
+            "total_bookings": 8,
+            "avg_stay_duration": 3.5,
+            "payment_reliability": 98.0,
+            "cancellation_rate": 5.0,
+            "avg_booking_value": 6875.0,
+            "membership_years": 3
+        },
+        "recommendations": [
+            "VIP guests with high spending - offer exclusive packages",
+            "Consider dedicated concierge service",
+            "Invite to premium loyalty program"
         ]
     }
 }
 ```
 
-### 5. List Segmented Guests
+## Using the Service Directly in Code
 
-**GET** `/api/segmentation/guests` or **GET** `/api/segmentation/guests/{segment}`
-
-```bash
-curl http://localhost:8000/api/segmentation/guests/VIP?page=1 \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
-
-### 6. Get Guest Insights
-
-**GET** `/api/segmentation/insights/{user}`
-
-```bash
-curl http://localhost:8000/api/segmentation/insights/1 \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
-
-### 7. Export Segment Data
-
-**GET** `/api/segmentation/export/{segment}`
-
-```bash
-curl http://localhost:8000/api/segmentation/export/VIP \
-  -H "Authorization: Bearer YOUR_TOKEN" > vip_guests.json
-```
-
----
-
-## Artisan Command
-
-### Segment All Guests
-
-```bash
-# Interactive (with confirmation)
-php artisan guests:segment
-
-# Force execution (no confirmation)
-php artisan guests:segment --force
-```
-
-**Output Example**:
-
-```
-Starting guest segmentation...
-✓ Guest segmentation completed!
-
-╭───────────────────────────────┬───────╮
-│ Metric                        │ Value │
-├───────────────────────────────┼───────┤
-│ Total Guests Processed        │ 47    │
-│ Successfully Segmented        │ 45    │
-│ Failed                        │ 2     │
-│ Time Taken                    │ 5s    │
-│ Average Time per Guest        │ 0.11s │
-╰───────────────────────────────┴───────╯
-
-Segmentation Summary:
-╭─────────┬───────┬──────────────╮
-│ Segment │ Count │ Total Revenue│
-├─────────┼───────┼──────────────┤
-│ VIP     │ 8     │ $600000      │
-│ LOYAL   │ 12    │ $450000      │
-│ BUSINESS│ 10    │ $250000      │
-│ LEISURE │ 5     │ $180000      │
-│ BUDGET  │ 7     │ $120000      │
-│ RISK    │ 2     │ $5000        │
-│ REGULAR │ 3     │ $15000       │
-╰─────────┴───────┴──────────────╯
-```
-
----
-
-## Usage Examples
-
-### Programmatic Usage
+You can also use the segmentation service directly in your code:
 
 ```php
 <?php
@@ -341,299 +284,220 @@ Segmentation Summary:
 use App\Services\GuestSegmentationEngine;
 use App\Models\User;
 
-$engine = app(GuestSegmentationEngine::class);
-
-// Segment a single guest
-$guest = User::find(1);
-$segment = $engine->segmentGuest($guest);
-echo "Guest segment: " . $segment->segment;
-
-// Segment all guests
-$results = $engine->segmentAllGuests();
-echo "Processed: " . count($results) . " guests";
-
-// Get summary
-$summary = $engine->getSegmentationSummary();
-echo "VIP guests: " . $summary['by_segment']['vip'];
-
-// Get segment profile
-$profile = $engine->getSegmentProfile('VIP');
-foreach ($profile['guests'] as $guest) {
-    echo $guest['name'] . ": $" . $guest['lifetime_value'] . "\n";
-}
-```
-
-### Controller Usage
-
-```php
-class MyController extends Controller
+class YourController
 {
-    public function __construct(private GuestSegmentationEngine $engine)
-    {}
-
-    public function dashboard()
+    public function segment(GuestSegmentationEngine $engine)
     {
-        $summary = $this->engine->getSegmentationSummary();
+        // Segment a single guest
+        $user = User::find(5);
+        $result = $engine->segmentGuest($user);
 
-        return view('dashboard', [
-            'total_guests' => $summary['total_guests'],
-            'by_segment' => $summary['by_segment'],
-            'total_revenue' => $summary['total_revenue'],
-        ]);
+        echo "Guest {$user->name} is now: " . $user->segment;
+
+        // Get all guests in a segment
+        $vipGuests = $engine->getGuestsBySegment('vip');
+
+        // Get segmentation summary
+        $summary = $engine->getSegmentationSummary();
+        echo "Total VIP guests: " . $summary['by_segment']['vip'];
     }
 }
 ```
 
----
-
-## Testing
-
-### Run All Tests
-
-```bash
-php artisan test
-```
-
-### Run Only Segmentation Tests
-
-```bash
-php artisan test --filter GuestSegmentation
-```
-
-### Run Unit Tests
-
-```bash
-php artisan test tests/Unit/GuestSegmentationEngineTest.php
-```
-
-### Run Feature Tests
-
-```bash
-php artisan test tests/Feature/GuestSegmentationFeatureTest.php
-```
-
-### Test Coverage
-
-```bash
-php artisan test --coverage
-```
-
----
-
-## Configuration
-
-Adjust thresholds in `app/Services/GuestSegmentationEngine.php`:
-
-```php
-private array $config = [
-    'vip_lifetime_value' => 50000,        // Modify for different currency
-    'vip_min_bookings' => 5,              // Minimum VIP bookings
-    'loyal_min_bookings' => 10,           // Minimum loyal bookings
-    'loyal_min_stay' => 3,                // Minimum average stay days
-    'business_max_stay' => 2,             // Maximum business stay
-    'business_min_bookings' => 4,         // Minimum business bookings
-    'leisure_min_stay' => 4,              // Minimum leisure stay
-    'risk_cancellation_threshold' => 0.3, // 30% cancellation rate
-    'risk_payment_reliability_threshold' => 70, // Below 70%
-];
-```
-
----
-
-## Performance Optimization
-
-### Caching
-
-Cache the segmentation summary for better performance:
-
-```php
-use Illuminate\Support\Facades\Cache;
-
-$summary = Cache::remember('segmentation_summary', 3600, function () {
-    return $engine->getSegmentationSummary();
-});
-```
-
-### Batch Processing
-
-Use queues for batch segmentation:
-
-```php
-// In a controller or command
-dispatch(new SegmentAllGuestsJob())->onQueue('segmentation');
-```
-
-### Database Indexes
-
-The migration automatically creates indexes on:
-
-- `user_id`
-- `segment`
-- `lifetime_value`
-- `booking_count`
-
----
-
-## Business Intelligence Integration
-
-### Revenue Analysis by Segment
-
-```php
-$segments = GuestSegment::select('segment')
-    ->selectRaw('SUM(lifetime_value) as total_revenue')
-    ->selectRaw('COUNT(*) as guest_count')
-    ->selectRaw('AVG(lifetime_value) as avg_revenue')
-    ->groupBy('segment')
-    ->get();
-```
-
-### Segment Trends
-
-```php
-$history = GuestSegmentHistory::where('created_at', '>=', now()->subMonth())
-    ->groupBy('new_segment')
-    ->selectRaw('new_segment, COUNT(*) as changes')
-    ->get();
-```
-
----
-
-## Best Practices
-
-### 1. **Regular Recalculation**
-
-Schedule segmentation to run weekly or monthly:
-
-```php
-// In app/Console/Kernel.php
-protected function schedule(Schedule $schedule)
-{
-    $schedule->command('guests:segment --force')
-        ->weekly(Carbon::SUNDAY)
-        ->at('02:00');
-}
-```
-
-### 2. **Monitor Changes**
-
-Review segment changes regularly with the history table to identify churn or upgrades.
-
-### 3. **Use Segments in Marketing**
-
-Integrate with email campaigns, SMS notifications, and personalized offers based on segment:
-
-```php
-// Example: VIP-only promotion
-$vips = GuestSegment::vip()->with('user')->get();
-foreach ($vips as $vip) {
-    Mail::to($vip->user->email)->send(new VipExclusiveOffer());
-}
-```
-
-### 4. **Risk Management**
-
-Monitor RISK segment closely and implement additional verification:
-
-```php
-$riskGuests = GuestSegment::risk()->get();
-foreach ($riskGuests as $risk) {
-    // Require deposit, payment verification, etc.
-}
-```
-
-### 5. **Data Quality**
-
-Ensure accurate booking and payment data:
-
-- Validate dates during reservation creation
-- Verify payments are marked correctly
-- Clean up test/demo records regularly
-
----
-
-## Troubleshooting
-
-### Issue: Guests not segmenting correctly
-
-**Solution**: Check metrics calculation:
-
-```bash
-php artisan tinker
-> $guest = App\Models\User::find(1);
-> $metrics = app(GuestSegmentationEngine::class)->calculateGuestMetrics($guest);
-> dd($metrics);
-```
-
-### Issue: Slow segmentation
-
-**Solution**: Ensure indexes exist:
-
-```sql
-SHOW INDEX FROM reservations;
-SHOW INDEX FROM payments;
-```
-
-### Issue: High memory usage for large dataset
-
-**Solution**: Use batch processing:
-
-```php
-User::where('type', 'guest')
-    ->chunk(100, function ($users) {
-        foreach ($users as $user) {
-            $engine->segmentGuest($user);
-        }
-    });
-```
-
----
-
-## Future Enhancements
-
-1. **Machine Learning**: Use historical data for predictive segmentation
-2. **Real-time Updates**: Segment guests automatically on each booking/payment
-3. **Custom Segments**: Allow admin to define custom segment criteria
-4. **Segment Lifecycle**: Track guest movement between segments over time
-5. **Seasonal Adjustments**: Adjust thresholds based on season
-6. **A/B Testing**: Test different segment strategies and measure impact
-
----
-
-## Files Created
+## Metrics Calculated
+
+The algorithm calculates 7 metrics for each guest:
+
+| Metric                    | Description                           | Source              |
+| ------------------------- | ------------------------------------- | ------------------- |
+| **Lifetime Value**        | Total amount paid across all bookings | Payment records     |
+| **Total Bookings**        | Number of reservations made           | Reservation records |
+| **Average Stay Duration** | Average nights per booking            | Reservation data    |
+| **Payment Reliability**   | Percentage of on-time payments        | Payment records     |
+| **Cancellation Rate**     | Percentage of cancelled bookings      | Reservation status  |
+| **Average Booking Value** | Average amount spent per booking      | Payment records     |
+| **Membership Years**      | Years since first booking             | User creation date  |
+
+## Implementation Details
+
+### File Structure
 
 ```
 app/
 ├── Services/
-│   └── GuestSegmentationEngine.php          # Core algorithm
-├── Models/
-│   ├── GuestSegment.php                     # Main model
-│   └── GuestSegmentHistory.php              # History tracking
+│   └── GuestSegmentationEngine.php       (Core algorithm)
 ├── Http/Controllers/
-│   └── GuestSegmentationController.php      # API endpoints
-├── Console/Commands/
-│   └── SegmentAllGuests.php                 # Artisan command
-database/
-└── migrations/
-    └── 2026_03_13_000001_create_guest_segments_table.php
-tests/
-├── Unit/
-│   └── GuestSegmentationEngineTest.php      # Unit tests
-└── Feature/
-    └── GuestSegmentationFeatureTest.php     # Feature tests
+│   └── GuestSegmentationController.php   (API endpoints)
+└── Console/Commands/
+    └── SegmentAllGuests.php              (Artisan command)
+
+database/migrations/
+└── 2026_03_13_add_segmentation_to_users.php  (Schema changes)
+
+routes/
+└── web.php                                (API routes)
 ```
 
----
+### Architecture
 
-## Support & Documentation
+**GuestSegmentationEngine** - Core service that handles:
 
-For more information:
+- Guest segmentation logic
+- Metrics calculation
+- Segment determination
+- Database updates
 
-- Review `PROJECT_ANALYSIS.md` for algorithm theory
-- Check `ALGORITHM_IMPLEMENTATION_GUIDE.md` for coding patterns
-- See test files for usage examples
+**GuestSegmentationController** - REST API layer that:
 
----
+- Validates requests
+- Calls the service
+- Returns JSON responses
+- Handles errors gracefully
 
-**Version**: 1.0.0  
-**Last Updated**: March 13, 2026  
-**Status**: Production Ready ✅
+**SegmentAllGuests** - Command that:
+
+- Provides CLI interface
+- Shows progress information
+- Displays summary statistics
+
+## Performance Considerations
+
+- **Single Guest**: ~100ms (includes database queries)
+- **All Guests (150)**: ~5-10 seconds (batched processing)
+- **Database Impact**: Minimal (only updates users table)
+- **Storage**: ~500 bytes per guest (JSON metrics + enum)
+
+## Scheduled Execution
+
+To automatically re-segment guests daily, add to your scheduler:
+
+```php
+// app/Console/Kernel.php
+protected function schedule(Schedule $schedule)
+{
+    $schedule->command('guests:segment --force')
+        ->daily()
+        ->at('02:00');  // 2 AM daily
+}
+```
+
+## Customization
+
+### Adjust Segment Thresholds
+
+Edit `app/Services/GuestSegmentationEngine.php`:
+
+```php
+private function determineSegment(array $metrics): string
+{
+    // Modify conditions to adjust segment thresholds
+    if ($metrics['lifetime_value'] >= 50000 && $metrics['total_bookings'] >= 5) {
+        return 'VIP';  // Change 50000 or 5 as needed
+    }
+    // ...
+}
+```
+
+### Add New Metrics
+
+Extend `calculateGuestMetrics()` method to add custom metrics:
+
+```php
+private function calculateGuestMetrics(User $guest): array
+{
+    $metrics = [
+        // ... existing metrics
+        'custom_metric' => $this->calculateCustomMetric($guest),
+    ];
+    return $metrics;
+}
+```
+
+## Frontend Features
+
+The Guest Segmentation module includes a complete frontend dashboard for managing segments.
+
+### Dashboard (`/segmentation`)
+
+- Segment distribution overview with color-coded cards
+- Visual bar chart showing percentage breakdown
+- Total guests and average lifetime value metrics
+- Quick action buttons to re-segment or manage guests
+- Quick links to view each segment
+
+### Segment Views (`/segmentation/segment/{segment}`)
+
+Shows all guests in a specific segment:
+
+- Segment criteria and recommended strategy
+- Sortable table of guests with key metrics
+    - Name, email, lifetime value
+    - Booking count, average stay duration
+    - Links to individual guest profiles
+- Pagination support for large segments
+
+### Guest Details (`/segmentation/guest/{id}`)
+
+Comprehensive guest profile including:
+
+- Current segment designation
+- Segment info card with update timestamp
+- 7 calculated metrics displayed clearly
+- Payment reliability percentage with color coding
+- Recent reservations (last 5 with dates and amounts)
+- Recent payments (last 5 with method and status)
+- Personalized recommendations based on segment
+
+### Re-segmentation Form (`/segmentation/segment-form`)
+
+Interactive form to trigger re-segmentation:
+
+- Confirmation checkbox to prevent accidental runs
+- Real-time progress bar during processing
+- Results display with success/failure counts
+- Error handling with user-friendly messages
+- Navigation back to dashboard
+
+### Views Structure
+
+```
+resources/views/segmentation/
+├── dashboard.blade.php          # Main dashboard with analytics
+├── segment.blade.php            # List guests by segment
+├── guest-detail.blade.php       # Individual guest profile
+└── segment-form.blade.php       # Re-segmentation trigger
+```
+
+## Troubleshooting
+
+### Migration fails
+
+- Ensure database connection is active
+- Check if columns don't already exist on `users` table
+
+### Segmentation runs slowly
+
+- Check database query performance
+- Ensure indexes on `reservations` and `payments` tables
+- Consider running during off-peak hours
+
+### No guests get segmented
+
+- Verify migration has run: `php artisan migrate:status`
+- Check that users have reservation/payment history
+- Review error logs in `storage/logs/`
+
+### Frontend views not loading
+
+- Verify auth middleware is applied
+- Check user role is admin/manager/staff
+- Ensure layout file exists: `resources/views/layouts/app.blade.php`
+- Review routes: `php artisan route:list | grep segmentation`
+
+## Support
+
+For issues or questions, check:
+
+1. The algorithm documentation in `ALGORITHM_IMPLEMENTATION_GUIDE.md`
+2. Controller error responses (JSON)
+3. Application logs in `storage/logs/laravel.log`
