@@ -69,85 +69,166 @@ def draw_incremental_methodology():
 
 
 # ============================================================
-# FIGURE 2: Use Case Diagram
+# FIGURE 2: Use Case Diagram (Enhanced - Based on DB & Routes Analysis)
 # ============================================================
 def draw_use_case():
-    fig, ax = plt.subplots(figsize=(16, 12))
-    ax.set_xlim(0, 16)
-    ax.set_ylim(0, 12)
+    """
+    Enhanced use case diagram based on:
+    - Database Models: User, Room, Reservation, Food, FoodOrder, Payment
+    - Routes Analysis: routes/web.php
+    - Controllers: All HTTP controllers
+
+    System Actors:
+    1. Guest (Unauthenticated) - Can register/login
+    2. Authenticated Guest/Customer - Can book, order food, make payments
+    3. Admin - Can manage all resources
+    """
+    fig, ax = plt.subplots(figsize=(20, 14))
+    ax.set_xlim(0, 20)
+    ax.set_ylim(0, 14)
     ax.axis('off')
-    ax.set_title('Figure 2: Use Case Diagram', fontsize=16, fontweight='bold', pad=20)
+    ax.set_title('Figure 2: Use Case Diagram - Hotel Management System',
+                 fontsize=16, fontweight='bold', pad=20)
 
     # System boundary
-    rect = FancyBboxPatch((4, 0.5), 8, 11, boxstyle="round,pad=0.2",
-                          facecolor='#f8f9fa', edgecolor='#2c3e50', linewidth=2)
+    rect = FancyBboxPatch((3.5, 0.5), 13, 12.8, boxstyle="round,pad=0.2",
+                          facecolor='#f8f9fa', edgecolor='#2c3e50', linewidth=2.5)
     ax.add_patch(rect)
-    ax.text(8, 11.2, 'Hotel Management System', ha='center', va='center',
+    ax.text(10.2, 13.0, 'Hotel Management System (HMS)', ha='center', va='center',
             fontsize=13, fontweight='bold', color='#2c3e50')
 
-    def draw_actor(x, y, label):
-        ax.plot(x, y + 0.5, 'o', markersize=12, color='#2c3e50')
-        ax.plot([x, x], [y + 0.3, y - 0.1], color='#2c3e50', linewidth=2)
-        ax.plot([x - 0.3, x + 0.3], [y + 0.15, y + 0.15], color='#2c3e50', linewidth=2)
-        ax.plot([x - 0.2, x], [y - 0.5, y - 0.1], color='#2c3e50', linewidth=2)
-        ax.plot([x + 0.2, x], [y - 0.5, y - 0.1], color='#2c3e50', linewidth=2)
-        ax.text(x, y - 0.8, label, ha='center', va='center', fontsize=10, fontweight='bold')
+    def draw_actor(x, y, label, color='#2c3e50'):
+        """Draw a stick figure actor"""
+        circle = plt.Circle((x, y + 0.5), 0.25, color=color, zorder=10)
+        ax.add_patch(circle)
+        ax.plot([x, x], [y + 0.25, y - 0.1], color=color, linewidth=2.5, zorder=10)
+        ax.plot([x - 0.35, x + 0.35], [y + 0.1, y + 0.1], color=color, linewidth=2.5, zorder=10)
+        ax.plot([x - 0.2, x], [y - 0.3, y - 0.1], color=color, linewidth=2.5, zorder=10)
+        ax.plot([x + 0.2, x], [y - 0.3, y - 0.1], color=color, linewidth=2.5, zorder=10)
+        ax.text(x, y - 0.95, label, ha='center', va='center', fontsize=9, fontweight='bold')
 
-    def draw_usecase(x, y, text, color='#dceefb'):
-        ellipse = mpatches.Ellipse((x, y), 3.2, 0.7, facecolor=color,
-                                    edgecolor='#2c3e50', linewidth=1.2)
+    def draw_usecase(x, y, text, color='#dceefb', width=2.8):
+        """Draw a use case ellipse"""
+        ellipse = mpatches.Ellipse((x, y), width, 0.55, facecolor=color,
+                                    edgecolor='#34495e', linewidth=1.3, zorder=5)
         ax.add_patch(ellipse)
-        ax.text(x, y, text, ha='center', va='center', fontsize=8.5, fontweight='bold')
+        ax.text(x, y, text, ha='center', va='center', fontsize=7.8, fontweight='bold', zorder=6)
 
-    # Actors
-    draw_actor(1.5, 9, 'Admin')
-    draw_actor(1.5, 4, 'Guest')
+    def connect_actor_usecase(ax, x1, y1, x2, y2, color='#3498db', style='-'):
+        """Draw connection line from actor to use case"""
+        ax.plot([x1, x2], [y1, y2], color=color, linewidth=0.9,
+                linestyle=style, alpha=0.65, zorder=4)
 
-    # Admin use cases
-    admin_cases = [
-        (7, 10.5, 'Manage Rooms (CRUD)'),
-        (7, 9.7, 'Manage Reservations'),
-        (7, 8.9, 'Check-In / Check-Out Guest'),
-        (7, 8.1, 'Manage Food Menu'),
-        (7, 7.3, 'Update Food Order Status'),
-        (7, 6.5, 'Record Payment'),
-        (7, 5.7, 'Create Guest Account'),
-        (7, 4.9, 'View Dashboard & Reports'),
+    # ===== ACTORS =====
+    draw_actor(1.5, 11.5, 'Guest\n(Unauth)', color='#e67e22')  # Orange
+    draw_actor(1.5, 6, 'Guest\n(Auth)', color='#27ae60')        # Green
+    draw_actor(1.5, 0.8, 'Admin', color='#2980b9')              # Blue
+
+    # ===== AUTHENTICATION LAYER (Top) =====
+    draw_usecase(6.5, 12.3, 'Register', '#ffe5b4')
+    draw_usecase(8.5, 12.3, 'Login', '#ffe5b4')
+    draw_usecase(10.5, 12.3, 'Logout', '#ffe5b4')
+
+    connect_actor_usecase(ax, 1.85, 11.5, 5.8, 12.3, '#e67e22')
+    connect_actor_usecase(ax, 1.85, 11.5, 7.8, 12.3, '#e67e22')
+    connect_actor_usecase(ax, 1.85, 5.8, 10.0, 12.3, '#27ae60')
+
+    # ===== PROFILE & DASHBOARD LAYER =====
+    draw_usecase(6.5, 10.8, 'View Profile', '#d5f5e3')
+    draw_usecase(8.5, 10.8, 'Edit Profile', '#d5f5e3')
+    draw_usecase(10.5, 10.8, 'View Dashboard', '#d5f5e3')
+
+    connect_actor_usecase(ax, 1.85, 6.0, 6.5, 10.5, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 6.0, 8.5, 10.5, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 6.0, 10.5, 10.5, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 1.3, 10.5, 10.5, '#2980b9')
+
+    # ===== ROOM MANAGEMENT LAYER =====
+    draw_usecase(6.5, 9.2, 'Search Rooms', '#d5f5e3', 2.6)
+    draw_usecase(8.5, 9.2, 'Filter by\nPrice/Type', '#d5f5e3', 2.6)
+    draw_usecase(10.5, 9.2, 'View Room\nDetails', '#d5f5e3', 2.6)
+    draw_usecase(12.5, 9.2, 'Manage Rooms\n[CRUD]', '#dceefb', 2.6)
+
+    connect_actor_usecase(ax, 1.85, 6.0, 6.5, 9.0, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 6.0, 8.5, 9.0, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 6.0, 10.5, 9.0, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 1.3, 12.5, 9.0, '#2980b9')
+
+    # ===== RESERVATION MANAGEMENT LAYER =====
+    draw_usecase(6.5, 7.6, 'Book a Room\n[Reserve]', '#d5f5e3', 2.6)
+    draw_usecase(8.5, 7.6, 'View My\nReservation', '#d5f5e3', 2.6)
+    draw_usecase(10.5, 7.6, 'Cancel\nReservation', '#d5f5e3', 2.6)
+    draw_usecase(12.5, 7.6, 'Manage\nReservations', '#dceefb', 2.6)
+    draw_usecase(14.5, 7.6, 'Check-In/\nCheck-Out', '#dceefb', 2.6)
+
+    connect_actor_usecase(ax, 1.85, 6.0, 6.5, 7.4, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 6.0, 8.5, 7.4, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 6.0, 10.5, 7.4, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 1.3, 12.5, 7.4, '#2980b9')
+    connect_actor_usecase(ax, 1.85, 1.3, 14.5, 7.4, '#2980b9')
+
+    # ===== FOOD & DINING LAYER =====
+    draw_usecase(6.5, 6.0, 'View Food\nMenu', '#d5f5e3', 2.6)
+    draw_usecase(8.5, 6.0, 'Order Food\nfrom Menu', '#d5f5e3', 2.6)
+    draw_usecase(10.5, 6.0, 'View Food\nOrders', '#d5f5e3', 2.6)
+    draw_usecase(12.5, 6.0, 'Manage Food\nMenu [CRUD]', '#dceefb', 2.6)
+    draw_usecase(14.5, 6.0, 'Update Food\nOrder Status', '#dceefb', 2.6)
+
+    connect_actor_usecase(ax, 1.85, 6.0, 6.5, 5.8, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 6.0, 8.5, 5.8, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 6.0, 10.5, 5.8, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 1.3, 12.5, 5.8, '#2980b9')
+    connect_actor_usecase(ax, 1.85, 1.3, 14.5, 5.8, '#2980b9')
+
+    # ===== PAYMENT & BILLING LAYER =====
+    draw_usecase(6.5, 4.4, 'View Billing\nSummary', '#d5f5e3', 2.6)
+    draw_usecase(8.5, 4.4, 'Make Payment', '#d5f5e3', 2.6)
+    draw_usecase(10.5, 4.4, 'View Payment\nHistory', '#d5f5e3', 2.6)
+    draw_usecase(12.5, 4.4, 'Record\nPayment', '#dceefb', 2.6)
+    draw_usecase(14.5, 4.4, 'View All\nPayments', '#dceefb', 2.6)
+
+    connect_actor_usecase(ax, 1.85, 6.0, 6.5, 4.2, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 6.0, 8.5, 4.2, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 6.0, 10.5, 4.2, '#27ae60')
+    connect_actor_usecase(ax, 1.85, 1.3, 12.5, 4.2, '#2980b9')
+    connect_actor_usecase(ax, 1.85, 1.3, 14.5, 4.2, '#2980b9')
+
+    # ===== GUEST MANAGEMENT LAYER (Admin Only) =====
+    draw_usecase(12.5, 2.8, 'Manage Guests\n[CRUD]', '#dceefb', 2.6)
+    draw_usecase(14.5, 2.8, 'View Guest\nDetails', '#dceefb', 2.6)
+
+    connect_actor_usecase(ax, 1.85, 1.3, 12.5, 2.6, '#2980b9')
+    connect_actor_usecase(ax, 1.85, 1.3, 14.5, 2.6, '#2980b9')
+
+    # ===== DATA ANALYSIS & REPORTING LAYER =====
+    draw_usecase(6.5, 2.0, 'Admin Dashboard\n& Reports', '#dceefb', 2.6)
+    draw_usecase(8.5, 2.0, 'Guest\nSegmentation', '#dceefb', 2.6)
+
+    connect_actor_usecase(ax, 1.85, 1.3, 6.5, 1.8, '#2980b9')
+    connect_actor_usecase(ax, 1.85, 1.3, 8.5, 1.8, '#2980b9')
+
+    # ===== LEGEND =====
+    legend_y = 0.6
+    ax.text(16.2, legend_y + 1.0, 'Legend:', fontsize=9, fontweight='bold', color='#2c3e50')
+
+    # Color legend
+    legend_items = [
+        ('#ffe5b4', 'Authentication'),
+        ('#d5f5e3', 'Guest Functions'),
+        ('#dceefb', 'Admin Functions'),
     ]
 
-    guest_cases = [
-        (7, 3.9, 'Register / Login'),
-        (7, 3.1, 'Search & Filter Rooms'),
-        (7, 2.3, 'Book a Room'),
-        (7, 1.5, 'Order Food (During Check-In)'),
-        (7, 0.7, 'View Billing Summary'),
-    ]
-
-    for x, y, text in admin_cases:
-        draw_usecase(x, y, text, '#dceefb')
-        ax.plot([2.0, x - 1.6], [9.0, y], color='#3498db', linewidth=0.8, alpha=0.6)
-
-    for x, y, text in guest_cases:
-        draw_usecase(x, y, text, '#d5f5e3')
-        ax.plot([2.0, x - 1.6], [4.0, y], color='#27ae60', linewidth=0.8, alpha=0.6)
-
-    # Shared use cases (admin also connects)
-    for x, y, _ in guest_cases[:2]:
-        ax.plot([2.0, x - 1.6], [9.0, y], color='#3498db', linewidth=0.8, linestyle='--', alpha=0.4)
-
-    # Legend
-    ax.text(13.5, 10.5, 'Legend:', fontsize=9, fontweight='bold')
-    p1 = mpatches.Ellipse((13.5, 10.0), 1.0, 0.35, facecolor='#dceefb', edgecolor='#2c3e50', linewidth=0.8)
-    ax.add_patch(p1)
-    ax.text(14.2, 10.0, 'Admin', fontsize=8)
-    p2 = mpatches.Ellipse((13.5, 9.5), 1.0, 0.35, facecolor='#d5f5e3', edgecolor='#2c3e50', linewidth=0.8)
-    ax.add_patch(p2)
-    ax.text(14.2, 9.5, 'Guest', fontsize=8)
+    for i, (color, label) in enumerate(legend_items):
+        y_pos = legend_y - (i * 0.35)
+        rect = FancyBboxPatch((16.0, y_pos - 0.1), 0.3, 0.2,
+                              facecolor=color, edgecolor='#2c3e50', linewidth=0.8)
+        ax.add_patch(rect)
+        ax.text(16.5, y_pos, label, fontsize=7, va='center', color='#2c3e50')
 
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, 'figure2_use_case_diagram.png'), dpi=200, bbox_inches='tight')
     plt.close()
-    print("Figure 2: Use Case Diagram - DONE")
+    print("Figure 2: Enhanced Use Case Diagram - DONE")
 
 
 # ============================================================
