@@ -14,7 +14,7 @@
             <div class="col-md-5">
                 <div class="card shadow-sm">
                     <div class="card-body p-4">
-                        <h4 class="text-center mb-4" style="color:#1a3263">Login</h4>
+                        <h4 class="text-center mb-4" style="color:#1a3263">HMS Login</h4>
 
                         @if ($errors->any())
                             <div class="alert alert-danger">

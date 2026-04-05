@@ -57,7 +57,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('algorithms', [AlgorithmDemoController::class, 'index'])->name('algorithms.index');
     Route::post('algorithms/segment', function () {
-        \Artisan::call('guests:segment');
+        Artisan::call('guests:segment');
+
         return back()->with('success', 'Guest segmentation re-run successfully.');
     })->name('algorithms.segment');
 });

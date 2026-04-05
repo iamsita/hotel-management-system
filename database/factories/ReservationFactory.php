@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Room;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ReservationFactory extends Factory
@@ -22,7 +23,7 @@ class ReservationFactory extends Factory
             'guests' => rand(1, $room->capacity),
             'status' => 'checked_out',
             'total_amount' => $room->price_per_night
-                * (new \Carbon\Carbon($checkIn))->diffInDays(new \Carbon\Carbon($checkOut)),
+                * (new Carbon($checkIn))->diffInDays(new Carbon($checkOut)),
         ];
     }
 

@@ -1,313 +1,207 @@
 # Algorithm Used in Hotel Management System
 
-## 1. Introduction
+## 3.3 Algorithm Details
 
-This document describes the algorithm implemented in the Hotel Management System developed as part of the college minor project. The system is built using the Laravel framework (PHP) with a MySQL database. The algorithm implemented is a **Rule-Based Decision Tree** for automatic guest segmentation, which classifies hotel guests into behavioral categories based on their reservation history, spending patterns, and cancellation behavior.
+The Hotel Management System implements a **Rule-Based Decision Tree Algorithm** to automatically classify hotel guests into behavioral segments based on their booking history and transaction data. The algorithm analyzes guest data from the reservations and payments tables and assigns each guest a segment label which is stored in the users table. This helps hotel administrators quickly identify which guests need special attention without manually reviewing individual records.
 
----
-
-## 2. Rule-Based Decision Tree Algorithm (Guest Segmentation)
-
-### 2.1 Purpose
-
-The Rule-Based Decision Tree Algorithm automatically classifies hotel guests into distinct behavioral segments based on their historical booking data, total spending, and cancellation patterns. This enables the hotel administration to understand their guest base and provide personalized service to different types of guests.
-
-### 2.2 Problem Statement
-
-Not all hotel guests behave the same way. Some guests are frequent, high-spending visitors who deserve premium service. Others have not returned in months and may need re-engagement. Some guests repeatedly cancel reservations, which creates operational challenges. The system needs an automated method to categorize guests so that administrators can identify each type at a glance and take appropriate action — without manually analyzing individual guest records.
-
-### 2.3 Algorithm Logic
-
-The algorithm implements a **Rule-Based Decision Tree** — a hierarchical series of IF-THEN conditions evaluated sequentially in order of priority. Each guest is assigned to the first segment whose conditions they satisfy. The rules are applied to four features derived from the existing database tables.
-
-### 2.4 Mathematical Formulation
-
-Let **G** be the set of all guests in the system, and let each guest be represented as **g ∈ G**.
-
-For each guest g, four feature values are computed from the database:
+The algorithm evaluates four features for each guest and applies five priority-based rules in order. The guest is placed in the first category whose condition matches. If no rule matches, the guest is marked as "Regular" by default.
 
 ---
 
-**Feature 1 — Total Spend (M)**
+## Features Used
 
-    M(g) = Σ  payment.amount
-             ∀ payments linked to g where payment.status = "completed"
-
-This is the sum of all completed payment amounts made by guest g across all reservations.
-
----
-
-**Feature 2 — Visit Count (F)**
-
-    F(g) = | { r ∈ Reservations : r.user_id = g.id } |
-
-This is the total number of reservations made by guest g (the cardinality of the reservation set).
+| Feature                   | Source Table | How it is Calculated                 |
+| ------------------------- | ------------ | ------------------------------------ |
+| Total Spend (M)           | payments     | Sum of all completed payment amounts |
+| Visit Count (F)           | reservations | Total number of bookings made        |
+| Days Since Last Visit (R) | reservations | Days passed since last checkout      |
+| Cancellation Rate (C)     | reservations | Cancelled bookings ÷ total bookings  |
 
 ---
 
-**Feature 3 — Days Since Last Visit (R)**
+## Classification Rules
 
-    R(g) = D_today  −  max({ r.check_out : r.user_id = g.id })
-
-Where D_today is the current date. R(g) measures how many days have passed since the guest's most recent checkout. A smaller value of R means the guest visited more recently.
-
----
-
-**Feature 4 — Cancellation Rate (C)**
-
-    C(g) =  | { r : r.user_id = g.id  AND  r.status = "cancelled" } |
-            ─────────────────────────────────────────────────────────
-                   | { r : r.user_id = g.id } |
-
-This is the proportion of reservations that were cancelled. C(g) ∈ [0, 1], where 0 means no cancellations and 1 means all reservations were cancelled.
+| Priority | Condition               | Segment        |
+| -------- | ----------------------- | -------------- |
+| 1        | M ≥ Rs.10,000 AND F ≥ 5 | VIP            |
+| 2        | F ≥ 3 AND C < 0.2       | Loyal          |
+| 3        | R > 90 AND F ≥ 2        | At Risk        |
+| 4        | F = 1 AND M ≥ Rs.5,000  | High Value New |
+| 5        | C ≥ 0.5                 | Unreliable     |
+| 6        | Default                 | Regular        |
 
 ---
 
-**Classification Function**
+## Segment Definitions
 
-The classification function φ maps each guest's feature vector to a segment label:
-
-    φ : (M, F, R, C)  →  { vip, loyal, at_risk, high_value_new, unreliable, regular }
-
-The function is defined as a priority-ordered piecewise rule:
-
-              ⎧  "vip"            if  M(g) ≥ 10000  AND  F(g) ≥ 5
-              ⎪  "loyal"          if  F(g) ≥ 3       AND  C(g) < 0.2
-    φ(g)  =   ⎨  "at_risk"        if  R(g) > 90      AND  F(g) ≥ 2
-              ⎪  "high_value_new" if  F(g) = 1        AND  M(g) ≥ 5000
-              ⎪  "unreliable"     if  C(g) ≥ 0.5
-              ⎩  "regular"        (default)
-
-Rules are evaluated strictly from top to bottom. The guest is assigned to the segment of the **first rule that evaluates to true**. If no rule matches, the default "regular" segment is assigned.
+| Segment        | Description                           | Recommended Action             |
+| -------------- | ------------------------------------- | ------------------------------ |
+| VIP            | High-spending frequent guest          | Room upgrade, priority service |
+| Loyal          | Repeat visitor with low cancellations | Discount, loyalty reward       |
+| At Risk        | Has not visited in over 90 days       | Send re-engagement offer       |
+| High Value New | First-time guest with high spending   | Assign dedicated staff         |
+| Unreliable     | Cancels 50% or more of bookings       | Require advance deposit        |
+| Regular        | Does not meet any above criteria      | Standard service               |
 
 ---
 
-**Segmentation Procedure**
+## Steps of the Algorithm
 
-The full segmentation over all guests can be expressed as:
+### Step i — Data Retrieval
 
-    S = { (g, φ(g))  :  g ∈ G }
+A single SQL query joins the users, reservations, payments, and food_orders tables to compute all feature values for every guest at once. The HMS also tracks food orders to enhance segmentation insights:
 
-Where S is the complete mapping of every guest to their computed segment. This mapping is stored by updating the segment field in the users table for each guest g.
-
----
-
-### 2.5 Features Used from the Database
-
-| Feature | Source Table | Derivation |
-|---|---|---|
-| Total Spend | payments | SUM(amount) WHERE status = 'completed' |
-| Visit Count | reservations | COUNT(id) per guest |
-| Days Since Last Visit | reservations | DATEDIFF(today, MAX(check_out)) |
-| Cancellation Rate | reservations | cancelled reservations ÷ total reservations |
-
-### 2.5 Decision Tree
-
-```
-INPUT: guest features (total_spend, visit_count, days_since_last_visit, cancellation_rate)
-
-├── IF total_spend >= 10000 AND visit_count >= 5
-│       └── ASSIGN segment = "VIP"
-│
-├── ELSE IF visit_count >= 3 AND cancellation_rate < 0.2
-│       └── ASSIGN segment = "Loyal"
-│
-├── ELSE IF days_since_last_visit > 90 AND visit_count >= 2
-│       └── ASSIGN segment = "At Risk"
-│
-├── ELSE IF visit_count = 1 AND total_spend >= 5000
-│       └── ASSIGN segment = "High Value New"
-│
-├── ELSE IF cancellation_rate >= 0.5
-│       └── ASSIGN segment = "Unreliable"
-│
-└── ELSE
-        └── ASSIGN segment = "Regular"
-
-OUTPUT: segment label stored in users.segment
+```sql
+SELECT
+    u.id AS user_id,
+    COUNT(r.id) AS visit_count,
+    COALESCE(SUM(p.amount), 0) AS total_spend,
+    COALESCE(DATEDIFF(CURDATE(), MAX(r.check_out)), 9999) AS days_since_last_visit,
+    COALESCE(
+        SUM(CASE WHEN r.status = 'cancelled' THEN 1 ELSE 0 END)
+        / NULLIF(COUNT(r.id), 0), 0
+    ) AS cancellation_rate,
+    COUNT(fo.id) AS food_order_count
+FROM users u
+LEFT JOIN reservations r ON r.user_id = u.id
+LEFT JOIN payments p ON p.reservation_id = r.id AND p.status = 'completed'
+LEFT JOIN food_orders fo ON fo.reservation_id = r.id AND fo.status = 'delivered'
+WHERE u.role = 'guest'
+GROUP BY u.id;
 ```
 
-### 2.6 Segment Definitions
+### Step ii — Feature Vector Creation
 
-| Segment | Description | Recommended Admin Action |
-|---|---|---|
-| VIP | High-spending guest with 5 or more completed stays | Complimentary room upgrade, priority service, loyalty rewards |
-| Loyal | Repeat visitor with at least 3 stays and low cancellation rate | Discount on next booking, loyalty acknowledgement |
-| At Risk | Previously active guest who has not visited in over 90 days | Re-engagement promotional offer via email |
-| High Value New | First-time guest with a high-value booking | Assign dedicated staff, personalized welcome |
-| Unreliable | Guest who cancels 50% or more of their bookings | Require advance deposit on future reservations |
-| Regular | Guest who does not meet any of the above criteria | Standard hotel service |
+For each guest, a feature vector is formed as:
 
-### 2.7 Pseudocode
+**v = (M, F, R, C)**
 
-```
-FUNCTION classifyGuest(total_spend, visit_count, days_since_last_visit, cancellation_rate):
+Where M = Total Spend, F = Visit Count, R = Days Since Last Visit, C = Cancellation Rate.
 
-    IF total_spend >= 10000 AND visit_count >= 5:
-        RETURN "vip"
+### Step iii — Classification
 
-    IF visit_count >= 3 AND cancellation_rate < 0.2:
-        RETURN "loyal"
-
-    IF days_since_last_visit > 90 AND visit_count >= 2:
-        RETURN "at_risk"
-
-    IF visit_count = 1 AND total_spend >= 5000:
-        RETURN "high_value_new"
-
-    IF cancellation_rate >= 0.5:
-        RETURN "unreliable"
-
-    RETURN "regular"
-
-END FUNCTION
-
-
-PROCEDURE runSegmentation():
-
-    guests = SQL query to aggregate features for all guest-role users
-             from reservations, payments tables
-
-    FOR EACH guest IN guests:
-        segment = classifyGuest(guest.total_spend, guest.visit_count,
-                                guest.days_since_last_visit, guest.cancellation_rate)
-        UPDATE users SET segment = segment WHERE id = guest.user_id
-
-END PROCEDURE
-```
-
-### 2.8 Step-by-Step Process
-
-1. A single SQL query joins the `users`, `reservations`, and `payments` tables to compute the four feature values for each guest.
-2. For each guest record, the `classifyGuest` function evaluates the rules in order from top to bottom.
-3. The guest is assigned the segment of the first rule that evaluates to true.
-4. If no rule matches, the guest is assigned the "regular" segment by default.
-5. The computed segment label is saved to the `segment` column of the `users` table.
-6. This process is scheduled to run automatically every day at midnight via Laravel's task scheduler.
-7. The Admin Guest Segmentation page reads the `segment` field and displays a color-coded badge next to each guest's name along with the feature values used for classification.
-
-### 2.9 Example
-
-```
-Guest: Alice
-  total_spend          = Rs. 12,000
-  visit_count          = 6
-  days_since_last_visit = 10
-  cancellation_rate    = 0.0
-
-Rule 1: total_spend >= 10000 AND visit_count >= 5 → TRUE
-Result: segment = "VIP"
-
----
-
-Guest: Eve
-  total_spend          = Rs. 800
-  visit_count          = 4
-  days_since_last_visit = 20
-  cancellation_rate    = 0.50
-
-Rule 1: 800 >= 10000 AND 4 >= 5 → FALSE
-Rule 2: 4 >= 3 AND 0.50 < 0.2  → FALSE  (cancellation rate too high)
-Rule 3: 20 > 90 AND 4 >= 2     → FALSE  (visited recently)
-Rule 4: visit_count = 1        → FALSE
-Rule 5: 0.50 >= 0.5            → TRUE
-Result: segment = "Unreliable"
-
----
-
-Guest: Frank
-  total_spend          = Rs. 250
-  visit_count          = 1
-  days_since_last_visit = 15
-  cancellation_rate    = 0.0
-
-Rule 1 → FALSE
-Rule 2 → FALSE (visit_count < 3)
-Rule 3 → FALSE (visited recently)
-Rule 4 → FALSE (total_spend < 5000)
-Rule 5 → FALSE
-Result: segment = "Regular"
-```
-
-### 2.10 Implementation
-
-**Feature Extraction Query**
-
-File: `app/Console/Commands/SegmentGuests.php`
-
-```php
-$guests = DB::select("
-    SELECT
-        u.id AS user_id,
-        COUNT(r.id)                                                        AS visit_count,
-        COALESCE(SUM(p.amount), 0)                                        AS total_spend,
-        COALESCE(DATEDIFF(CURDATE(), MAX(r.check_out)), 9999)             AS days_since_last_visit,
-        COALESCE(
-            SUM(CASE WHEN r.status = 'cancelled' THEN 1 ELSE 0 END)
-            / NULLIF(COUNT(r.id), 0), 0
-        )                                                                  AS cancellation_rate
-    FROM users u
-    LEFT JOIN reservations r  ON r.user_id = u.id
-    LEFT JOIN payments p      ON p.reservation_id = r.id AND p.status = 'completed'
-    WHERE u.role = 'guest'
-    GROUP BY u.id
-");
-```
-
-**Classification Function**
+The PHP implementation uses the `classify()` method in the Command class. It evaluates rules from top to bottom and returns the segment of the first matching rule. Comments explain each rule's business logic:
 
 ```php
 private function classify(float $spend, int $visits, int $daysSince, float $cancellationRate): string
 {
-    if ($spend >= 10000 && $visits >= 5)          return 'vip';
-    if ($visits >= 3 && $cancellationRate < 0.2)  return 'loyal';
-    if ($daysSince > 90 && $visits >= 2)          return 'at_risk';
-    if ($visits == 1 && $spend >= 5000)           return 'high_value_new';
-    if ($cancellationRate >= 0.5)                 return 'unreliable';
+    // Rule 1: VIP — high spend + frequent visitor
+    if ($spend >= 10000 && $visits >= 5) {
+        return 'vip';
+    }
+
+    // Rule 2: Loyal — repeat visitor with low cancellation rate
+    if ($visits >= 3 && $cancellationRate < 0.2) {
+        return 'loyal';
+    }
+
+    // Rule 3: At Risk — used to visit but now inactive
+    if ($daysSince > 90 && $visits >= 2) {
+        return 'at_risk';
+    }
+
+    // Rule 4: High Value New — first-time but high spend
+    if ($visits == 1 && $spend >= 5000) {
+        return 'high_value_new';
+    }
+
+    // Rule 5: Unreliable — cancels often
+    if ($cancellationRate >= 0.5) {
+        return 'unreliable';
+    }
+
+    // Default
     return 'regular';
 }
 ```
 
-**Daily Schedule**
+### Step iv — Database Update & Statistics
 
-File: `routes/console.php`
+Once the segment is determined for each guest, it is saved to the users table. The command also maintains segment statistics:
+
+```php
+$counts = ['vip' => 0, 'loyal' => 0, 'at_risk' => 0, 'high_value_new' => 0, 'unreliable' => 0, 'regular' => 0];
+
+foreach ($guests as $guest) {
+    $segment = $this->classify(
+        (float) $guest->total_spend,
+        (int) $guest->visit_count,
+        (int) $guest->days_since_last_visit,
+        (float) $guest->cancellation_rate
+    );
+
+    DB::table('users')->where('id', $guest->user_id)->update(['segment' => $segment]);
+    $counts[$segment]++;
+}
+
+// Display results as a table
+$this->table(
+    ['Segment', 'Guests'],
+    collect($counts)->map(fn ($n, $s) => [$s, $n])->values()->toArray()
+);
+
+$this->info('Segmentation complete. '.array_sum($counts).' guests classified.');
+```
+
+This shows administrators how many guests fall into each segment category, making it easy to monitor guest composition and adjust strategies accordingly.
+
+### Step v — Execution
+
+The algorithm is implemented in `app/Console/Commands/SegmentGuests.php` with the signature `guests:segment`. It runs in two ways:
+
+- **Manual:** Admin can trigger it anytime using `php artisan guests:segment`
+    - Outputs a table showing segment counts
+    - Displays total number of guests classified
+
+- **Automatic:** Runs every day at midnight via Laravel's task scheduler (configured in `routes/console.php`):
 
 ```php
 Schedule::command('guests:segment')->daily();
 ```
 
-### 2.11 Where It Is Used
+When executed, the command:
 
-- **Artisan command** `php artisan guests:segment` — can be run manually to classify all guests immediately.
-- **Laravel Task Scheduler** — runs the command automatically every day so segments stay up to date as guest behavior changes over time.
-- **Admin Guest Segmentation Page** (`/admin/algorithms`) — displays a color-coded segment badge for every guest along with the feature values (visits, spend, days since visit, cancellation rate) used for classification. Includes a **Re-run Segmentation** button to trigger the algorithm from the UI.
-
-### 2.12 Database Change
-
-A `segment` column was added to the existing `users` table migration:
+1. Logs "Running guest segmentation..."
+2. Fetches all guest data from database
+3. Classifies each guest using the `classify()` method
+4. Updates the users table with segment labels
+5. Displays a statistics table
+6. Logs completion message with total count
 
 ```php
-$table->enum('segment', ['vip', 'loyal', 'at_risk', 'high_value_new', 'unreliable', 'regular'])
-      ->nullable();
+Schedule::command('guests:segment')->daily();
 ```
-
-### 2.13 Time Complexity
-
-- **O(g)** where g is the total number of guests — each guest is evaluated against a constant number of rules (6 rules), so the classification itself is O(1) per guest.
-- The underlying SQL aggregation is **O(r + p)** where r is the number of reservation rows and p is the number of payment rows — all computed in a single database query.
-- Overall the algorithm scales linearly with the size of the guest database.
 
 ---
 
-## 3. Summary
+## Complexity Analysis
 
-| Property | Detail |
-|---|---|
-| Algorithm Type | Rule-Based Decision Tree |
-| Input | Guest behavioral features from reservations and payments tables |
-| Output | Segment label stored in users.segment |
-| Number of Rules | 5 priority rules + 1 default |
-| Number of Segments | 6 (VIP, Loyal, At Risk, High Value New, Unreliable, Regular) |
-| Time Complexity | O(g) — linear in number of guests |
-| Execution | Manual (artisan command) or automatic (daily scheduler) |
-| File Location | app/Console/Commands/SegmentGuests.php |
+- **Time Complexity:** O(n) — linear in the number of guests. The SQL query runs in O(r + p) and classification per guest is O(1) since only 6 rules are checked.
+- **Space Complexity:** O(n) — for storing the feature vectors and results.
+
+---
+
+## Advantages and Limitations
+
+**Advantages:**
+
+- Fully automated, no manual work needed
+- Rules are simple and easy to understand
+- Efficient and scales well as guest count grows
+- Thresholds can be adjusted easily if business needs change
+
+**Limitations:**
+
+- Rule thresholds are fixed and may need periodic update
+- Does not consider qualitative factors like guest feedback
+- No machine learning component to adapt over time
+- Assumes past behavior predicts future behavior
+
+---
+
+## System Integration
+
+- Admin Dashboard shows guest distribution across all segments
+- Guest Management Page shows a color-coded badge next to each guest's name
+- Admin can trigger re-segmentation manually from the dashboard
+- Automatically updates every night so segments stay current
