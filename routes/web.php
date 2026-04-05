@@ -43,6 +43,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('reservations', ReservationController::class);
     Route::patch('reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.update-status');
     Route::post('reservations/{reservation}/pay', [ReservationController::class, 'recordPayment'])->name('reservations.pay');
+    Route::get('reservations/{reservation}/invoice', [ReservationController::class, 'generateInvoice'])->name('reservations.generate-invoice');
 
     Route::get('guests', [GuestController::class, 'index'])->name('guests.index');
     Route::get('guests/create', [GuestController::class, 'create'])->name('guests.create');

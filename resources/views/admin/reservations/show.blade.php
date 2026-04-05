@@ -4,6 +4,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4>Reservation #{{ $reservation->id }}</h4>
     <div>
+        <a href="{{ route('admin.reservations.generate-invoice', $reservation) }}" class="btn btn-sm btn-success">Generate Invoice</a>
         <a href="{{ route('admin.reservations.edit', $reservation) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
         <a href="{{ route('admin.reservations.index') }}" class="btn btn-sm btn-secondary">Back</a>
     </div>

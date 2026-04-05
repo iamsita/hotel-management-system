@@ -166,4 +166,11 @@ class ReservationController extends Controller
 
         return redirect()->route('admin.reservations.index')->with('success', 'Reservation deleted.');
     }
+
+    public function generateInvoice(Reservation $reservation)
+    {
+        $reservation->load('user', 'room', 'foodOrders.food', 'payments');
+
+        return view('admin.invoices.show', compact('reservation'));
+    }
 }
