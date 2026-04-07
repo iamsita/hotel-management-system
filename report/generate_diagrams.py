@@ -317,87 +317,171 @@ def draw_dfd_level0():
 # FIGURE 4b: Data Flow Diagram Level 1
 # ============================================================
 def draw_dfd_level1():
-    fig, ax = plt.subplots(figsize=(16, 11))
-    ax.set_xlim(0, 16)
-    ax.set_ylim(0, 11)
+    """
+    Improved DFD Level 1 - Better clarity, organization, and visual hierarchy
+    Shows core business processes and data flows with clear grouping
+    """
+    fig, ax = plt.subplots(figsize=(18, 12))
+    ax.set_xlim(0, 18)
+    ax.set_ylim(0, 12)
     ax.axis('off')
-    ax.set_title('Figure 4b: Data Flow Diagram - Level 1', fontsize=16, fontweight='bold', pad=20)
+    ax.set_title('Figure 4b: Data Flow Diagram - Level 1 (Hotel Management System)', 
+                 fontsize=14, fontweight='bold', pad=20)
 
-    def draw_process(x, y, num, label, color='#3498db'):
-        circle = plt.Circle((x, y), 0.8, facecolor=color, edgecolor='#2c3e50', linewidth=1.5, alpha=0.85)
+    # ==================== Helper Functions ====================
+    def draw_process(x, y, num, label, description, color='#3498db'):
+        """Draw a process circle with number and label"""
+        circle = plt.Circle((x, y), 0.95, facecolor=color, edgecolor='#2c3e50', linewidth=2, alpha=0.9)
         ax.add_patch(circle)
-        ax.text(x, y + 0.2, f'P{num}', ha='center', va='center', fontsize=8, fontweight='bold', color='white')
-        ax.text(x, y - 0.2, label, ha='center', va='center', fontsize=7, fontweight='bold', color='white')
+        ax.text(x, y + 0.35, f'P{num}', ha='center', va='center', fontsize=10, fontweight='bold', color='white')
+        ax.text(x, y - 0.15, label, ha='center', va='center', fontsize=7.5, fontweight='bold', color='white')
+        if description:
+            ax.text(x, y - 0.6, description, ha='center', va='center', fontsize=6, color='#555555', style='italic')
 
-    def draw_store(x, y, label):
-        box = FancyBboxPatch((x - 1.3, y - 0.25), 2.6, 0.5, boxstyle="round,pad=0.05",
-                             facecolor='#ecf0f1', edgecolor='#2c3e50', linewidth=1.2)
+    def draw_store(x, y, num, label, description):
+        """Draw a data store (parallel lines)"""
+        box = FancyBboxPatch((x - 1.4, y - 0.35), 2.8, 0.7, boxstyle="round,pad=0.08",
+                             facecolor='#f0f3f4', edgecolor='#2c3e50', linewidth=1.5)
         ax.add_patch(box)
-        ax.plot([x - 1.3, x - 1.3], [y - 0.25, y + 0.25], color='#2c3e50', linewidth=2)
-        ax.text(x, y, label, ha='center', va='center', fontsize=8, fontweight='bold')
+        # Top line
+        ax.plot([x - 1.4, x + 1.4], [y + 0.20, y + 0.20], color='#2c3e50', linewidth=2.5)
+        # Bottom line
+        ax.plot([x - 1.4, x + 1.4], [y - 0.20, y - 0.20], color='#2c3e50', linewidth=2.5)
+        ax.text(x, y + 0.08, f'D{num}', ha='center', va='center', fontsize=8, fontweight='bold', color='#2c3e50')
+        ax.text(x, y - 0.10, label, ha='center', va='center', fontsize=7, fontweight='bold', color='#34495e')
+        ax.text(x, y - 0.5, description, ha='center', va='center', fontsize=5.5, color='#7f8c8d', style='italic')
 
-    def draw_ext(x, y, label):
-        box = FancyBboxPatch((x - 1, y - 0.3), 2, 0.6, boxstyle="round,pad=0.1",
-                             facecolor='#2c3e50', edgecolor='#2c3e50', linewidth=1.5)
+    def draw_external_entity(x, y, label):
+        """Draw external entity box"""
+        box = FancyBboxPatch((x - 1.1, y - 0.35), 2.2, 0.7, boxstyle="round,pad=0.12",
+                             facecolor='#34495e', edgecolor='#1a1a1a', linewidth=2)
         ax.add_patch(box)
         ax.text(x, y, label, ha='center', va='center', fontsize=9, fontweight='bold', color='white')
 
-    def draw_flow(x1, y1, x2, y2, label, offset=0.25):
+    def draw_data_flow(x1, y1, x2, y2, label, offset=0.35, flow_type='normal'):
+        """Draw data flow with label"""
+        colors = {
+            'normal': '#e74c3c',
+            'query': '#3498db',
+            'store': '#27ae60',
+            'auth': '#8e44ad'
+        }
+        color = colors.get(flow_type, colors['normal'])
+        
         ax.annotate('', xy=(x2, y2), xytext=(x1, y1),
-                    arrowprops=dict(arrowstyle='->', color='#e74c3c', lw=1.2))
+                    arrowprops=dict(arrowstyle='->', color=color, lw=1.5, alpha=0.85))
         mx, my = (x1 + x2) / 2, (y1 + y2) / 2
-        ax.text(mx, my + offset, label, ha='center', va='center', fontsize=6.5,
-                bbox=dict(boxstyle='round,pad=0.1', facecolor='#ffeaa7', edgecolor='none'))
+        ax.text(mx + offset, my, label, ha='center', va='center', fontsize=6.5, fontweight='bold',
+                bbox=dict(boxstyle='round,pad=0.25', facecolor='#fffacd', edgecolor='#d4af37', linewidth=0.8))
 
-    # External entities
-    draw_ext(1.5, 10, 'Admin')
-    draw_ext(14.5, 10, 'Guest')
+    # ==================== External Entities ====================
+    draw_external_entity(0.8, 10.8, 'Admin User')
+    draw_external_entity(17.2, 10.8, 'Guest User')
 
-    # Processes
-    draw_process(4, 8.5, 1, 'Auth', '#2c3e50')
-    draw_process(8, 8.5, 2, 'Room\nMgmt', '#27ae60')
-    draw_process(12, 8.5, 3, 'Search\n& Filter', '#16a085')
-    draw_process(4, 5.5, 4, 'Reservation\nMgmt', '#e74c3c')
-    draw_process(8, 5.5, 5, 'Food\nOrder', '#f39c12')
-    draw_process(12, 5.5, 6, 'Billing\nCalc', '#8e44ad')
-    draw_process(8, 2.5, 7, 'Payment\nMgmt', '#2980b9')
+    # ==================== CORE BUSINESS PROCESSES ====================
+    # Authentication & Authorization Tier
+    draw_process(3, 9.0, 1, 'Auth', 'Login/Register', '#8e44ad')
+    
+    # Room Management Tier
+    draw_process(7.5, 9.0, 2, 'Room\nManagement', 'Add/Update Rooms', '#27ae60')
+    draw_process(12, 9.0, 3, 'Room Search\n& Filter', 'Availability Check', '#16a085')
+    
+    # Reservation Processing Tier
+    draw_process(3, 6.0, 4, 'Reservation\nProcessing', 'Create/Manage', '#e74c3c')
+    draw_process(7.5, 6.0, 5, 'Food Order\nProcessing', 'Add/Update Orders', '#f39c12')
+    draw_process(12, 6.0, 6, 'Billing\nCalculation', 'Compute Totals', '#9b59b6')
+    
+    # Payment Processing Tier
+    draw_process(7.5, 3.0, 7, 'Payment\nProcessing', 'Record Transactions', '#2980b9')
 
-    # Data stores
-    draw_store(1.5, 5.5, 'D1: Users')
-    draw_store(1.5, 3.5, 'D2: Rooms')
-    draw_store(14.5, 5.5, 'D3: Reservations')
-    draw_store(14.5, 3.5, 'D4: Foods')
-    draw_store(4, 1.0, 'D5: Food Orders')
-    draw_store(12, 1.0, 'D6: Payments')
+    # ==================== DATA STORES ====================
+    draw_store(0.8, 5.0, 1, 'Users', 'Profiles, Credentials')
+    draw_store(3.0, 1.5, 2, 'Rooms', 'Room Details')
+    draw_store(7.5, 1.5, 3, 'Food Items', 'Menu, Pricing')
+    draw_store(12, 1.5, 4, 'Reservations', 'Bookings')
+    draw_store(15.2, 5.0, 5, 'Food Orders', 'Order History')
+    draw_store(17.2, 1.5, 6, 'Payments', 'Transaction Ledger')
 
-    # Flows from Admin
-    draw_flow(2.5, 10, 4, 9.3, 'Login')
-    draw_flow(2.5, 9.7, 8, 9.2, 'Room CRUD')
-    draw_flow(2.5, 9.5, 4, 6.3, 'Create Reservation')
+    # ==================== DATA FLOWS - AUTHENTICATION ====================
+    draw_data_flow(1.8, 10.7, 3, 9.9, 'credentials', offset=0.15, flow_type='auth')
+    draw_data_flow(16.2, 10.7, 12, 9.9, 'search query', offset=-0.15, flow_type='query')
+    draw_data_flow(16.2, 10.5, 3, 9.7, 'register/login', offset=0.15, flow_type='auth')
+    
+    # ==================== DATA FLOWS - AUTH TO STORES ====================
+    draw_data_flow(3, 8.0, 0.8, 5.4, 'user info', offset=0.15, flow_type='store')
+    draw_data_flow(2.5, 8.2, 2.3, 2.0, 'read auth', offset=-0.2, flow_type='query')
 
-    # Flows from Guest
-    draw_flow(13.5, 10, 12, 9.3, 'Search Rooms')
-    draw_flow(13.5, 9.7, 4, 9.0, 'Register/Login')
-    draw_flow(13.8, 9.5, 12, 6.3, 'View Bill')
+    # ==================== DATA FLOWS - ROOM MANAGEMENT ====================
+    draw_data_flow(7.5, 8.0, 3.0, 2.0, 'room details', offset=0.2, flow_type='store')
+    draw_data_flow(7.5, 8.0, 3.0, 2.0, 'room details', offset=0.2, flow_type='store')
+    draw_data_flow(10.5, 8.8, 12, 8.2, 'room info', offset=0.2, flow_type='query')
+    draw_data_flow(12, 8.0, 7.5, 2.0, 'availability', offset=0.2, flow_type='query')
 
-    # Process to store flows
-    draw_flow(4, 7.7, 1.5, 5.8, 'User Data')
-    draw_flow(8, 7.7, 1.5, 3.8, 'Room Data')
-    draw_flow(4, 4.7, 14.5, 5.8, 'Reservation')
-    draw_flow(8, 4.7, 4, 1.3, 'Order Data')
-    draw_flow(8, 4.7, 14.5, 3.8, 'Food Data')
-    draw_flow(8, 1.8, 12, 1.3, 'Payment Data')
+    # ==================== DATA FLOWS - RESERVATION ====================
+    draw_data_flow(3, 5.3, 12, 2.0, 'reservation data', offset=0.25, flow_type='store')
+    draw_data_flow(12, 2.0, 3, 5.3, 'reservation details', offset=-0.25, flow_type='query')
+    draw_data_flow(4.2, 6.0, 7.5, 5.3, 'active reservations', offset=0.2, flow_type='query')
 
-    # Inter-process flows
-    draw_flow(8.8, 5.5, 11.2, 5.5, 'Order Total')
-    draw_flow(4.8, 5.5, 7.2, 5.5, 'Active Res.')
-    draw_flow(8, 3.3, 8, 4.7, 'Paid Amount')
-    draw_flow(12, 4.7, 8.8, 2.8, 'Balance Due')
+    # ==================== DATA FLOWS - FOOD ORDERS ====================
+    draw_data_flow(7.5, 5.3, 7.5, 2.0, 'order details', offset=0.25, flow_type='store')
+    draw_data_flow(7.5, 2.0, 7.5, 5.3, 'menu items', offset=-0.25, flow_type='query')
+    draw_data_flow(10.5, 5.9, 15.2, 5.3, 'order record', offset=0.2, flow_type='store')
+
+    # ==================== DATA FLOWS - BILLING & PAYMENT ====================
+    draw_data_flow(10.5, 6.0, 12, 5.3, 'order total', offset=-0.15, flow_type='query')
+    draw_data_flow(12, 5.3, 10.5, 3.3, 'billing amount', offset=0.2, flow_type='query')
+    draw_data_flow(10.5, 5.3, 7.5, 3.8, 'bill for payment', offset=0.2, flow_type='query')
+    draw_data_flow(7.5, 2.3, 17.2, 2.0, 'payment data', offset=0.2, flow_type='store')
+    draw_data_flow(16.0, 4.7, 12, 5.3, 'payment status', offset=-0.15, flow_type='query')
+
+    # ==================== DATA FLOWS - GUEST INTERACTIONS ====================
+    draw_data_flow(14.0, 9.0, 16.2, 10.5, 'bill display', offset=0.3, flow_type='normal')
+    draw_data_flow(15.2, 4.8, 16.2, 10.3, 'order summary', offset=-0.3, flow_type='normal')
+
+    # ==================== LEGEND ====================
+    legend_y = 11.3
+    ax.text(0.8, legend_y, 'Legend:', fontsize=8, fontweight='bold', color='#2c3e50')
+    
+    # Data Flow Types
+    ax.annotate('', xy=(1.5, legend_y - 0.35), xytext=(1.3, legend_y - 0.35),
+                arrowprops=dict(arrowstyle='->', color='#e74c3c', lw=1.5))
+    ax.text(1.8, legend_y - 0.35, 'Data Flow', fontsize=6.5, va='center')
+    
+    ax.annotate('', xy=(3.3, legend_y - 0.35), xytext=(3.1, legend_y - 0.35),
+                arrowprops=dict(arrowstyle='->', color='#3498db', lw=1.5))
+    ax.text(3.6, legend_y - 0.35, 'Query', fontsize=6.5, va='center')
+    
+    ax.annotate('', xy=(5.0, legend_y - 0.35), xytext=(4.8, legend_y - 0.35),
+                arrowprops=dict(arrowstyle='->', color='#27ae60', lw=1.5))
+    ax.text(5.3, legend_y - 0.35, 'Store', fontsize=6.5, va='center')
+
+    # Process Layers
+    ax.text(7.0, legend_y - 0.10, 'Process Layers:', fontsize=7, fontweight='bold', color='#2c3e50')
+    ax.add_patch(plt.Circle((7.2, legend_y - 0.5), 0.12, color='#8e44ad', alpha=0.9))
+    ax.text(7.5, legend_y - 0.5, 'Auth', fontsize=6)
+    
+    ax.add_patch(plt.Circle((7.9, legend_y - 0.5), 0.12, color='#27ae60', alpha=0.9))
+    ax.text(8.2, legend_y - 0.5, 'Room', fontsize=6)
+    
+    ax.add_patch(plt.Circle((8.6, legend_y - 0.5), 0.12, color='#e74c3c', alpha=0.9))
+    ax.text(8.9, legend_y - 0.5, 'Reservation', fontsize=6)
+    
+    ax.add_patch(plt.Circle((9.9, legend_y - 0.5), 0.12, color='#f39c12', alpha=0.9))
+    ax.text(10.2, legend_y - 0.5, 'Food', fontsize=6)
+    
+    ax.add_patch(plt.Circle((10.9, legend_y - 0.5), 0.12, color='#2980b9', alpha=0.9))
+    ax.text(11.2, legend_y - 0.5, 'Payment', fontsize=6)
+
+    # Key Info
+    ax.text(13.0, legend_y - 0.10, 'Key Information:', fontsize=7, fontweight='bold', color='#2c3e50')
+    ax.text(13.0, legend_y - 0.5, '• 2 External Actors | 7 Main Processes | 6 Data Stores', fontsize=6, color='#555555')
+    ax.text(13.0, legend_y - 0.75, '• Processes handle core business workflows', fontsize=6, color='#555555')
+    ax.text(13.0, legend_y - 1.0, '• Color-coded flows for flow type clarity', fontsize=6, color='#555555')
 
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, 'figure4b_dfd_level1.png'), dpi=200, bbox_inches='tight')
     plt.close()
-    print("Figure 4b: DFD Level 1 - DONE")
+    print("Figure 4b: DFD Level 1 (Improved) - DONE")
 
 
 # ============================================================
