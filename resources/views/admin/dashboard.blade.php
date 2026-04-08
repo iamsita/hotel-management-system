@@ -53,6 +53,7 @@
                         <th>Check In</th>
                         <th>Check Out</th>
                         <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,6 +65,9 @@
                             <td>{{ $r->check_out->format('M d, Y') }}</td>
                             <td><span
                                     class="badge bg-{{ $r->status === 'checked_in' ? 'success' : ($r->status === 'pending' ? 'warning' : 'secondary') }}">{{ $r->status }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ route('admin.reservations.show', $r->id) }}" class="btn btn-sm btn-outline-primary">View</a>
                             </td>
                         </tr>
                     @empty
