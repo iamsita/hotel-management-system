@@ -1,5 +1,8 @@
 <?php
 
+pest()->extend(Tests\DuskTestCase::class)
+    ->in('Browser');
+
 use Tests\TestCase;
 
 /*

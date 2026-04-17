@@ -12,7 +12,7 @@ class RoomController extends Controller
         $rooms = Room::all();
 
         return view('admin.rooms.index', [
-            'rooms',
+            'rooms'=>$rooms,
         ]);
     }
 
