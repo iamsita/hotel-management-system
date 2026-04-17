@@ -7,12 +7,39 @@ use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $rooms = Room::all();
+        $query = Room::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('room_number', 'like', "%{$search}%");
+        }
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('floor')) {
+            $query->where('floor', $request->floor);
+        }
+
+        if ($request->filled('price_from')) {
+            $query->where('price_per_night', '>=', $request->price_from);
+        }
+
+        if ($request->filled('price_to')) {
+            $query->where('price_per_night', '<=', $request->price_to);
+        }
+
+        $rooms = $query->paginate(10)->withQueryString();
 
         return view('admin.rooms.index', [
-            'rooms'=>$rooms,
+            'rooms' => $rooms,
         ]);
     }
 

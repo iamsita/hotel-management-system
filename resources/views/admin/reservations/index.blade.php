@@ -146,7 +146,7 @@
                     @endforelse
                 </tbody>
             </table>
-            <div class="p-3">{{ $reservations->links() }}</div>
+            <div class="p-3">{{ $reservations->links('pagination::bootstrap-5') }}</div>
         </div>
     </div>
 @endsection

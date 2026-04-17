@@ -7,9 +7,24 @@ use Illuminate\Http\Request;
 
 class FoodController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $foods = Food::all();
+        $query = Food::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('available')) {
+            $query->where('available', $request->available === 'yes' ? 1 : 0);
+        }
+
+        $foods = $query->paginate(15)->withQueryString();
 
         return view('admin.foods.index', [
             'foods' => $foods,
