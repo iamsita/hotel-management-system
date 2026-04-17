@@ -14,7 +14,9 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
-        return view('profile.show', compact('user'));
+        return view('profile.show', [
+            'user' => $user,
+        ]);
     }
 
     /**
@@ -24,7 +26,9 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
-        return view('profile.edit', compact('user'));
+        return view('profile.edit', [
+            'user' => $user,
+        ]);
     }
 
     /**

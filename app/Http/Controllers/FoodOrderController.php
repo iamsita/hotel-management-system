@@ -10,7 +10,9 @@ class FoodOrderController extends Controller
     {
         $orders = FoodOrder::with('reservation.user', 'food')->latest()->paginate(15);
 
-        return view('admin.food-orders.index', compact('orders'));
+        return view('admin.food-orders.index', [
+            'orders' => $orders,
+        ]);
     }
 
     public function updateStatus(FoodOrder $order, string $status)

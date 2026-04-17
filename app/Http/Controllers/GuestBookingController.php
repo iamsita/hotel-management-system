@@ -21,7 +21,10 @@ class GuestBookingController extends Controller
             ->whereIn('status', ['pending', 'confirmed', 'checked_in'])
             ->exists();
 
-        return view('guest.rooms', compact('rooms', 'hasActive'));
+        return view('guest.rooms', [
+            'rooms' => $rooms,
+            'hasActive' => $hasActive,
+        ]);
     }
 
     public function book(Request $request)
@@ -67,7 +70,9 @@ class GuestBookingController extends Controller
 
         $reservation->load('room', 'foodOrders.food', 'payments');
 
-        return view('guest.reservation', compact('reservation'));
+        return view('guest.reservation', [
+            'reservation' => $reservation,
+        ]);
     }
 
     public function menu()
@@ -77,7 +82,10 @@ class GuestBookingController extends Controller
             ->where('status', 'checked_in')
             ->first();
 
-        return view('guest.menu', compact('foods', 'activeReservation'));
+        return view('guest.menu', [
+            'foods' => $foods,
+            'activeReservation' => $activeReservation,
+        ]);
     }
 
     public function orderFood(Request $request)

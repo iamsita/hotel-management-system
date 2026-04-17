@@ -29,6 +29,8 @@ class AlgorithmDemoController extends Controller
             ORDER BY FIELD(u.segment, 'vip','loyal','high_value_new','at_risk','unreliable','regular')
         ");
 
-        return view('admin.algorithms.index', compact('segmentedGuests'));
+        return view('admin.algorithms.index', [
+            'segmentedGuests' => $segmentedGuests,
+        ]);
     }
 }

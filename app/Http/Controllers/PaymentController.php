@@ -10,6 +10,8 @@ class PaymentController extends Controller
     {
         $payments = Payment::with('reservation.user')->latest()->paginate(15);
 
-        return view('admin.payments.index', compact('payments'));
+        return view('admin.payments.index', [
+            'payments' => $payments,
+        ]);
     }
 }

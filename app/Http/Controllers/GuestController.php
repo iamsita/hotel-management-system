@@ -11,7 +11,9 @@ class GuestController extends Controller
     {
         $guests = User::where('role', 'guest')->withCount('reservations')->paginate(15);
 
-        return view('admin.guests.index', compact('guests'));
+        return view('admin.guests.index', [
+            'guests' => $guests,
+        ]);
     }
 
     public function create()

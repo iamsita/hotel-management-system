@@ -11,7 +11,9 @@ class FoodController extends Controller
     {
         $foods = Food::all();
 
-        return view('admin.foods.index', compact('foods'));
+        return view('admin.foods.index', [
+            'foods' => $foods,
+        ]);
     }
 
     public function create()
@@ -36,7 +38,9 @@ class FoodController extends Controller
 
     public function edit(Food $food)
     {
-        return view('admin.foods.edit', compact('food'));
+        return view('admin.foods.edit', [
+            'food' => $food,
+        ]);
     }
 
     public function update(Request $request, Food $food)

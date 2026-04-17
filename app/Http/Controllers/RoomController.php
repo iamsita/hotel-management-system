@@ -11,7 +11,9 @@ class RoomController extends Controller
     {
         $rooms = Room::all();
 
-        return view('admin.rooms.index', compact('rooms'));
+        return view('admin.rooms.index', [
+            'rooms',
+        ]);
     }
 
     public function create()
@@ -36,7 +38,9 @@ class RoomController extends Controller
 
     public function edit(Room $room)
     {
-        return view('admin.rooms.edit', compact('room'));
+        return view('admin.rooms.edit', [
+            'room' => $room,
+        ]);
     }
 
     public function update(Request $request, Room $room)

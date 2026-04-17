@@ -18,8 +18,8 @@ class ReservationController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->whereHas('user', fn($u) => $u->whereAny(['name','email'], 'like', "%{$search}%"))
-                  ->orWhereHas('room', fn($r) => $r->where('room_number', 'like', "%{$search}%"));
+                $q->whereHas('user', fn ($u) => $u->whereAny(['name', 'email'], 'like', "%{$search}%"))
+                    ->orWhereHas('room', fn ($r) => $r->where('room_number', 'like', "%{$search}%"));
             });
         }
 
@@ -28,7 +28,7 @@ class ReservationController extends Controller
         }
 
         if ($request->filled('room_type')) {
-            $query->whereHas('room', fn($r) => $r->where('type', $request->room_type));
+            $query->whereHas('room', fn ($r) => $r->where('type', $request->room_type));
         }
 
         if ($request->filled('check_in_from')) {
@@ -41,7 +41,9 @@ class ReservationController extends Controller
 
         $reservations = $query->paginate(15)->withQueryString();
 
-        return view('admin.reservations.index', compact('reservations'));
+        return view('admin.reservations.index', [
+            'reservations' => $reservations,
+        ]);
     }
 
     public function create()
@@ -86,7 +88,9 @@ class ReservationController extends Controller
     {
         $reservation->load('user', 'room', 'foodOrders.food', 'payments');
 
-        return view('admin.reservations.show', compact('reservation'));
+        return view('admin.reservations.show', [
+            'reservation' => $reservation,
+        ]);
     }
 
     public function edit(Reservation $reservation)
@@ -94,7 +98,11 @@ class ReservationController extends Controller
         $guests = User::where('role', 'guest')->get();
         $rooms = Room::whereIn('status', ['available', 'occupied'])->get();
 
-        return view('admin.reservations.edit', compact('reservation', 'guests', 'rooms'));
+        return view('admin.reservations.edit', [
+            'reservation' => $reservation,
+            'guests' => $guests,
+            'rooms' => $rooms,
+        ]);
     }
 
     public function update(Request $request, Reservation $reservation)
