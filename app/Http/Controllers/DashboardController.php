@@ -24,12 +24,32 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function guest()
+    public function guest(\Illuminate\Http\Request $request)
     {
         $user = auth()->user();
+        $query = $user->reservations()->with('room')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('room', fn ($q) => $q->where('room_number', 'like', "%{$search}%"));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('check_in_from')) {
+            $query->whereDate('check_in', '>=', $request->check_in_from);
+        }
+
+        if ($request->filled('check_in_to')) {
+            $query->whereDate('check_in', '<=', $request->check_in_to);
+        }
+
+        $reservations = $query->paginate(10)->withQueryString();
 
         return view('guest.dashboard', [
-            'reservations' => $user->reservations()->with('room')->latest()->get(),
+            'reservations' => $reservations,
         ]);
     }
 }

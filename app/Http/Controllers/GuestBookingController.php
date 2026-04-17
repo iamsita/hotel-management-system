@@ -75,9 +75,20 @@ class GuestBookingController extends Controller
         ]);
     }
 
-    public function menu()
+    public function menu(Request $request)
     {
-        $foods = Food::where('available', true)->get();
+        $query = Food::where('available', true);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        $foods = $query->get();
         $activeReservation = auth()->user()->reservations()
             ->where('status', 'checked_in')
             ->first();
